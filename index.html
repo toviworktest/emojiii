@@ -48,7 +48,7 @@
         .btn-gene { background: #333; color: #777; font-size: 0.7rem; grid-column: span 2; }
         .btn-nav { background: #2d3436; color: white; font-size: 0.65rem; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50px; }
         
-        /* 랭킹 버튼 스타일 업그레이드 */
+        /* 랭킹 버튼 스타일 */
         .world-rank-btn { 
             background: #000; border: 2px solid var(--purple-btn); padding: 12px; border-radius: 12px; 
             display: flex; justify-content: space-between; align-items: center;
@@ -58,7 +58,6 @@
         .world-rank-label { color: var(--purple-btn); font-size: 0.65rem; font-weight: 900; letter-spacing: 1px; margin-bottom: 2px; }
         .world-rank-val { font-size: 0.8rem; font-weight: bold; color: #ddd; }
         .world-rank-icon { font-size: 2rem; margin-left: 10px; animation: float 2s infinite ease-in-out; }
-        
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
         .my-rank-btn { background: #1a1a1a; border: 1px solid #444; color: #aaa; }
@@ -79,33 +78,34 @@
         .inv-status-bar:active { transform: scale(0.98); background: #333; }
         .inv-current-info { display: flex; align-items: center; gap: 10px; }
         .inv-current-icon { font-size: 2rem; }
+        .inv-hint { font-size: 0.7rem; color: #666; text-align: center; margin-bottom: 10px; background: #111; padding: 8px; border-radius: 6px; }
 
         #nick-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; display: flex; align-items: center; justify-content: center; }
         .login-box { background:#1a1a1a; padding:25px; border-radius:15px; border:2px solid #e74c3c; text-align:center; width:85%; max-width:340px; }
         .login-input { width:100%; padding:12px; background:#000; border:1px solid #444; color:white; border-radius:8px; margin: 5px 0; box-sizing:border-box; font-size: 1rem; }
-        .login-btn { width:48%; padding:12px; border:none; border-radius:8px; font-weight:bold; margin-top: 10px; font-size: 0.9rem; }
+        .login-btn { width:48%; padding:12px; border:none; border-radius:8px; font-weight:bold; margin-top: 10px; font-size: 0.9rem; cursor: pointer; }
         .btn-join { background: #00cec9; color: #000; }
         .btn-login { background: #e74c3c; color: white; }
         
         .glow-legendary { animation: text-glow 1.5s infinite alternate; }
         @keyframes text-glow { from { text-shadow: 0 0 5px #ff7675; } to { text-shadow: 0 0 20px #ff7675; } }
+        
         /* 랭킹 스타일 */
         .rank-card-slim { display: grid; grid-template-columns: 45px 45px 1fr; gap: 5px; background: #111; border-radius: 10px; margin-bottom: 8px; border: 1px solid #222; align-items: stretch; overflow: hidden; }
         .rank-block { display: flex; align-items: center; justify-content: center; background: #1a1a1a; font-weight: 900; font-size: 0.8rem; aspect-ratio: 1/1; }
         .rank-info-block { padding: 8px 12px; display: flex; flex-direction: column; justify-content: center; font-size: 0.7rem; }
         .rank-glow-1 { box-shadow: 0 0 20px gold; border-color: gold !important; }
         
-        /* 도감 및 확률표 */
+        /* 도감 스타일 */
         .rate-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; background: #1a1a1a; border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
         .rate-table th, .rate-table td { padding: 10px; text-align: center; border-bottom: 1px solid #333; }
         .rate-table th { background: #222; color: #aaa; }
-        
         .book-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .book-item { background: #1a1a1a; padding: 12px; border-radius: 12px; border: 1px solid #333; margin-bottom: 5px; }
         .book-item span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 1.1rem; margin-top: 5px; color: #ddd; }
         
-        /* 인벤토리 하단 설명 */
-        .inv-hint { font-size: 0.7rem; color: #666; text-align: center; margin-bottom: 10px; background: #111; padding: 8px; border-radius: 6px; }
+        /* 팝업 애니메이션 */
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body>
@@ -116,10 +116,8 @@
         <p style="color:#f1c40f; font-size:0.8rem; margin:10px 0; font-weight:bold; background:#332b00; padding:8px; border-radius:5px;">
             ⚠ 보안 주의: 금융/실제 비밀번호 사용 금지
         </p>
-        
         <input type="text" id="inp-nick" class="login-input" placeholder="닉네임 (ID)" maxlength="12">
         <input type="password" id="inp-pw" class="login-input" placeholder="비밀번호" maxlength="20">
-        
         <div style="display:flex; justify-content:space-between;">
             <button class="login-btn btn-join" onclick="handleAuth('signup')">새로 시작 (가입)</button>
             <button class="login-btn btn-login" onclick="handleAuth('login')">불러오기 (로그인)</button>
@@ -193,7 +191,6 @@
 
 <div id="inv-page" class="full-page">
     <h2 style="color:#fff; text-align:center; margin-bottom:10px;">🎒 개인 인벤토리</h2>
-    
     <div class="inv-status-bar" onclick="swapWithMain()" title="클릭 시 선택한 아이템과 교체">
         <div class="inv-current-info">
             <div id="inv-current-emoji" class="inv-current-icon">🔒</div>
@@ -204,9 +201,7 @@
         </div>
         <div id="inv-total-gold" style="font-size:1.2rem; font-weight:bold; color:#ffd700;">0 🟡</div>
     </div>
-    
     <div class="inv-hint">💡 팁: 아이템 선택 후 '재클릭'하거나 위 '장착 중' 바를 누르면 교체됩니다.</div>
-
     <div id="inv-grid-list" class="inv-grid"></div>
     <button style="width:100%; padding:15px; background:#333; color:white; border-radius:10px; margin-top:15px;" onclick="closePage('inv-page')">창 닫기</button>
 </div>
@@ -221,6 +216,22 @@
 </div>
 
 <div id="rank-page" class="full-page"><h2 id="rank-title" style="color:#ffd700; text-align:center;">전당</h2><div id="rank-list"></div><button style="width:100%; padding:15px; background:#333; color:white; border-radius:10px;" onclick="closePage('rank-page')">닫기</button></div>
+
+<div id="exit-modal" class="full-page" style="z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,0.85);">
+    <div class="login-box" style="border-color:#e74c3c; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+        <h2 style="color:#e74c3c; margin-top:0; font-size:1.5rem;">⚠️ WARNING</h2>
+        <p style="color:#ddd; margin:20px 0; line-height:1.6; font-size:0.9rem;">
+            정말로 게임을 종료하시겠습니까?<br>
+            <span style="color:#4cd137; font-size:0.8rem; font-weight:bold;">
+                (현재 내용은 서버에 자동 저장되며,<br>다시 로그인하면 불러올 수 있습니다)
+            </span>
+        </p>
+        <div style="display:flex; gap:10px; width:100%;">
+            <button class="login-btn" onclick="realExit()" style="background:#e74c3c; color:white; width:50%;">종료</button>
+            <button class="login-btn" onclick="cancelExit()" style="background:#444; color:white; width:50%;">취소</button>
+        </div>
+    </div>
+</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
@@ -241,7 +252,7 @@
 
     const gradeInfo = { "일반": { color: "#b2bec3", mod: 1.0, rank: 0, prob: 45.0, weight: 1.0 }, "매직": { color: "#00cec9", mod: 0.85, rank: 1, prob: 25.0, weight: 2.0 }, "레어": { color: "#a29bfe", mod: 0.7, rank: 2, prob: 15.0, weight: 3.0 }, "에픽": { color: "#fab1a0", mod: 0.5, rank: 3, prob: 10.0, weight: 4.0 }, "레전더리": { color: "#ff7675", mod: 0.3, rank: 4, prob: 5.0, weight: 15.0 } };
     
-    // 100종 진화 트리 데이터
+    // 100종 진화 트리
     const evoPaths = [
         { name: "보석", grades: ["레전더리"], stages: ["📿", "💍", "👑", "✨"] }, { name: "기상", grades: ["일반", "매직"], stages: ["☀️", "🌤️", "🌦️", "🌈"] }, { name: "도시", grades: ["매직", "레어"], stages: ["🧱", "🏠", "🏢", "🏙️"] }, { name: "의류", grades: ["일반", "매직"], stages: ["🧶", "👕", "👔", "🕴️"] }, { name: "심해", grades: ["에픽", "레전더리"], stages: ["🐚", "🦀", "🐙", "🦈"] },
         { name: "사무", grades: ["매직", "레어"], stages: ["📎", "📂", "🖥️", "🏢"] }, { name: "식사", grades: ["일반", "매직"], stages: ["🥣", "🥗", "🍝", "🍗"] }, { name: "미래", grades: ["에픽", "레전더리"], stages: ["🔋", "⚡", "🤖", "🛸"] }, { name: "연금술", grades: ["레어", "에픽"], stages: ["🧪", "⚗️", "🔮", "🧙"] }, { name: "유적", grades: ["매직", "레어"], stages: ["⛏️", "🔦", "🦴", "🏺"] },
@@ -272,8 +283,65 @@
 
     // 유틸 함수
     window.addLog = (msg) => { const lb = document.getElementById('game-log'); const d = document.createElement('div'); d.innerText = `> ${msg}`; lb.appendChild(d); lb.scrollTop = lb.scrollHeight; };
-    window.closePage = (id) => { document.getElementById(id).style.display = 'none'; window.selectedInvIdx = null; renderInventory(); };
     window.vibrate = () => { if(navigator.vibrate) navigator.vibrate(10); };
+    
+    // 모달 상태 체크 함수
+    function isGameModalOpen() {
+        return Array.from(document.querySelectorAll('.full-page')).some(el => 
+            el.id !== 'exit-modal' && el.style.display === 'block'
+        );
+    }
+    
+    // ⭐ 종료 및 뒤로가기 로직 (수정됨: 로그인 화면으로 이동)
+    window.realExit = () => {
+        // 종료 = 로그아웃으로 처리하여 초기 화면으로 돌아감
+        localStorage.removeItem('lastUser'); 
+        location.reload(); 
+    };
+
+    window.cancelExit = () => {
+        // 단순히 팝업만 숨김 (State는 유지하여 안전장치 역할 지속)
+        document.getElementById('exit-modal').style.display = 'none';
+    };
+
+    // history 처리 핵심 로직
+    window.addEventListener('popstate', () => {
+        const exitModal = document.getElementById('exit-modal');
+
+        // 1. 종료 팝업이 떠있는 상태에서 뒤로가기 누름 (취소 의도)
+        if (exitModal.style.display === 'flex') {
+            exitModal.style.display = 'none';
+            // ❗ 핵심: 방금 소비한 안전장치를 다시 채워넣음 (무한 방어)
+            history.pushState({ main: true }, '', '');
+            return;
+        }
+
+        // 2. 게임 내 모달(인벤토리 등) 열려있으면 닫기
+        if (isGameModalOpen()) {
+            document.querySelectorAll('.full-page').forEach(el => {
+                if(el.id !== 'exit-modal') el.style.display = 'none';
+            });
+            window.selectedInvIdx = null;
+            if(window.renderInventory) window.renderInventory();
+            return;
+        }
+
+        // 3. 메인 화면이면 종료 팝업 띄우기
+        // ❗ 핵심: 팝업을 띄우는 순간 다시 state를 push하여 "못 나가게 가둠"
+        history.pushState({ main: true }, '', ''); 
+        exitModal.style.display = 'flex';
+    });
+    
+    // 모달 닫기 공통 함수 (화면 내 X버튼 등)
+    window.closePage = (id) => { 
+        if (history.state && history.state.modal) {
+            history.back();
+        } else {
+            document.getElementById(id).style.display = 'none'; 
+            window.selectedInvIdx = null; 
+            renderInventory(); 
+        }
+    };
     
     // UI 업데이트
     window.updateUI = function() {
@@ -363,8 +431,15 @@
         window.gold += rec.val; addLog(`💰 판매: +${rec.val.toLocaleString()}`); window.currentEmoji = null; updateUI(); await saveGame();
     };
 
-    // --- 인벤토리 & 도감 ---
-    window.openInventory = () => { document.getElementById('inv-page').style.display = 'block'; updateUI(); renderInventory(); };
+    // --- 인벤토리 관련 함수들 ---
+    window.openInventory = () => { 
+        if(isGameModalOpen()) return;
+        history.pushState({ modal: true }, '', ''); 
+        const page = document.getElementById('inv-page');
+        page.style.display = 'block'; page.scrollTop = 0;
+        updateUI(); renderInventory(); 
+    };
+
     function renderInventory() {
         const grid = document.getElementById('inv-grid-list'); grid.innerHTML = "";
         window.inventory.forEach((slot, i) => {
@@ -375,98 +450,55 @@
         });
     }
 
-    // ⭐ 핵심 개선: 인벤토리 교체/스왑 로직 강화
     window.swapWithMain = () => {
-        // 선택된 아이템이 없거나 유효하지 않으면 리턴
         if (window.selectedInvIdx === null) return;
-        
-        // 메인이 파괴된 상태면 차단
-        if (window.currentEmoji && window.currentEmoji.gone) {
-            addLog("💀 파괴된 이모지는 인벤토리에 넣을 수 없습니다.");
-            return;
-        }
-
+        if (window.currentEmoji && window.currentEmoji.gone) { addLog("💀 파괴된 이모지는 인벤토리에 넣을 수 없습니다."); return; }
         const slot = window.inventory[window.selectedInvIdx];
         if (!slot || !slot.unlocked) return;
 
-        // 교체 로직 (메인 <-> 인벤토리)
         const temp = window.currentEmoji;
         window.currentEmoji = slot.item;
-        slot.item = temp; // 메인이 null이면 null이 들어감 (이동됨)
+        slot.item = temp; 
         
-        // 로그 출력
         const newItemName = window.currentEmoji ? window.currentEmoji.stages[0] : "없음";
         const oldItemName = slot.item ? slot.item.stages[0] : "빈칸";
         addLog(`🔄 [${newItemName}] ↔ [${oldItemName}] 교체/장착 완료.`);
         
         window.vibrate();
-        window.selectedInvIdx = null; // 선택 해제
+        window.selectedInvIdx = null; 
         updateUI(); saveGame(); renderInventory();
     };
 
     async function handleSlotClick(idx) {
         let slot = window.inventory[idx];
-        
-        // 1. 잠금 해제
         if (!slot.unlocked) { 
-            if (window.gold >= 500000 && confirm("슬롯 잠금 해제?")) { 
-                window.gold -= 500000; slot.unlocked = true; saveGame(); renderInventory(); updateUI(); 
-            } 
+            if (window.gold >= 500000 && confirm("슬롯 잠금 해제?")) { window.gold -= 500000; slot.unlocked = true; saveGame(); renderInventory(); updateUI(); } 
             return; 
         }
-
-        // 2. 내부 선택 로직 (Select)
         if (window.selectedInvIdx === null) {
-            // 선택된 게 없을 때 클릭
-            if (slot.item) {
-                // 아이템이 있으면 선택 상태로 만듦
-                window.selectedInvIdx = idx;
-                renderInventory();
-            } else {
-                // 빈칸 클릭 시: 메인에 살아있는 아이템이 있으면 즉시 넣기 (기존 기능 유지)
-                if (window.currentEmoji && !window.currentEmoji.gone) {
-                    slot.item = window.currentEmoji;
-                    window.currentEmoji = null;
-                    addLog("🎒 인벤토리에 보관함.");
-                    window.vibrate();
-                    updateUI(); saveGame(); renderInventory();
-                } else if(window.currentEmoji && window.currentEmoji.gone) {
-                    addLog("💀 파괴된 이모지는 보관 불가.");
-                }
+            if (slot.item) { window.selectedInvIdx = idx; renderInventory(); } 
+            else {
+                if (window.currentEmoji && !window.currentEmoji.gone) { slot.item = window.currentEmoji; window.currentEmoji = null; addLog("🎒 인벤토리에 보관함."); window.vibrate(); updateUI(); saveGame(); renderInventory(); } 
+                else if(window.currentEmoji && window.currentEmoji.gone) { addLog("💀 파괴된 이모지는 보관 불가."); }
             }
         } else {
-            // 이미 무언가 선택된 상태에서 클릭
-            if (window.selectedInvIdx === idx) {
-                // ⭐ 같은 슬롯을 다시 클릭 (Double Click) -> 메인과 교체 시도
-                window.swapWithMain();
-            } else {
-                // 다른 슬롯 클릭 -> 내부 자리 바꾸기 (Move)
-                let temp = window.inventory[window.selectedInvIdx].item;
-                window.inventory[window.selectedInvIdx].item = slot.item;
-                slot.item = temp;
-                window.selectedInvIdx = null; // 이동 후 선택 해제
-                renderInventory(); saveGame();
-            }
+            if (window.selectedInvIdx === idx) { window.swapWithMain(); } 
+            else { let temp = window.inventory[window.selectedInvIdx].item; window.inventory[window.selectedInvIdx].item = slot.item; slot.item = temp; window.selectedInvIdx = null; renderInventory(); saveGame(); }
         }
     }
 
-    // 메인화면 클릭 시: 인벤토리 아이템 꺼내기 (기존 기능 + 안전장치)
-    document.getElementById('display-area').onclick = () => { 
-        if (window.selectedInvIdx !== null) { 
-            // 인벤토리에 선택된 게 있으면 메인과 교체 시도 (모달 닫혔을 때 대비)
-            // 사실상 모달이 열려있어서 클릭 불가하지만, 방어 코드로 유지
-            window.swapWithMain();
-        } 
-    };
+    document.getElementById('display-area').onclick = () => { if (window.selectedInvIdx !== null) { window.swapWithMain(); } };
 
+    // --- 도감 및 랭킹 열기 (History 적용) ---
     window.openBook = () => { 
-        document.getElementById('book-page').style.display = 'block';
+        if(isGameModalOpen()) return;
+        history.pushState({ modal: true }, '', '');
+        const page = document.getElementById('book-page');
+        page.style.display = 'block'; page.scrollTop = 0;
+        
         let tableHtml = `<table class="rate-table"><thead><tr><th>등급</th><th>출현 확률</th><th>색상</th></tr></thead><tbody>`;
         const grades = ["레전더리", "에픽", "레어", "매직", "일반"];
-        grades.forEach(g => {
-            const info = gradeInfo[g];
-            tableHtml += `<tr><td style="color:${info.color}; font-weight:bold;">${g}</td><td>${info.prob}%</td><td><div style="width:12px; height:12px; background:${info.color}; margin:0 auto; border-radius:50%;"></div></td></tr>`;
-        });
+        grades.forEach(g => { const info = gradeInfo[g]; tableHtml += `<tr><td style="color:${info.color}; font-weight:bold;">${g}</td><td>${info.prob}%</td><td><div style="width:12px; height:12px; background:${info.color}; margin:0 auto; border-radius:50%;"></div></td></tr>`; });
         tableHtml += `</tbody></table>`;
         document.getElementById('rate-table-container').innerHTML = tableHtml;
         document.getElementById('book-list').innerHTML = evoPaths.map(p => `<div class="book-item"><b>${p.name}</b><br><span>${p.stages.join('→')}</span></div>`).join(''); 
@@ -479,18 +511,9 @@
             let snap = await getDocs(collection(db, "users")); let all = []; 
             snap.forEach(d => { if(d.data().h) all = all.concat(d.data().h); }); 
             const bests = all.filter(c => c && c.prob).sort((a, b) => a.prob - b.prob); 
-            
             const worldBtnVal = document.getElementById('world-best-info');
             const worldBtnIcon = document.getElementById('world-best-icon');
-
-            if (bests.length > 0) { 
-                let t = bests[0]; 
-                worldBtnVal.innerHTML = `<span style="color:#fff">${t.owner}</span> <span style="font-size:0.7rem; color:#aaa">(${t.grade})</span>`;
-                worldBtnIcon.innerText = t.emoji;
-            } else {
-                worldBtnVal.innerText = "기록 없음";
-                worldBtnIcon.innerText = "👑";
-            }
+            if (bests.length > 0) { let t = bests[0]; worldBtnVal.innerHTML = `<span style="color:#fff">${t.owner}</span> <span style="font-size:0.7rem; color:#aaa">(${t.grade})</span>`; worldBtnIcon.innerText = t.emoji; } else { worldBtnVal.innerText = "기록 없음"; worldBtnIcon.innerText = "👑"; }
         } catch(e) {} 
     }
 
@@ -500,9 +523,21 @@
             return `<div class="rank-card-slim ${glw}"><div class="rank-block">#${rk}</div><div class="rank-block" style="font-size:1.6rem;">${c.emoji}</div><div class="rank-info-block"><div style="font-weight:900;">${c.owner}</div><div style="color:${col}; font-size:0.6rem;">${c.grade} +${c.lvl} | ${c.prob}%</div><div style="font-size:0.55rem; color:#ffd700;">${c.val.toLocaleString()} 🟡</div></div></div>`;
         }).join('') || "<div style='text-align:center; padding:20px; color:#555;'>기록 없음</div>";
     }
-    window.openMyHistory = () => { document.getElementById('rank-title').innerText = "📜 나의 명예의 전당"; document.getElementById('rank-page').style.display = 'block'; document.getElementById('rank-list').innerHTML = renderRanking(window.myHistory); };
+    
+    window.openMyHistory = () => { 
+        if(isGameModalOpen()) return;
+        history.pushState({ modal: true }, '', ''); 
+        const page = document.getElementById('rank-page');
+        page.style.display = 'block'; page.scrollTop = 0;
+        document.getElementById('rank-title').innerText = "📜 나의 명예의 전당"; document.getElementById('rank-list').innerHTML = renderRanking(window.myHistory); 
+    };
+    
     window.openGlobalRanking = async () => { 
-        document.getElementById('rank-title').innerText = "🌏 글로벌 명예의 전당"; document.getElementById('rank-page').style.display = 'block'; document.getElementById('rank-list').innerHTML = "데이터 로딩 중..."; 
+        if(isGameModalOpen()) return;
+        history.pushState({ modal: true }, '', '');
+        const page = document.getElementById('rank-page');
+        page.style.display = 'block'; page.scrollTop = 0;
+        document.getElementById('rank-title').innerText = "🌏 글로벌 명예의 전당"; document.getElementById('rank-list').innerHTML = "데이터 로딩 중..."; 
         if(!db) { document.getElementById('rank-list').innerText = "서버 연결 안됨"; return; }
         let snap = await getDocs(collection(db, "users")); let all = []; snap.forEach(d => { if(d.data().h) all = all.concat(d.data().h); }); let bsts = all.filter(c => c && c.prob).sort((a, b) => a.prob - b.prob).slice(0, 50); document.getElementById('rank-list').innerHTML = renderRanking(bsts); 
     };
@@ -518,10 +553,8 @@
         const idInput = document.getElementById('inp-nick');
         const pwInput = document.getElementById('inp-pw');
         const msg = document.getElementById('auth-msg');
-
         const id = idInput.value.trim();
         const pw = pwInput.value.trim();
-
         if(id.length < 2 || pw.length < 4) { msg.innerText = "ID는 2자, 비번은 4자 이상이어야 합니다."; return; }
         const localKey = `catSave_${id}`; 
 
@@ -543,40 +576,22 @@
                     if(snap.exists() && snap.data().pw === pw) loadedData = snap.data();
                 } catch(e) {}
             }
-            if(!loadedData) {
-                const local = localStorage.getItem(localKey);
-                if(local) loadedData = JSON.parse(local);
-            }
+            if(!loadedData) { const local = localStorage.getItem(localKey); if(local) loadedData = JSON.parse(local); }
 
-            if(loadedData) {
-                loginSuccess(id, pw, loadedData);
-            } else {
-                msg.innerText = "존재하지 않는 ID이거나 비밀번호가 틀렸습니다.";
-            }
+            if(loadedData) { loginSuccess(id, pw, loadedData); } else { msg.innerText = "존재하지 않는 ID이거나 비밀번호가 틀렸습니다."; }
         }
     };
 
     function loginSuccess(nick, pw, data) {
-        window.nickname = nick;
-        window.password = pw; 
-        window.gold = data.g || 10000;
-        window.myHistory = data.h || [];
-        window.currentEmoji = data.c || null;
-        window.inventory = data.i || window.inventory;
-
+        window.nickname = nick; window.password = pw; 
+        window.gold = data.g || 10000; window.myHistory = data.h || []; window.currentEmoji = data.c || null; window.inventory = data.i || window.inventory;
         localStorage.setItem('lastUser', JSON.stringify({ nick: nick, pw: pw }));
         localStorage.setItem('catSave_' + nick, JSON.stringify(data));
-
         document.getElementById('nick-modal').style.display = 'none';
-        addLog(`환영합니다, 마스터 ${nick}님!`);
-        updateUI();
+        addLog(`환영합니다, 마스터 ${nick}님!`); updateUI();
     }
 
-    window.logout = () => {
-        localStorage.removeItem('lastUser');
-        location.reload();
-    };
-    
+    window.logout = () => { localStorage.removeItem('lastUser'); location.reload(); };
     window.resetGame = () => {
         if(confirm("정말로 데이터를 초기화하시겠습니까? (복구 불가)")) {
             window.gold = 10000; window.currentEmoji = null; window.myHistory = []; 
@@ -586,6 +601,10 @@
     };
 
     async function init() {
+        // 새로고침 시 꼬인 히스토리 초기화 후 메인 상태 주입 (안전장치 시작)
+        history.replaceState(null, '', location.href);
+        history.pushState({ main: true }, '', '');
+
         const last = localStorage.getItem('lastUser');
         if (last) {
             const user = JSON.parse(last);
@@ -595,7 +614,6 @@
         updateUI();
     }
     init();
-
 </script>
 </body>
 </html>
