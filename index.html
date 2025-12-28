@@ -26,8 +26,7 @@
 
         /* 메인 레이아웃 */
         .main-split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: stretch; }
-        .left-col { display: flex; flex-direction: column; gap: 8px; }
-        .right-col { display: flex; flex-direction: column; gap: 8px; }
+        .left-col, .right-col { display: flex; flex-direction: column; gap: 8px; }
 
         /* 캔버스 & 로그 */
         .canvas-area { height: 180px; background: #1a1a1a; border: 2px solid var(--border); border-radius: 12px; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: inset 0 0 20px #000; flex-shrink: 0; }
@@ -91,7 +90,7 @@
         .status-dot { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; background: var(--red-alert); border-radius: 50%; box-shadow: 0 0 5px var(--red-alert); display: none; animation: blink 1s infinite alternate; }
         @keyframes blink { from { opacity: 0.7; } to { opacity: 1; box-shadow: 0 0 10px var(--red-alert); } }
 
-        /* 인벤토리 */
+        /* 인벤토리 (5칸 -> 10칸 대응) */
         .inv-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; width: 100%; }
         .inv-slot { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer; aspect-ratio: 1/1; transition: 0.2s; }
         .inv-slot.selected { border: 2px solid #fff; box-shadow: 0 0 10px #fff; z-index: 10; }
@@ -104,7 +103,6 @@
         .chart-box { background: #111; border: 1px solid #333; border-radius: 8px; padding: 8px; }
         .chart-title { font-size: 0.7rem; color: #888; text-align: center; margin-bottom: 6px; font-weight: bold; border-bottom: 1px solid #222; padding-bottom: 4px; }
         .rate-table { width: 100%; border-collapse: collapse; font-size: 0.65rem; }
-        /* ⭐ 도감 셀 중앙 정렬 */
         .rate-table td { padding: 3px 2px; text-align: center !important; vertical-align: middle; border-bottom: 1px solid #222; color: #aaa; }
         .book-compact-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 2px; }
         .book-card-mini { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; display: flex; flex-direction: column; padding: 4px; position: relative; width: 100%; aspect-ratio: 0.85/1; box-sizing: border-box; overflow: hidden; cursor: pointer; transition: all 0.2s ease; }
@@ -117,12 +115,12 @@
         .book-completed { border-color: #ffd700; box-shadow: 0 0 5px rgba(255,215,0,0.2); }
         .mini-reward-dot { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; background: var(--red-alert); border-radius: 50%; border: 1px solid #fff; z-index: 10; animation: blink 0.8s infinite alternate; }
 
-        /* ⭐ 랭킹 탭 */
+        /* 랭킹 탭 */
         .rank-tabs { display: flex; gap: 5px; margin-bottom: 10px; justify-content: center; width: 100%; }
         .rank-tab { flex: 1; background: #222; border: 1px solid #333; color: #888; padding: 8px; border-radius: 8px; font-weight: bold; font-size: 0.75rem; cursor: pointer; transition: 0.2s; }
         .rank-tab.active { background: #333; color: #fff; border-color: #666; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
         
-        /* ⭐ 타이머 박스 디자인 (둥근 박스 + 파란색) */
+        /* 타이머 박스 */
         .reset-timer-box { 
             font-size: 0.65rem; color: #74b9ff; font-weight: bold; 
             text-align: center; margin-top: 5px; 
@@ -130,13 +128,12 @@
             background: rgba(116, 185, 255, 0.1); display: inline-block;
         }
 
-        /* 희귀도 랭킹 카드 */
+        /* 랭킹 카드 */
         .rank-card-styled { display: grid; grid-template-columns: 1fr 1fr 4fr; background: #111; border-radius: 8px; margin-bottom: 6px; border: 1px solid #222; align-items: stretch; overflow: hidden; position: relative; height: 74px; }
         .rank-col-rank { display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border-right: 1px solid #222; font-size: 0.8rem; font-weight: 900; color: #666; }
         .rank-col-icon { display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border-right: 1px solid #222; font-size: 1.8rem; }
         .rank-col-info { padding: 4px 10px; display: flex; flex-direction: column; justify-content: center; position: relative; }
         
-        /* ⭐ 자산 랭킹 카드 (1:2:3 비율) */
         .rank-card-wealth { display: grid; grid-template-columns: 0.8fr 1.5fr 2fr; background: #111; border-radius: 8px; margin-bottom: 6px; border: 1px solid #222; align-items: stretch; overflow: hidden; position: relative; height: 50px; }
         
         .rank-user { font-weight: 900; font-size: 0.8rem; color: #fff; margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90%; }
@@ -152,13 +149,12 @@
         .rank-glow-2 { box-shadow: 0 0 15px rgba(255, 71, 87, 0.3); border: 1px solid #ff4757 !important; z-index: 2; }
         .rank-glow-3 { box-shadow: 0 0 15px rgba(52, 152, 219, 0.3); border: 1px solid #3498db !important; z-index: 2; }
 
-        /* ⭐ EX 티어 CSS Fix (inline-block) */
         .tier-ex-gradient { 
             background: linear-gradient(135deg, #00cec9, #a29bfe, #e056fd); 
             -webkit-background-clip: text; 
             -webkit-text-fill-color: transparent; 
             font-weight: 900; 
-            display: inline-block; /* 중앙 정렬 개선 */
+            display: inline-block;
             filter: drop-shadow(0 0 3px rgba(162, 155, 254, 0.5)); 
             animation: ex-pulse 2s infinite alternate; 
         }
@@ -275,8 +271,6 @@
             <div class="rank-icon" id="my-best-icon">👻</div>
         </div>
     </div>
-    
-    <button onclick="resetGame()" style="width:100%; background:none; color:#333; font-size:0.6rem; margin-top:5px; padding:5px;">데이터 초기화</button>
 </div>
 
 <div id="inv-page" class="full-page">
@@ -325,6 +319,7 @@
     <div class="modal-header">
         <h2 id="rank-title" class="modal-title">전당</h2>
         <div id="reset-timer" class="reset-timer-box">주간랭킹 갱신까지 0일 0시간 남음</div>
+        <div style="font-size:0.6rem; color:#ff7675; margin-top:5px; margin-bottom:-5px;">* 희귀도 랭킹은 매주 월요일 0시에 갱신(리셋)됩니다.</div>
     </div>
     
     <div class="rank-tabs" id="rank-tabs-container" style="display:none;">
@@ -366,7 +361,7 @@
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
     const firebaseConfig = {
-        apiKey: "AIzaSyA-QVwu7jpUUeLH3jtqYHChfwOW3FHY3pc", 
+        apiKey: "AIzaSyA-QVwu7jpUUeLH3jtqYHChfwOW3FHY3pc",  // ⭐ Firebase API Key
         authDomain: "gkyoungee.firebaseapp.com",
         projectId: "gkyoungee",
         storageBucket: "gkyoungee.firebasestorage.app",
@@ -428,7 +423,8 @@
 
     window.gold = 10000; window.nickname = ""; window.currentEmoji = null; 
     window.myHistory = []; window.selectedInvIdx = null;
-    window.inventory = Array(5).fill(null).map((_, i) => ({ unlocked: i < 1, item: null }));
+    // ⭐ 인벤토리 초기화 (10칸)
+    window.inventory = Array(10).fill(null).map((_, i) => ({ unlocked: i < 1, item: null }));
     window.book = {}; window.claimedRewards = [];
     
     window.maxGold = 10000;
@@ -453,23 +449,30 @@
     };
     window.vibrate = () => { if(navigator.vibrate) navigator.vibrate(10); };
     
-    // ⭐ 타이머 업데이트
+    function getWeeklyStartTimestamp() {
+        const now = new Date();
+        const kstOffset = 9 * 60 * 60 * 1000;
+        const kstNow = new Date(now.getTime() + kstOffset);
+        const day = kstNow.getUTCDay(); 
+        const diffToMonday = day === 0 ? 6 : day - 1;
+        const startOfWeek = new Date(kstNow);
+        startOfWeek.setUTCDate(kstNow.getUTCDate() - diffToMonday);
+        startOfWeek.setUTCHours(0, 0, 0, 0);
+        return startOfWeek.getTime() - kstOffset;
+    }
+
     function updateResetTimer() {
         const now = new Date();
         const kstNow = new Date(now.getTime() + (9 * 60 * 60 * 1000));
         const day = kstNow.getUTCDay();
         const daysUntilMonday = day === 0 ? 1 : 8 - day;
-        
         const target = new Date(kstNow);
         target.setUTCDate(kstNow.getUTCDate() + daysUntilMonday);
         target.setUTCHours(0,0,0,0);
-        
         const diffMs = target.getTime() - kstNow.getTime();
-        const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const remainHrs = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-        const diffDays = Math.floor(diffHrs / 24);
-        const remainHrs = diffHrs % 24;
-        
         const el = document.getElementById('reset-timer');
         el.innerText = `주간랭킹 갱신까지 ${diffDays}일 ${remainHrs}시간 ${diffMins}분 남음`;
     }
@@ -544,7 +547,6 @@
         document.getElementById('my-id-label').innerText = `ID: ${window.nickname || "GUEST"}`;
         document.getElementById('inv-total-gold').innerText = window.gold.toLocaleString() + " 🟡";
         
-        // ⭐ 최고 자산 갱신
         if (window.gold > window.maxGold) {
             window.maxGold = window.gold;
             window.maxGoldDate = Date.now();
@@ -705,7 +707,12 @@
         const grid = document.getElementById('inv-grid-list'); grid.innerHTML = "";
         window.inventory.forEach((slot, i) => {
             const div = document.createElement('div'); div.className = `inv-slot ${slot.unlocked ? '' : 'locked'} ${window.selectedInvIdx === i ? 'selected' : ''}`;
-            if (!slot.unlocked) div.innerHTML = "🔒<br>1억"; 
+            
+            // ⭐ 5번째 이후 슬롯은 2억으로 표시
+            if (!slot.unlocked) {
+                const price = i < 5 ? "1억" : "2억";
+                div.innerHTML = `🔒<br>${price}`;
+            }
             else if (slot.item) { div.style.borderColor = gradeInfo[slot.item.grade].color; div.innerHTML = `<span class="inv-emoji">${slot.item.stages[Math.min(3, Math.floor(slot.item.level / 5))]}</span><div class="inv-tag">+${slot.item.level}</div>`; }
             div.onclick = () => handleSlotClick(i); grid.appendChild(div);
         });
@@ -733,8 +740,14 @@
     async function handleSlotClick(idx) {
         let slot = window.inventory[idx];
         if (!slot.unlocked) { 
-            if (window.gold >= 100000000 && confirm("슬롯 잠금 해제? (1억 골드)")) { 
-                window.gold -= 100000000; slot.unlocked = true; saveGame(); renderInventory(); updateUI(); 
+            // ⭐ 슬롯별 가격 차등 적용
+            const cost = idx < 5 ? 100000000 : 200000000;
+            const costText = idx < 5 ? "1억" : "2억";
+            
+            if (window.gold >= cost && confirm(`슬롯 잠금 해제? (${costText} 골드)`)) { 
+                window.gold -= cost; 
+                slot.unlocked = true; 
+                saveGame(); renderInventory(); updateUI(); 
             } 
             return; 
         }
@@ -829,48 +842,59 @@
         return `${y}.${m}.${day}`;
     }
 
-    // ⭐ 메인 버튼: 희귀도(Rarity) 1위 표시 로직
+    // 메인 화면 1위 표시 (정렬)
     async function fetchGlobalLeader() {
         if(!db) return;
         try {
-            const q = query(collection(db, "users"), limit(100)); 
+            const q = query(collection(db, "users"), orderBy("best_prob", "asc"), limit(1)); 
             const snap = await getDocs(q); 
             
-            let all = [];
-            snap.forEach(d => { if(d.data().h) all = all.concat(d.data().h); }); 
-            
-            const best = all.sort((a, b) => a.prob - b.prob)[0];
-
-            if(best) {
-                document.getElementById('world-best-info').innerHTML = `🏆 1위: ${best.owner}`;
-                document.getElementById('world-best-icon').innerText = best.emoji;
+            if(!snap.empty) {
+                const bestUser = snap.docs[0].data();
+                const bestItem = bestUser.h ? bestUser.h.sort((a,b) => a.prob - b.prob)[0] : null;
+                
+                if(bestItem) {
+                    document.getElementById('world-best-info').innerHTML = `🏆 1위: ${bestUser.nickname}`;
+                    document.getElementById('world-best-icon').innerText = bestItem.emoji;
+                }
             } else {
                 document.getElementById('world-best-info').innerText = "기록 없음";
             }
         } catch(e) { console.log(e); }
     }
 
+    // 랭킹 로직
     async function syncGlobal(tabType) { 
         if(!db) return;
+        const weeklyLimit = getWeeklyStartTimestamp();
+
         try {
             if (tabType === 'rarity') {
                 if (!cachedRarityRank || (Date.now() - lastRankFetch > 60000)) { 
-                    const q = query(collection(db, "users"), limit(100)); 
+                    
+                    const q = query(collection(db, "users"), orderBy("best_prob", "asc"), limit(300)); 
                     const snap = await getDocs(q); 
                     
                     let all = [];
                     snap.forEach(d => { if(d.data().h) all = all.concat(d.data().h); }); 
                     
-                    cachedRarityRank = all.sort((a, b) => a.prob - b.prob).slice(0, 50);
+                    cachedRarityRank = all
+                        .filter(item => item.date >= weeklyLimit)
+                        .sort((a, b) => a.prob - b.prob)
+                        .slice(0, 50);
                     lastRankFetch = Date.now();
                 }
-
+                
                 let displayList = [...cachedRarityRank];
                 if (window.myHistory.length > 0) {
-                    const myBest = window.myHistory[0];
-                    displayList = displayList.filter(item => item.owner !== window.nickname);
-                    displayList.push(myBest);
-                    displayList.sort((a, b) => a.prob - b.prob);
+                    const myWeeklyBest = window.myHistory
+                        .filter(item => item.date >= weeklyLimit)
+                        .sort((a,b) => a.prob - b.prob)[0];
+                    if(myWeeklyBest) {
+                        displayList = displayList.filter(item => item.owner !== window.nickname);
+                        displayList.push(myWeeklyBest);
+                        displayList.sort((a, b) => a.prob - b.prob);
+                    }
                 }
                 
                 const rankListEl = document.getElementById('rank-list');
@@ -880,31 +904,18 @@
 
             } else if (tabType === 'wealth') {
                 if (!cachedWealthRank || (Date.now() - lastRankFetch > 60000)) {
-                    // ⭐ 자산 랭킹: 기존 유저 호환성을 위해 'g' (현재 골드) 기준으로 정렬
-                    try {
-                        const q = query(collection(db, "users"), orderBy("g", "desc"), limit(50));
-                        const snap = await getDocs(q);
-                        let all = [];
-                        snap.forEach(d => {
-                            const data = d.data();
-                            const val = data.max_gold || data.g || 0; 
-                            all.push({ owner: data.nickname, val: val, date: data.max_gold_date || Date.now() });
-                        });
-                        cachedWealthRank = all;
-                        lastRankFetch = Date.now();
-                    } catch (err) {
-                        console.warn("Index Error caught, switching to simple query...", err);
-                        const q = query(collection(db, "users"), limit(100));
-                        const snap = await getDocs(q);
-                        let all = [];
-                        snap.forEach(d => {
-                            const data = d.data();
-                            const val = data.max_gold || data.g || 0;
-                            all.push({ owner: data.nickname, val: val, date: data.max_gold_date || Date.now() });
-                        });
-                        cachedWealthRank = all.sort((a,b) => b.val - a.val).slice(0,50);
-                        lastRankFetch = Date.now();
-                    }
+                    const q = query(collection(db, "users"), orderBy("max_gold", "desc"), limit(50));
+                    const snap = await getDocs(q);
+                    
+                    let all = [];
+                    snap.forEach(d => {
+                        const data = d.data();
+                        const val = data.max_gold || data.g || 0; 
+                        all.push({ owner: data.nickname, val: val, date: data.max_gold_date || Date.now() });
+                    });
+                    
+                    cachedWealthRank = all;
+                    lastRankFetch = Date.now();
                 }
                 
                 let displayList = [...cachedWealthRank];
@@ -917,11 +928,26 @@
                     rankListEl.innerHTML = renderRanking(displayList.slice(0, 50), 'wealth');
                 }
             }
-        } catch(e) { console.log(e); } 
+        } catch(e) {
+            console.error("Rank Error", e);
+            if(e.message.includes("index")) {
+                const url = e.message.match(/https?:\/\/[^\s]+/);
+                if(url) {
+                    const rankListEl = document.getElementById('rank-list');
+                    rankListEl.innerHTML = `
+                        <div style="padding:20px; text-align:center; color:#ff7675;">
+                            ⚠️ 랭킹 설정(인덱스)이 필요합니다.<br><br>
+                            개발자라면 아래 버튼을 눌러<br>설정을 완료해주세요.<br><br>
+                            <a href="${url[0]}" target="_blank" style="background:#333; color:white; padding:10px 20px; border-radius:10px; text-decoration:none; font-weight:bold; border:1px solid #555;">🚀 설정 바로가기 (클릭)</a>
+                        </div>
+                    `;
+                }
+            }
+        } 
     }
 
     function renderRanking(list, type) {
-        if (!list || list.length === 0) return "<div style='text-align:center; padding:20px; color:#555;'>기록이 없습니다.</div>";
+        if (!list || list.length === 0) return "<div style='text-align:center; padding:20px; color:#555;'>이번 주 기록이 없습니다.<br>첫 번째 주인공이 되어보세요!</div>";
 
         return list.map((c, i) => {
             const rk = i + 1; 
@@ -931,7 +957,6 @@
             const dateStr = formatDateSimple(c.date);
 
             if (type === 'wealth') {
-                // ⭐ 자산 랭킹 레이아웃 (1:2:3 비율, 전체 숫자 표기)
                 return `
                 <div class="rank-card-wealth ${glw}">
                     <div class="rank-col-rank">#${rk}</div>
@@ -991,9 +1016,7 @@
         document.getElementById('rank-page').style.display = 'block';
         document.getElementById('rank-title').innerText = "📜 나의 명예의 전당"; 
         
-        // ⭐ 개인 기록에서는 타이머 숨김
         document.getElementById('reset-timer').style.display = 'none';
-        
         document.getElementById('rank-tabs-container').style.display = 'none';
         document.getElementById('my-wealth-banner').style.display = 'flex';
         
@@ -1009,7 +1032,6 @@
         document.getElementById('rank-page').style.display = 'block';
         document.getElementById('rank-title').innerText = "🌏 글로벌 명예의 전당"; 
         
-        // ⭐ 글로벌 랭킹에서는 타이머 표시
         document.getElementById('reset-timer').style.display = 'inline-block';
 
         document.getElementById('rank-tabs-container').style.display = 'flex';
@@ -1024,7 +1046,11 @@
     
     async function saveGame() { 
         if(window.currentUserUid) {
-            const bestProb = window.myHistory.length > 0 ? Math.min(...window.myHistory.map(h => h.prob)) : 100;
+            let bestProb = 100;
+            if(window.myHistory.length > 0) {
+                 bestProb = Math.min(...window.myHistory.map(h => parseFloat(h.prob)));
+            }
+            
             const dataToSave = { 
                 nickname: window.nickname, 
                 g: window.gold, c: window.currentEmoji, h: window.myHistory, i: window.inventory,
@@ -1109,6 +1135,14 @@
                 window.myHistory = d.h || []; window.book = d.b || {}; window.claimedRewards = d.r || [];
                 window.inventory = d.i || window.inventory;
                 
+                // ⭐ 구버전 유저 호환성: 인벤토리가 5칸이면 10칸으로 확장
+                if(window.inventory.length < 10) {
+                    const diff = 10 - window.inventory.length;
+                    for(let k=0; k<diff; k++) {
+                        window.inventory.push({ unlocked: false, item: null });
+                    }
+                }
+
                 window.maxGold = d.max_gold || d.g || 10000;
                 window.maxGoldDate = d.max_gold_date || Date.now();
                 if (!d.last_active) saveGame(); 
@@ -1123,7 +1157,6 @@
     });
 
     window.logout = () => signOut(auth).then(() => location.reload());
-    window.resetGame = () => { if(confirm("초기화하시겠습니까? (닉네임, 도감, 랭킹 기록은 유지됩니다)")) { window.gold = 10000; window.currentEmoji = null; window.inventory = Array(5).fill(null).map((_, i) => ({ unlocked: i < 1, item: null })); saveGame(); updateUI(); addLog("데이터가 초기화되었습니다."); } };
 
     async function init() {
         history.replaceState(null, '', location.href);
@@ -1135,3 +1168,4 @@
 </script>
 </body>
 </html>
+
