@@ -53,17 +53,26 @@
         .gauge-text { display: flex; justify-content: space-between; font-size: 0.45rem; font-weight: bold; }
         .wealth-box { background: #222; padding: 8px; border-radius: 10px; text-align: center; border: 1px solid #ffd70044; color: #ffd700; font-weight: 900; font-size: 1.1rem; text-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
 
-        /* 버튼 */
+        /* 버튼 시스템 개편 */
         .btn-stack { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
         button { border: none; font-weight: bold; cursor: pointer; transition: 0.1s; position: relative; overflow: hidden; font-family: inherit; }
         button:active { transform: scale(0.97); }
-        button:disabled { opacity: 0.3; filter: grayscale(1); cursor: not-allowed; }
+        button:disabled { opacity: 0.2; filter: grayscale(1); cursor: not-allowed; }
         .btn-action { padding: 12px 5px; border-radius: 8px; color: white; box-shadow: 0 3px 0 rgba(0,0,0,0.3); }
         .btn-action:active { box-shadow: 0 0 0 rgba(0,0,0,0); transform: translateY(3px); }
+        
         .btn-evolve { background: #6c5ce7; grid-column: span 2; display: flex; flex-direction: column; align-items: center; }
-        .btn-buy { background: var(--success); }
+        /* 노역 버튼 스타일 */
+        .btn-labor { background: #576574; grid-column: span 2; display: flex; flex-direction: column; align-items: center; border: 2px dashed #999; animation: laborPulse 1s infinite; }
+        @keyframes laborPulse { 0% { border-color: #999; } 50% { border-color: #fff; } 100% { border-color: #999; } }
+
+        .btn-normal-summ { background: var(--success); display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:0.7rem; }
+        .btn-premium-summ { background: linear-gradient(135deg, #e1b12c, #fbc531); color:#222; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:0.7rem; box-shadow: 0 0 10px rgba(251, 197, 49, 0.3); }
+        
         .btn-sell { background: var(--stay); color: #333; }
-        .btn-gene { background: #333; color: #bbb; font-size: 0.75rem; grid-column: span 2; padding: 10px; }
+        .btn-cleanup { background: #e74c3c; color: white; } /* 청소 버튼 */
+        .btn-gene { background: #333; color: #bbb; font-size: 0.75rem; padding: 10px; }
+        
         .menu-btn-square { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #ccc; font-size: 0.65rem; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 3px 0 #000; position: relative; font-weight: bold; aspect-ratio: 1.2/1; }
         .menu-btn-square:hover { background: #222; color: #fff; border-color: #555; }
         .menu-btn-square:active { transform: translateY(3px); box-shadow: none; }
@@ -90,7 +99,7 @@
         .status-dot { position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; background: var(--red-alert); border-radius: 50%; box-shadow: 0 0 5px var(--red-alert); display: none; animation: blink 1s infinite alternate; }
         @keyframes blink { from { opacity: 0.7; } to { opacity: 1; box-shadow: 0 0 10px var(--red-alert); } }
 
-        /* 인벤토리 (5칸 -> 10칸 대응) */
+        /* 인벤토리 */
         .inv-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; width: 100%; }
         .inv-slot { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer; aspect-ratio: 1/1; transition: 0.2s; }
         .inv-slot.selected { border: 2px solid #fff; box-shadow: 0 0 10px #fff; z-index: 10; }
@@ -99,11 +108,12 @@
         .inv-status-bar { background: #222; padding: 12px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #444; cursor: pointer; }
 
         /* 도감 */
-        .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .chart-grid { display: flex; flex-direction:column; gap: 8px; margin-bottom: 15px; }
         .chart-box { background: #111; border: 1px solid #333; border-radius: 8px; padding: 8px; }
-        .chart-title { font-size: 0.7rem; color: #888; text-align: center; margin-bottom: 6px; font-weight: bold; border-bottom: 1px solid #222; padding-bottom: 4px; }
-        .rate-table { width: 100%; border-collapse: collapse; font-size: 0.65rem; }
-        .rate-table td { padding: 3px 2px; text-align: center !important; vertical-align: middle; border-bottom: 1px solid #222; color: #aaa; }
+        .chart-title { font-size: 0.8rem; color: #888; text-align: center; margin-bottom: 6px; font-weight: bold; border-bottom: 1px solid #222; padding-bottom: 4px; }
+        .rate-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; }
+        .rate-table th { color:#888; border-bottom:1px solid #444; padding:5px;}
+        .rate-table td { padding: 5px 2px; text-align: center !important; vertical-align: middle; border-bottom: 1px solid #222; color: #aaa; }
         .book-compact-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 2px; }
         .book-card-mini { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; display: flex; flex-direction: column; padding: 4px; position: relative; width: 100%; aspect-ratio: 0.85/1; box-sizing: border-box; overflow: hidden; cursor: pointer; transition: all 0.2s ease; }
         .book-card-mini:hover { transform: translateY(-3px); background: #252525; }
@@ -240,12 +250,9 @@
             </div>
             <div class="wealth-box" id="gold-display">0 🟡</div>
             
-            <div class="btn-stack">
-                <button id="btn-evolve" class="btn-action btn-evolve" onclick="evolve()"><span>강화</span><small id="evolve-cost" style="font-size:0.6rem; opacity:0.8">-</small></button>
-                <button id="btn-buy" class="btn-action btn-buy" onclick="fetchNew()">📦 소환 (1k)</button>
-                <button id="btn-sell" class="btn-action btn-sell" onclick="sellItem()">💰 판매</button>
-                <button id="btn-gene" class="btn-action btn-gene" onclick="mutateGene()">🧬 변이 (500k)</button>
-                
+            <div id="dynamic-btn-area"></div>
+
+            <div class="btn-stack" style="margin-top:6px;">
                 <button class="menu-btn-square" onclick="openInventory()">
                     <span class="menu-icon">🎒</span>
                     <span>인벤토리</span>
@@ -293,6 +300,11 @@
     <div class="modal-header"><h2 class="modal-title">📕 도감 컬렉션</h2></div>
     <div class="chart-grid">
         <div class="chart-box">
+            <div class="chart-title">등급별 소환 확률</div>
+            <table class="rate-table" id="grade-rate-table">
+                </table>
+        </div>
+        <div class="chart-box">
             <div class="chart-title">희귀도(Tier) 확률</div>
             <table class="rate-table">
                 <tr><td class="tier-ex-gradient">EX</td><td>0.000001% ↓</td></tr>
@@ -301,13 +313,7 @@
                 <tr><td style="color:var(--tier-s)">S</td><td>1.0% ↓</td></tr>
                 <tr><td style="color:var(--tier-a)">A</td><td>5.0% ↓</td></tr>
                 <tr><td style="color:var(--tier-b)">B</td><td>15.0% ↓</td></tr>
-                <tr><td style="color:var(--tier-c)">C</td><td>30.0% ↓</td></tr>
-                <tr><td style="color:var(--tier-f)">F</td><td>30.0% ↑</td></tr>
             </table>
-        </div>
-        <div class="chart-box">
-            <div class="chart-title">등급 출현 확률</div>
-            <table class="rate-table" id="grade-rate-table"></table>
         </div>
     </div>
     <div style="font-size:0.8rem; color:#aaa; margin-bottom:10px; text-align:center;">🧬 수집 현황 (등급순 정렬)</div>
@@ -361,7 +367,7 @@
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
     const firebaseConfig = {
-        apiKey: "AIzaSyA-QVwu7jpUUeLH3jtqYHChfwOW3FHY3pc",  // ⭐ Firebase API Key
+        apiKey: "AIzaSyA-QVwu7jpUUeLH3jtqYHChfwOW3FHY3pc", 
         authDomain: "gkyoungee.firebaseapp.com",
         projectId: "gkyoungee",
         storageBucket: "gkyoungee.firebasestorage.app",
@@ -372,6 +378,7 @@
     let app, db, auth;
     try { app = initializeApp(firebaseConfig); db = getFirestore(app); auth = getAuth(app); } catch(e) {}
 
+    // 등급 정보
     const gradeInfo = { 
         "레전더리": { color: "#ffd700", mod: 0.3, rank: 4, prob: 5.0, weight: 15.0 },
         "에픽": { color: "#ff4757", mod: 0.5, rank: 3, prob: 10.0, weight: 4.0 },
@@ -421,14 +428,14 @@
         { name: "항해", grades: ["레어","에픽"], stages: ["⚓","⛵","🚢","🏝️"] }, { name: "우주2", grades: ["에픽","레전더리"], stages: ["🛰️","🚀","🛸","👽"] }, { name: "불꽃", grades: ["매직","레어"], stages: ["🔥","🕯️","🧨","🎇"] }, { name: "전기", grades: ["레어","에픽"], stages: ["🔌","🔋","⚡","💡"] }, { name: "흉기", grades: ["에픽","레전더리"], stages: ["🔪","🩸","⚰️","👻"] }
     ];
 
-    window.gold = 10000; window.nickname = ""; window.currentEmoji = null; 
+    window.gold = 200000; window.nickname = ""; window.currentEmoji = null; 
     window.myHistory = []; window.selectedInvIdx = null;
-    // ⭐ 인벤토리 초기화 (10칸)
     window.inventory = Array(10).fill(null).map((_, i) => ({ unlocked: i < 1, item: null }));
     window.book = {}; window.claimedRewards = [];
     
-    window.maxGold = 10000;
+    window.maxGold = 200000;
     window.maxGoldDate = Date.now();
+    window.lastRewardDate = 0; 
     
     let saveTimeout = null;
     let cachedRarityRank = null;
@@ -535,13 +542,21 @@
         const stageIdx = Math.min(4, Math.floor(level / 5) + 1); 
         if (!window.book[pathName] || window.book[pathName] < stageIdx) {
             window.book[pathName] = stageIdx;
+            
+            // ⭐ 고진감래 보상 (일반/매직 등급 완성 시)
             if(stageIdx === 4) {
-                addLog(`🎉 [${pathName}] 도감 완성! (보상 수령 가능)`);
+                const pathInfo = evoPaths.find(p => p.name === pathName);
+                if(pathInfo && (pathInfo.grades.includes("일반") || pathInfo.grades.includes("매직"))) {
+                    addLog(`🎉 [${pathName}] 완성! (고진감래 대상: 1.5억 지급 예정)`);
+                } else {
+                    addLog(`🎉 [${pathName}] 도감 완성! (보상 수령 가능)`);
+                }
                 checkBookAlert();
             }
         }
     }
 
+    // ⭐ UI 상태 관리 (State Machine)
     window.updateUI = function() {
         document.getElementById('gold-display').innerText = window.gold.toLocaleString() + " 🟡";
         document.getElementById('my-id-label').innerText = `ID: ${window.nickname || "GUEST"}`;
@@ -552,18 +567,128 @@
             window.maxGoldDate = Date.now();
             saveGame();
         }
+
+        const mainBtns = document.getElementById('dynamic-btn-area');
+        let html = "";
         
-        if(window.myHistory.length > 0) {
-             const best = window.myHistory[0];
-             document.getElementById('my-best-icon').innerText = best.emoji;
-             document.getElementById('my-best-info').innerText = `${best.grade} +${best.lvl}`;
-             document.getElementById('my-best-info').style.color = gradeInfo[best.grade].color;
-        } else {
-             document.getElementById('my-best-icon').innerText = "👻";
-             document.getElementById('my-best-info').innerText = "기록 없음";
-             document.getElementById('my-best-info').style.color = "#aaa";
+        const hasItem = window.currentEmoji !== null;
+        const isDead = hasItem && window.currentEmoji.gone; // 파괴된 상태
+        const isPoor = window.gold < 10000;
+
+        // 1. 슬롯에 아이템이 있을 때
+        if (hasItem) {
+            const info = gradeInfo[window.currentEmoji.grade];
+            const lvl = window.currentEmoji.level;
+            
+            // 정보 업데이트
+            document.getElementById('overlay-grade').innerText = window.currentEmoji.grade; 
+            document.getElementById('overlay-grade').style.color = info.color;
+            document.getElementById('overlay-name-level').innerText = `+${lvl}`; 
+            
+            // ⭐ 데드 상태 처리
+            if (isDead) {
+                document.getElementById('deco-l').innerText = "💀";
+                document.getElementById('deco-r').innerText = "💀";
+                document.getElementById('main-emoji').innerText = window.currentEmoji.stages[Math.min(3, Math.floor(lvl / 5))];
+                document.getElementById('overlay-name-level').innerText = "파괴됨";
+                
+                // 버튼: 강화/변이 비활성, 판매 -> 청소(0원)
+                html = `
+                <div class="btn-stack">
+                    <button class="btn-action" disabled style="background:#333; color:#555;">(파괴됨)</button>
+                    <button class="btn-action" disabled style="background:#222; color:#555;">(소환 불가)</button>
+                    <button class="btn-action" disabled style="background:#222; color:#555;">(소환 불가)</button>
+                    <button class="btn-action btn-cleanup" onclick="cleanup()">🧹 잔해 치우기<br>(0원)</button>
+                    <button class="btn-action" disabled style="background:#222; color:#555;">(변이 불가)</button>
+                </div>`;
+            } 
+            else {
+                // 정상 상태
+                let cost = Math.floor(2000 * Math.pow(1.8, lvl));
+                const canEvolve = window.gold >= cost;
+                
+                let b = (lvl < 5) ? 0 : Math.min(20, (lvl - 4) * 2), m = Math.min(50, lvl * (7 / info.mod)), s = Math.max(10, 100 - b - m); 
+                window.currentEmoji.value = Math.floor(1000 * info.weight * 10 * Math.pow(1.6, lvl) * (window.currentEmoji.mutated ? 1.5 : 1.0));
+                
+                document.getElementById('st-value').innerText = window.currentEmoji.value.toLocaleString(); 
+                document.getElementById('st-grade').innerText = window.currentEmoji.grade;
+                document.getElementById('st-grade').style.color = info.color;
+                
+                // ⭐ 상태창 유전자 정보 수정
+                let geneText = "-";
+                if(window.currentEmoji.mutated) geneText = "🧬 변이됨";
+                else if(window.currentEmoji.gene) geneText = "🧬 보유";
+                document.getElementById('st-gene').innerText = geneText;
+
+                const dL = document.getElementById('deco-l'), dR = document.getElementById('deco-r');
+                document.getElementById('main-emoji').innerText = window.currentEmoji.stages[Math.min(3, Math.floor(lvl / 5))];
+                if (lvl >= 15) dL.innerText = dR.innerText = "🎆"; else if (lvl >= 10) dL.innerText = dR.innerText = "🔥"; else dL.innerText = dR.innerText = "";
+
+                // ⭐ 버튼 배치 변경 (엄지 최적화)
+                html = `
+                <div class="btn-stack">
+                    <button class="btn-action btn-evolve" onclick="evolve()" ${!canEvolve ? 'disabled' : ''}><span>강화</span><small style="font-size:0.6rem; opacity:0.8">${cost.toLocaleString()}🟡</small></button>
+                    <button class="btn-action btn-premium-summ" disabled style="opacity:0.3; filter:grayscale(1);">🌟 고급 소환<br>(슬롯 꽉 참)</button>
+                    <button class="btn-action btn-normal-summ" disabled style="opacity:0.3; filter:grayscale(1);">🔮 일반 소환<br>(슬롯 꽉 참)</button>
+                    <button class="btn-action btn-gene" onclick="mutateGene()" ${!(window.currentEmoji.gene && !window.currentEmoji.mutated && lvl >= 5 && window.gold >= 500000) ? 'disabled' : ''}>🧬 변이 (500k)</button>
+                    <button class="btn-action btn-sell" onclick="sellItem()">💰 판매</button>
+                </div>`;
+                
+                // 게이지 업데이트
+                document.getElementById('seg-s').style.width = s + "%"; document.getElementById('seg-m').style.width = m + "%"; document.getElementById('seg-b').style.width = b + "%";
+                document.getElementById('val-s').innerText = Math.floor(s) + "%"; document.getElementById('val-b').innerText = Math.floor(b) + "%";
+                const tier = getTier(window.currentEmoji.rarity);
+                if(tier.color === "EX") document.getElementById('st-rarity').innerHTML = `<span class="tier-ex-gradient">EX</span> <small style="font-size:0.5rem; opacity:0.7">(${formatProb(window.currentEmoji.rarity)}%)</small>`;
+                else { document.getElementById('st-rarity').innerHTML = `${tier.text} <small style="font-size:0.5rem; opacity:0.7">(${formatProb(window.currentEmoji.rarity)}%)</small>`; document.getElementById('st-rarity').style.color = tier.color; }
+            }
+        } 
+        // 2. 슬롯 비어있음 + 돈 없음 (노역 모드)
+        else if (isPoor) {
+            resetDisplay();
+            html = `
+            <div class="btn-stack">
+                <button class="btn-action btn-labor" onclick="labor()">
+                    <span style="font-size:1.2rem;">⛏️</span>
+                    <span>열심히 일하기</span>
+                    <small style="color:#ffd700;">(+200원)</small>
+                </button>
+                <button class="btn-action" disabled style="background:#222; color:#555;">(소환 불가)</button>
+                <button class="btn-action" disabled style="background:#222; color:#555;">(소환 불가)</button>
+                <button class="btn-action" disabled style="background:#222; color:#555;">(변이 불가)</button>
+                <button class="btn-action" disabled style="background:#222; color:#555;">(판매 불가)</button>
+            </div>`;
+        }
+        // 3. 슬롯 비어있음 + 돈 있음 (소환 모드)
+        else {
+            resetDisplay();
+            const canNormal = window.gold >= 10000;
+            const canPremium = window.gold >= 100000; // ⭐ 10만으로 변경
+
+            // ⭐ 버튼 배치 변경 (엄지 최적화)
+            html = `
+            <div class="btn-stack">
+                <button class="btn-action btn-evolve" disabled><span>강화</span><small>-</small></button>
+                <button class="btn-action btn-premium-summ" onclick="fetchNew('premium')" ${!canPremium ? 'disabled' : ''}>🌟 고급 소환<br>(10만)</button>
+                <button class="btn-action btn-normal-summ" onclick="fetchNew('normal')" ${!canNormal ? 'disabled' : ''}>🔮 일반 소환<br>(1만)</button>
+                <button class="btn-action btn-gene" disabled>🧬 변이</button>
+                <button class="btn-action btn-sell" disabled style="opacity:0.3;">💰 판매</button>
+            </div>`;
         }
 
+        mainBtns.innerHTML = html;
+        checkBookAlert();
+        updateInvStatusBar();
+    };
+
+    function resetDisplay() {
+        document.getElementById('overlay-name-level').innerText = "소환 대기 중"; document.getElementById('main-emoji').innerText = "❓";
+        document.getElementById('overlay-grade').innerText = "-"; document.getElementById('deco-l').innerText = document.getElementById('deco-r').innerText = "";
+        document.querySelectorAll('.gauge-seg').forEach(el => el.style.width = "0%"); 
+        ["st-value", "st-grade", "st-rarity"].forEach(id => document.getElementById(id).innerText = "-");
+        document.getElementById('st-gene').innerText = "-";
+    }
+
+    function updateInvStatusBar() {
         if(window.currentEmoji && !window.currentEmoji.gone) {
              const info = gradeInfo[window.currentEmoji.grade];
              document.getElementById('inv-current-emoji').innerText = window.currentEmoji.stages[Math.min(3, Math.floor(window.currentEmoji.level / 5))];
@@ -573,61 +698,65 @@
              document.getElementById('inv-current-emoji').innerText = "🔒";
              document.getElementById('inv-current-name').innerText = "없음";
         }
-
-        const evoBtn = document.getElementById('btn-evolve'), buyBtn = document.getElementById('btn-buy'), sellBtn = document.getElementById('btn-sell'), geneBtn = document.getElementById('btn-gene');
-
-        if (window.currentEmoji) {
-            const info = gradeInfo[window.currentEmoji.grade], lvl = window.currentEmoji.level;
-            let b = (lvl < 5) ? 0 : Math.min(20, (lvl - 4) * 2), m = Math.min(50, lvl * (7 / info.mod)), s = Math.max(10, 100 - b - m); 
-            window.currentEmoji.value = Math.floor(1000 * info.weight * 10 * Math.pow(1.6, lvl) * (window.currentEmoji.mutated ? 1.5 : 1.0));
-            let cost = Math.floor(2000 * Math.pow(1.8, lvl));
-
-            document.getElementById('overlay-grade').innerText = window.currentEmoji.grade; document.getElementById('overlay-grade').style.color = info.color;
-            document.getElementById('overlay-name-level').innerText = `+${lvl}`; 
-            document.getElementById('overlay-grade').className = document.getElementById('overlay-name-level').className = (window.currentEmoji.grade === "레전더리") ? "glow-legendary" : "";
-
-            const mainEmoji = document.getElementById('main-emoji'), dL = document.getElementById('deco-l'), dR = document.getElementById('deco-r');
-            mainEmoji.innerText = window.currentEmoji.stages[Math.min(3, Math.floor(lvl / 5))];
-            
-            if (window.currentEmoji.gone) {
-                dL.innerText = dR.innerText = "💀"; evoBtn.disabled = sellBtn.disabled = geneBtn.disabled = true; buyBtn.disabled = false;
-                document.getElementById('evolve-cost').innerText = "-";
-            } else {
-                if (lvl >= 15) dL.innerText = dR.innerText = "🎆"; else if (lvl >= 10) dL.innerText = dR.innerText = "🔥"; else dL.innerText = dR.innerText = "";
-                buyBtn.disabled = true; sellBtn.disabled = false; evoBtn.disabled = window.gold < cost;
-                document.getElementById('evolve-cost').innerText = `${cost.toLocaleString()}🟡`;
-                geneBtn.disabled = !(window.currentEmoji.gene && !window.currentEmoji.mutated && lvl >= 5 && window.gold >= 500000);
-            }
-            document.getElementById('st-value').innerText = window.currentEmoji.value.toLocaleString(); 
-            document.getElementById('st-grade').innerText = window.currentEmoji.grade;
-            document.getElementById('st-grade').style.color = info.color;
-            document.getElementById('st-gene').innerText = window.currentEmoji.mutated ? "발현" : (window.currentEmoji.gene ? "보유" : "없음"); 
-            
-            const tier = getTier(window.currentEmoji.rarity);
-            if(tier.color === "EX") {
-                document.getElementById('st-rarity').innerHTML = `<span class="tier-ex-gradient">EX</span> <small style="font-size:0.5rem; opacity:0.7">(${formatProb(window.currentEmoji.rarity)}%)</small>`;
-            } else {
-                document.getElementById('st-rarity').innerHTML = `${tier.text} <small style="font-size:0.5rem; opacity:0.7">(${formatProb(window.currentEmoji.rarity)}%)</small>`;
-                document.getElementById('st-rarity').style.color = tier.color;
-            }
-            
-            document.getElementById('seg-s').style.width = s + "%"; document.getElementById('seg-m').style.width = m + "%"; document.getElementById('seg-b').style.width = b + "%";
-            document.getElementById('val-s').innerText = Math.floor(s) + "%"; document.getElementById('val-b').innerText = Math.floor(b) + "%";
-        } else {
-            document.getElementById('overlay-name-level').innerText = "소환 대기 중"; document.getElementById('main-emoji').innerText = "❓";
-            document.getElementById('overlay-grade').innerText = "-"; document.getElementById('deco-l').innerText = document.getElementById('deco-r').innerText = "";
-            document.getElementById('evolve-cost').innerText = "-"; buyBtn.disabled = false; evoBtn.disabled = sellBtn.disabled = geneBtn.disabled = true;
-            document.querySelectorAll('.gauge-seg').forEach(el => el.style.width = "0%"); ["st-value", "st-grade", "st-rarity"].forEach(id => document.getElementById(id).innerText = "-");
+        
+        if(window.myHistory.length > 0) {
+             const best = window.myHistory[0];
+             document.getElementById('my-best-icon').innerText = best.emoji;
+             document.getElementById('my-best-info').innerText = `${best.grade} +${best.lvl}`;
+             document.getElementById('my-best-info').style.color = gradeInfo[best.grade].color;
         }
-        checkBookAlert();
+    }
+
+    // ⭐ 노동 기능
+    window.labor = () => {
+        if(window.gold >= 10000) return;
+        window.gold += 200;
+        window.vibrate();
+        
+        if(window.gold >= 10000) {
+            addLog("⛏️ 10,000원 달성! 이제 소환이 가능합니다.");
+            updateUI(); // 소환 모드로 전환
+        } else {
+            document.getElementById('gold-display').innerText = window.gold.toLocaleString() + " 🟡";
+        }
     };
 
-    window.fetchNew = () => { 
-        if (window.gold < 1000) return; 
-        window.gold -= 1000; 
+    // ⭐ 시체 치우기 (무료)
+    window.cleanup = () => {
+        window.currentEmoji = null;
+        addLog("🧹 잔해를 치웠습니다. (슬롯 비워짐)");
+        updateUI(); saveGame();
+    }
+
+    window.fetchNew = (type) => { 
+        if (window.currentEmoji) return; // 중복 방지
+
+        let cost = 0;
+        if (type === 'normal') cost = 10000;
+        else if (type === 'premium') cost = 100000; // ⭐ 10만으로 변경
         
-        let r = Math.random() * 100; 
-        let g = (r < 5.0) ? "레전더리" : (r < 15.0) ? "에픽" : (r < 30.0) ? "레어" : (r < 55.0) ? "매직" : "일반"; 
+        if (window.gold < cost) {
+            addLog(`잔액 부족! (${cost.toLocaleString()} 필요)`);
+            return; 
+        }
+        window.gold -= cost; 
+        
+        let g = "일반";
+        let r = Math.random() * 100;
+        
+        if (type === 'premium') {
+            if (r < 10) g = "레전더리";
+            else if (r < 30) g = "에픽";
+            else if (r < 60) g = "레어";
+            else g = "매직";
+        } else {
+            if (r < 5) g = "레전더리";
+            else if (r < 15) g = "에픽";
+            else if (r < 30) g = "레어";
+            else if (r < 55) g = "매직";
+            else g = "일반";
+        }
+
         const paths = evoPaths.filter(p => p.grades.includes(g)); 
         const p = paths[Math.floor(Math.random() * paths.length)]; 
         
@@ -637,11 +766,12 @@
         window.currentEmoji = { 
             pathName: p.name, stages: p.stages, grade: g, level: 0, 
             gene: Math.random() < 0.35, mutated: false, survival: 100, gone: false, 
-            rarity: finalRarity 
+            rarity: finalRarity, mutationHistory: null // ⭐ 변이 기록 초기화
         }; 
         
         const tier = getTier(finalRarity);
-        addLog(`✨ [${g}] 소환! (Tier: ${tier.text})`); 
+        const typeName = type === 'premium' ? "🌟 고급" : "🔮 일반";
+        addLog(`${typeName} 소환! [${g}] (Tier: ${tier.text})`); 
         updateUI(); saveGame(); 
     };
 
@@ -662,15 +792,16 @@
                 addLog(`✨ 강화 성공! +${window.currentEmoji.level}`); 
             }
             else { addLog("💨 상태 유지"); }
-        } else { addLog(`😭 강화 실패 (데드)`); window.currentEmoji.gone = true; } 
+        } else { 
+            addLog(`💀 강화 실패... 파괴되었습니다.`); 
+            window.currentEmoji.gone = true; 
+        } 
         updateUI(); saveGame();
     };
 
     window.mutateGene = () => {
         if (!window.currentEmoji || window.gold < 500000) return; 
         window.gold -= 500000;
-        let gs = Object.keys(gradeInfo).reverse();
-        let i = gs.indexOf(window.currentEmoji.grade);
         
         const gradeOrder = ["일반", "매직", "레어", "에픽", "레전더리"];
         const currentIdx = gradeOrder.indexOf(window.currentEmoji.grade);
@@ -678,11 +809,13 @@
         if (currentIdx < 4 && Math.random() < 0.6) { 
             window.currentEmoji.grade = gradeOrder[currentIdx+1]; 
             window.currentEmoji.mutated = true; 
+            window.currentEmoji.mutationHistory = "success"; // ⭐ 성공 기록
             window.currentEmoji.rarity = (parseFloat(window.currentEmoji.rarity) * 0.5).toFixed(9); 
             addLog(`🔮 변이 성공! [${window.currentEmoji.grade}] (가치 2배 상승)`); 
         }
         else { 
             window.currentEmoji.gene = false; 
+            window.currentEmoji.mutationHistory = "fail"; // ⭐ 실패 기록
             window.currentEmoji.rarity = (parseFloat(window.currentEmoji.rarity) * 0.9).toFixed(9);
             addLog(`🔮 변이 실패.. (유전자 소멸, 희귀도 상승)`); 
         } 
@@ -691,9 +824,28 @@
 
     window.sellItem = async function() { 
         if (!window.currentEmoji || window.currentEmoji.gone) return;
-        let rec = { owner: window.nickname, emoji: window.currentEmoji.stages[Math.min(3, Math.floor(window.currentEmoji.level / 5))], prob: parseFloat(window.currentEmoji.rarity), val: window.currentEmoji.value, grade: window.currentEmoji.grade, lvl: window.currentEmoji.level, date: Date.now() };
-        window.myHistory.push(rec); window.myHistory.sort((a, b) => a.prob - b.prob); window.myHistory = window.myHistory.slice(0, 20);
-        window.gold += rec.val; addLog(`💰 판매: +${rec.val.toLocaleString()}`); window.currentEmoji = null; updateUI(); await saveGame();
+        
+        let rec = { 
+            owner: window.nickname, 
+            emoji: window.currentEmoji.stages[Math.min(3, Math.floor(window.currentEmoji.level / 5))], 
+            prob: parseFloat(window.currentEmoji.rarity), 
+            val: window.currentEmoji.value, 
+            grade: window.currentEmoji.grade, 
+            lvl: window.currentEmoji.level, 
+            date: Date.now(),
+            mutated: window.currentEmoji.mutated,
+            mutationHistory: window.currentEmoji.mutationHistory // ⭐ 기록 저장
+        };
+        
+        window.myHistory.push(rec); 
+        window.myHistory.sort((a, b) => a.prob - b.prob); 
+        window.myHistory = window.myHistory.slice(0, 20);
+        
+        window.gold += rec.val; 
+        addLog(`💰 판매: +${rec.val.toLocaleString()}`); 
+        window.currentEmoji = null; 
+        updateUI(); 
+        await saveGame();
     };
 
     window.openInventory = () => { 
@@ -707,8 +859,6 @@
         const grid = document.getElementById('inv-grid-list'); grid.innerHTML = "";
         window.inventory.forEach((slot, i) => {
             const div = document.createElement('div'); div.className = `inv-slot ${slot.unlocked ? '' : 'locked'} ${window.selectedInvIdx === i ? 'selected' : ''}`;
-            
-            // ⭐ 5번째 이후 슬롯은 2억으로 표시
             if (!slot.unlocked) {
                 const price = i < 5 ? "1억" : "2억";
                 div.innerHTML = `🔒<br>${price}`;
@@ -720,7 +870,13 @@
 
     window.swapWithMain = () => {
         if (window.selectedInvIdx === null) return;
-        if (window.currentEmoji && window.currentEmoji.gone) { addLog("💀 파괴된 이모지는 인벤토리에 넣을 수 없습니다."); return; }
+        
+        // 데드 상태면 스왑 불가
+        if (window.currentEmoji && window.currentEmoji.gone) { 
+            addLog("🚫 파괴된 이모지는 인벤토리에 넣을 수 없습니다. 먼저 치우세요."); 
+            return; 
+        }
+        
         const slot = window.inventory[window.selectedInvIdx];
         if (!slot || !slot.unlocked) return;
 
@@ -740,7 +896,6 @@
     async function handleSlotClick(idx) {
         let slot = window.inventory[idx];
         if (!slot.unlocked) { 
-            // ⭐ 슬롯별 가격 차등 적용
             const cost = idx < 5 ? 100000000 : 200000000;
             const costText = idx < 5 ? "1억" : "2억";
             
@@ -755,7 +910,7 @@
             if (slot.item) { window.selectedInvIdx = idx; renderInventory(); } 
             else {
                 if (window.currentEmoji && !window.currentEmoji.gone) { slot.item = window.currentEmoji; window.currentEmoji = null; addLog("🎒 인벤토리에 보관함."); window.vibrate(); updateUI(); saveGame(); renderInventory(); } 
-                else if(window.currentEmoji && window.currentEmoji.gone) { addLog("💀 파괴된 이모지는 보관 불가."); }
+                else if(window.currentEmoji && window.currentEmoji.gone) { addLog("🚫 파괴된 이모지는 보관 불가."); }
             }
         } else {
             if (window.selectedInvIdx === idx) { window.swapWithMain(); } 
@@ -770,9 +925,23 @@
         history.pushState({ modal: true }, '', '');
         document.getElementById('book-page').style.display = 'block';
         
-        let gradeHtml = "";
+        let gradeHtml = `<tr><th>등급</th><th>🔮 일반</th><th>🌟 고급</th></tr>`;
         const grades = ["레전더리", "에픽", "레어", "매직", "일반"];
-        grades.forEach(g => { const info = gradeInfo[g]; gradeHtml += `<tr><td style="color:${info.color}; font-weight:bold;">${g}</td><td>${info.prob}%</td></tr>`; });
+        const normalRate = [5, 10, 15, 25, 45];
+        const premiumRate = [10, 20, 30, 40, 0];
+
+        grades.forEach((g, i) => { 
+            const info = gradeInfo[g]; 
+            const nR = normalRate[i];
+            const pR = premiumRate[i];
+            const pStyle = pR > nR ? `color:#ffd700; font-weight:bold;` : `color:#555;`;
+            
+            gradeHtml += `<tr>
+                <td style="color:${info.color}; font-weight:bold;">${g}</td>
+                <td>${nR}%</td>
+                <td style="${pStyle}">${pR > 0 ? pR + '%' : '-'}</td>
+            </tr>`; 
+        });
         document.getElementById('grade-rate-table').innerHTML = gradeHtml;
 
         const grid = document.getElementById('book-list');
@@ -823,14 +992,26 @@
         });
     };
 
+    // ⭐ 보상 지급 (고진감래 포함)
     function handleReward(themeName) {
         if(window.claimedRewards.includes(themeName)) { alert("이미 보상을 수령했습니다."); return; }
-        window.gold += 50000000;
+        
+        const pathInfo = evoPaths.find(p => p.name === themeName);
+        let rewardAmount = 50000000; // 기본 5천만
+        let msg = `축하합니다! [${themeName}] 진화 완성 보상으로\n50,000,000 골드가 지급되었습니다!`;
+
+        // ⭐ 고진감래 체크
+        if(pathInfo && (pathInfo.grades.includes("일반") || pathInfo.grades.includes("매직"))) {
+            rewardAmount = 150000000;
+            msg = `🎉 고진감래! [${themeName}] 완성!\n비효율의 끝에서 기적을 보셨군요!\n보상: 150,000,000 골드 지급!`;
+        }
+
+        window.gold += rewardAmount;
         window.claimedRewards.push(themeName);
-        addLog(`💰 [${themeName}] 도감 보상 5,000만 골드 지급!`);
+        addLog(`💰 [${themeName}] 도감 보상 ${rewardAmount.toLocaleString()} 골드 지급!`);
         window.vibrate();
         saveGame(); updateUI(); window.openBook(); 
-        alert(`축하합니다! [${themeName}] 진화 완성 보상으로\n50,000,000 골드가 지급되었습니다!`);
+        alert(msg);
     }
 
     function formatDateSimple(ts) {
@@ -842,17 +1023,14 @@
         return `${y}.${m}.${day}`;
     }
 
-    // 메인 화면 1위 표시 (정렬)
     async function fetchGlobalLeader() {
         if(!db) return;
         try {
             const q = query(collection(db, "users"), orderBy("best_prob", "asc"), limit(1)); 
             const snap = await getDocs(q); 
-            
             if(!snap.empty) {
                 const bestUser = snap.docs[0].data();
                 const bestItem = bestUser.h ? bestUser.h.sort((a,b) => a.prob - b.prob)[0] : null;
-                
                 if(bestItem) {
                     document.getElementById('world-best-info').innerHTML = `🏆 1위: ${bestUser.nickname}`;
                     document.getElementById('world-best-icon').innerText = bestItem.emoji;
@@ -863,7 +1041,6 @@
         } catch(e) { console.log(e); }
     }
 
-    // 랭킹 로직
     async function syncGlobal(tabType) { 
         if(!db) return;
         const weeklyLimit = getWeeklyStartTimestamp();
@@ -871,13 +1048,10 @@
         try {
             if (tabType === 'rarity') {
                 if (!cachedRarityRank || (Date.now() - lastRankFetch > 60000)) { 
-                    
                     const q = query(collection(db, "users"), orderBy("best_prob", "asc"), limit(300)); 
                     const snap = await getDocs(q); 
-                    
                     let all = [];
                     snap.forEach(d => { if(d.data().h) all = all.concat(d.data().h); }); 
-                    
                     cachedRarityRank = all
                         .filter(item => item.date >= weeklyLimit)
                         .sort((a, b) => a.prob - b.prob)
@@ -906,14 +1080,12 @@
                 if (!cachedWealthRank || (Date.now() - lastRankFetch > 60000)) {
                     const q = query(collection(db, "users"), orderBy("max_gold", "desc"), limit(50));
                     const snap = await getDocs(q);
-                    
                     let all = [];
                     snap.forEach(d => {
                         const data = d.data();
                         const val = data.max_gold || data.g || 0; 
                         all.push({ owner: data.nickname, val: val, date: data.max_gold_date || Date.now() });
                     });
-                    
                     cachedWealthRank = all;
                     lastRankFetch = Date.now();
                 }
@@ -981,6 +1153,11 @@
                 } else {
                     badgeHtml = `<span class="tier-badge" style="color:${tier.color}; border-color:${tier.color}">${tier.text}</span>`;
                 }
+                
+                // ⭐ 🧬 유전자 변이 표시 로직
+                let geneHtml = " <span style='font-size:0.6rem; color:#555;'>[ ]</span>";
+                if(c.mutationHistory === 'success') geneHtml = " <span style='font-size:0.6rem; color:#00cec9; font-weight:bold;'>[🧬성공]</span>";
+                else if(c.mutationHistory === 'fail') geneHtml = " <span style='font-size:0.6rem; color:#ff4757; font-weight:bold;'>[🧬실패]</span>";
 
                 return `
                 <div class="rank-card-styled ${glw}">
@@ -989,7 +1166,7 @@
                     <div class="rank-col-info">
                         <div class="rank-date">${dateStr}</div>
                         <div class="rank-user">${c.owner}</div>
-                        <div class="rank-detail" style="color:${col}">${c.grade} +${c.lvl}</div>
+                        <div class="rank-detail" style="color:${col}">${c.grade} +${c.lvl}${geneHtml}</div>
                         <div class="rank-meta-row">
                             ${badgeHtml}
                             <span class="rank-prob-thin" style="color:${probColor};">${formatProb(c.prob)}%</span>
@@ -1058,7 +1235,8 @@
                 max_gold: window.maxGold,
                 max_gold_date: window.maxGoldDate,
                 last_active: Date.now(),
-                best_prob: bestProb 
+                best_prob: bestProb,
+                last_reward_date: window.lastRewardDate 
             };
             localStorage.setItem('catSave_' + window.nickname, JSON.stringify(dataToSave)); 
             if(db) { 
@@ -1105,8 +1283,8 @@
                 if(await checkNicknameDuplicate(nick)) { msg.innerText = "중복된 닉네임"; return; }
                 const cred = await createUserWithEmailAndPassword(auth, email, pw);
                 await setDoc(doc(db, "users", cred.user.uid), { 
-                    nickname: nick, g: 10000, h: [], c: null, i: window.inventory, b: {}, r: [],
-                    max_gold: 10000, max_gold_date: Date.now(), last_active: Date.now(), best_prob: 100
+                    nickname: nick, g: 200000, h: [], c: null, i: window.inventory, b: {}, r: [],
+                    max_gold: 200000, max_gold_date: Date.now(), last_active: Date.now(), best_prob: 100, last_reward_date: 0
                 });
                 msg.innerText = "가입 성공!";
             } else { await signInWithEmailAndPassword(auth, email, pw); }
@@ -1134,23 +1312,33 @@
                 window.nickname = d.nickname; window.gold = d.g; window.currentEmoji = d.c;
                 window.myHistory = d.h || []; window.book = d.b || {}; window.claimedRewards = d.r || [];
                 window.inventory = d.i || window.inventory;
+                window.lastRewardDate = d.last_reward_date || 0;
                 
-                // ⭐ 구버전 유저 호환성: 인벤토리가 5칸이면 10칸으로 확장
                 if(window.inventory.length < 10) {
                     const diff = 10 - window.inventory.length;
-                    for(let k=0; k<diff; k++) {
-                        window.inventory.push({ unlocked: false, item: null });
-                    }
+                    for(let k=0; k<diff; k++) { window.inventory.push({ unlocked: false, item: null }); }
                 }
 
-                window.maxGold = d.max_gold || d.g || 10000;
+                window.maxGold = d.max_gold || d.g || 200000;
                 window.maxGoldDate = d.max_gold_date || Date.now();
+                
+                const today = new Date().toDateString();
+                const lastDate = new Date(window.lastRewardDate).toDateString();
+                if(today !== lastDate) {
+                    window.gold += 100000;
+                    window.lastRewardDate = Date.now();
+                    alert("📅 일일 지원금이 도착했습니다!\n+100,000 🟡 (오늘도 대박 나세요!)");
+                    saveGame();
+                }
+
                 if (!d.last_active) saveGame(); 
 
                 updateUI(); 
                 fetchGlobalLeader(); 
             } else {
                 window.nickname = "User_" + user.uid.slice(0,4);
+                window.gold = 200000;
+                window.maxGold = 200000;
                 saveGame(); updateUI();
             }
         } else { document.getElementById('nick-modal').style.display = 'flex'; }
@@ -1168,4 +1356,3 @@
 </script>
 </body>
 </html>
-
