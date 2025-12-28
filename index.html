@@ -28,7 +28,7 @@
         .main-split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: stretch; }
         .left-col, .right-col { display: flex; flex-direction: column; gap: 8px; }
 
-        /* 캔버스 (기존 디자인 유지) */
+        /* 캔버스 */
         .canvas-area { height: 180px; background: #1a1a1a; border: 2px solid var(--border); border-radius: 12px; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: inset 0 0 20px #000; flex-shrink: 0; }
         .canvas-overlay { position: absolute; top: 0; left: 0; width: 100%; padding: 8px 10px; box-sizing: border-box; background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%); display: flex; justify-content: space-between; align-items: center; z-index: 5; }
         #overlay-grade { font-size: 0.65rem; font-weight: bold; }
@@ -386,35 +386,27 @@
         "일반": { color: "#b2bec3", mod: 1.0, rank: 0, prob: 45.0, weight: 1.0, sellMod: 0.5 }   
     };
 
-    // ⭐ 확률 하한선 설정 (이것보다 낮으면 EX/측정불가 처리)
     const EX_THRESHOLD = 0.000001; 
 
-    // 확률 텍스트 포맷터 (안전 장치 포함)
     function formatProb(num) {
         if (typeof num !== 'number') num = parseFloat(num);
         if (isNaN(num)) return "0.00";
-        
-        // EX 등급 진입 시 숫자 대신 텍스트 반환
         if (num < EX_THRESHOLD) return "측정 불가"; 
-        
         if (num < 0.00001) return num.toFixed(9); 
         if (num < 0.001) return num.toFixed(7);
-        return parseFloat(num.toFixed(6)); // 불필요한 0 제거
+        return parseFloat(num.toFixed(6)); 
     }
 
-    // 티어 계산기 (EX 분기 처리)
     function getTier(rarity) {
         const val = parseFloat(rarity);
         if (isNaN(val)) return { text: "F", color: "#636e72" };
-
-        if (val < EX_THRESHOLD) return { text: "EX", color: "EX" }; // ⭐ EX 모드
+        if (val < EX_THRESHOLD) return { text: "EX", color: "EX" }; 
         if (val > 30.0) return { text: "F", color: "#636e72" };
         if (val > 15.0) return { text: "C", color: "#00cec9" };
         if (val > 5.0)  return { text: "B", color: "#a29bfe" };
         if (val > 1.0)  return { text: "A", color: "#fab1a0" };
         if (val > 0.1)  return { text: "S", color: "#ff4757" };
         if (val > 0.01) return { text: "SS", color: "#ffd700" };
-        // 0.000001 ~ 0.01 사이
         return { text: "SSS", color: "#fdcb6e" };
     }
 
@@ -562,9 +554,8 @@
         }
     }
 
-    // ⭐ updateUI 수정: 안전성 대폭 강화 (멈춤 방지)
     window.updateUI = function() {
-        window.gold = Number(window.gold); // 숫자 강제 변환
+        window.gold = Number(window.gold); 
         
         try {
             document.getElementById('gold-display').innerText = window.gold.toLocaleString() + " 🟡";
@@ -585,30 +576,25 @@
             let isPoor = window.gold < 10000;
 
             if (hasItem) {
-                // ⭐ 안전 장치 1: 데이터 무결성 체크
                 if(typeof window.currentEmoji.grade === 'undefined' || typeof window.currentEmoji.level === 'undefined') {
                     console.warn("Corrupted Emoji Data -> Resetting safely.");
                     window.currentEmoji = null;
                     updateUI(); return;
                 }
 
-                // ⭐ 안전 장치 2: 이모지 경로(Path) 체크
-                // 저장된 pathName이 현재 코드에 없는 경우(구버전 데이터 등)를 대비
                 let pathObj = evoPaths.find(p => p.name === window.currentEmoji.pathName);
                 if (!pathObj) {
-                    // 없는 경로면 기본값으로 대체하여 크래시 방지
                     pathObj = { stages: ["❓", "❓", "❓", "❓"] };
                 }
 
                 isDead = window.currentEmoji.gone;
-                const info = gradeInfo[window.currentEmoji.grade] || gradeInfo["일반"]; // 등급 정보 없을 시 일반으로
+                const info = gradeInfo[window.currentEmoji.grade] || gradeInfo["일반"]; 
                 const lvl = window.currentEmoji.level;
                 
                 document.getElementById('overlay-grade').innerText = window.currentEmoji.grade; 
                 document.getElementById('overlay-grade').style.color = info.color;
                 document.getElementById('overlay-name-level').innerText = `+${lvl}`; 
                 
-                // 이모지 표시 (stages 범위 초과 방지)
                 const stageIdx = Math.min(3, Math.floor(lvl / 5));
                 const currentIcon = pathObj.stages[stageIdx] || "❓";
 
@@ -674,13 +660,10 @@
                     document.getElementById('seg-s').style.width = s + "%"; document.getElementById('seg-m').style.width = m + "%"; document.getElementById('seg-b').style.width = b + "%";
                     document.getElementById('val-s').innerText = Math.floor(s) + "%"; document.getElementById('val-b').innerText = Math.floor(b) + "%";
                     
-                    // ⭐ 희귀도 표시 (EX 모드 적용)
                     const tier = getTier(window.currentEmoji.rarity);
                     if(tier.color === "EX") {
-                        // EX일 경우 [EX] [측정 불가] 표시
                         document.getElementById('st-rarity').innerHTML = `<span class="tier-ex-gradient">EX</span> <small style="font-size:0.6rem; color:#aaa;">(측정 불가)</small>`;
                     } else {
-                        // 일반적인 경우
                         document.getElementById('st-rarity').innerHTML = `${tier.text} <small style="font-size:0.5rem; opacity:0.7">(${formatProb(window.currentEmoji.rarity)}%)</small>`; 
                         document.getElementById('st-rarity').style.color = tier.color; 
                     }
@@ -726,7 +709,6 @@
 
         } catch(e) { 
             console.error("Critical UpdateUI Error:", e);
-            // 에러 발생시에도 청소 버튼 대신, 재시도 유도
             addLog("⚠️ 화면 갱신 중 오류가 발생했습니다. (자동 복구 시도)");
         }
     };
@@ -851,9 +833,7 @@
                 if(Math.random() < 0.1) { improveFactor *= 0.8; addLog(`⚡ 대성공! (희귀도 대폭 상승)`); }
                 
                 let nextRarity = parseFloat(window.currentEmoji.rarity) * improveFactor;
-                // ⭐ 하한선 아래로 떨어지면 0(EX)으로 간주하지 않고 작은 값 유지
-                // 단, 표기에서만 '측정 불가'로 처리함.
-                if (nextRarity < 1e-15) nextRarity = 1e-15; // 너무 작아져서 0이 되는 것 방지
+                if (nextRarity < 1e-15) nextRarity = 1e-15; 
                 
                 window.currentEmoji.rarity = nextRarity.toFixed(20); // 정밀도 높게 저장
                 addLog(`✨ 강화 성공! +${window.currentEmoji.level}`); 
@@ -914,16 +894,51 @@
         };
         
         window.myHistory.push(rec); 
+        const weeklyStart = getWeeklyStartTimestamp();
+
+        let thisWeekItems = window.myHistory.filter(h => h.date >= weeklyStart);
+        thisWeekItems.sort((a, b) => {
+            if(a.prob === b.prob) return b.date - a.date; 
+            return a.prob - b.prob;
+        });
+        thisWeekItems = thisWeekItems.slice(0, 50); 
+
+        let pastItems = window.myHistory.filter(h => h.date < weeklyStart);
+        pastItems.sort((a, b) => a.prob - b.prob);
+        pastItems = pastItems.slice(0, 30);
+
+        window.myHistory = [...thisWeekItems, ...pastItems];
+        
         window.myHistory.sort((a, b) => {
             if(a.prob === b.prob) return b.date - a.date; 
             return a.prob - b.prob;
         });
-        window.myHistory = window.myHistory.slice(0, 20);
-        
+
         window.gold += rec.val; 
         addLog(`💰 판매: +${rec.val.toLocaleString()}`); 
         window.currentEmoji = null; 
-        
+
+        // ⭐ 로컬 인젝션: 랭킹 데이터가 있으면 즉시 반영
+        if (cachedRarityRank && window.currentRankTab === 'rarity') {
+            cachedRarityRank.push(rec); 
+            cachedRarityRank.sort((a, b) => {
+                if(a.prob === b.prob) return b.date - a.date;
+                return a.prob - b.prob;
+            });
+            cachedRarityRank = cachedRarityRank.slice(0, 50);
+            
+            const rankListEl = document.getElementById('rank-list');
+            if (rankListEl && rankListEl.offsetParent !== null) {
+                rankListEl.innerHTML = renderRanking(cachedRarityRank, 'rarity');
+            }
+            
+            if(cachedRarityRank.length > 0) {
+                const best = cachedRarityRank[0];
+                document.getElementById('world-best-info').innerText = `🏆 1위: ${best.owner}`;
+                document.getElementById('world-best-icon').innerText = best.emoji;
+            }
+        }
+
         saveGame(2000); 
         updateUI(); 
     };
@@ -970,7 +985,6 @@
         window.currentEmoji = slot.item;
         slot.item = temp; 
         
-        // 이름 표시용 안전 장치
         const getEmojiName = (emoji) => {
             if(!emoji) return "없음";
             const p = evoPaths.find(obj => obj.name === emoji.pathName);
@@ -1140,24 +1154,8 @@
     }
 
     async function fetchGlobalLeader() {
-        if(!db) return;
-        try {
-            const q = query(collection(db, "users"), orderBy("best_prob", "asc"), limit(1)); 
-            const snap = await getDocs(q); 
-            if(!snap.empty) {
-                const bestUser = snap.docs[0].data();
-                const bestItem = bestUser.h ? bestUser.h.sort((a,b) => {
-                    if(a.prob === b.prob) return b.date - a.date;
-                    return a.prob - b.prob;
-                })[0] : null;
-                if(bestItem) {
-                    document.getElementById('world-best-info').innerHTML = `🏆 1위: ${bestUser.nickname}`;
-                    document.getElementById('world-best-icon').innerText = bestItem.emoji;
-                }
-            } else {
-                document.getElementById('world-best-info').innerText = "기록 없음";
-            }
-        } catch(e) { console.log(e); }
+        // [수정됨] 대시보드는 이제 syncGlobal()에서 자동 갱신하므로,
+        // 이 함수는 더 이상 사용하지 않거나 비워둠
     }
 
     async function syncGlobal(tabType) { 
@@ -1170,38 +1168,35 @@
                     const q = query(collection(db, "users"), orderBy("best_prob", "asc"), limit(300)); 
                     const snap = await getDocs(q); 
                     let all = [];
-                    snap.forEach(d => { if(d.data().h) all = all.concat(d.data().h); }); 
-                    cachedRarityRank = all
-                        .filter(item => item.date >= weeklyLimit)
-                        .sort((a, b) => {
-                            if(a.prob === b.prob) return b.date - a.date; 
-                            return a.prob - b.prob;
-                        })
-                        .slice(0, 50);
+                    snap.forEach(d => { 
+                        if(d.data().h) {
+                            const userItems = d.data().h.filter(item => item.date >= weeklyLimit);
+                            all = all.concat(userItems); 
+                        }
+                    }); 
+                    
+                    cachedRarityRank = all.sort((a, b) => {
+                        if(a.prob === b.prob) return b.date - a.date; 
+                        return a.prob - b.prob;
+                    }).slice(0, 50); 
+                    
                     lastRankFetch = Date.now();
                 }
                 
-                let displayList = [...cachedRarityRank];
-                if (window.myHistory.length > 0) {
-                    const myWeeklyBest = window.myHistory
-                        .filter(item => item.date >= weeklyLimit)
-                        .sort((a,b) => {
-                            if(a.prob === b.prob) return b.date - a.date;
-                            return a.prob - b.prob;
-                        })[0];
-                    if(myWeeklyBest) {
-                        displayList = displayList.filter(item => item.owner !== window.nickname);
-                        displayList.push(myWeeklyBest);
-                        displayList.sort((a, b) => {
-                            if(a.prob === b.prob) return b.date - a.date;
-                            return a.prob - b.prob;
-                        });
-                    }
-                }
+                let displayList = cachedRarityRank;
                 
+                if(displayList.length > 0) {
+                    const best = displayList[0];
+                    document.getElementById('world-best-info').innerText = `🏆 1위: ${best.owner}`;
+                    document.getElementById('world-best-icon').innerText = best.emoji;
+                } else {
+                    document.getElementById('world-best-info').innerText = "기록 없음";
+                    document.getElementById('world-best-icon').innerText = "👑";
+                }
+
                 const rankListEl = document.getElementById('rank-list');
-                if (rankListEl.offsetParent !== null) {
-                    rankListEl.innerHTML = renderRanking(displayList.slice(0, 50), 'rarity');
+                if (rankListEl && rankListEl.offsetParent !== null) {
+                    rankListEl.innerHTML = renderRanking(displayList, 'rarity');
                 }
 
             } else if (tabType === 'wealth') {
@@ -1224,7 +1219,7 @@
                 displayList.sort((a, b) => b.val - a.val);
                 
                 const rankListEl = document.getElementById('rank-list');
-                if (rankListEl.offsetParent !== null) {
+                if (rankListEl && rankListEl.offsetParent !== null) {
                     rankListEl.innerHTML = renderRanking(displayList.slice(0, 50), 'wealth');
                 }
             }
@@ -1261,7 +1256,6 @@
                 let probColor = col;
                 let probText = "";
 
-                // ⭐ 랭킹에서도 EX는 측정불가 처리
                 if (tier.color === "EX") {
                     badgeHtml = `<span class="tier-badge tier-badge-ex"><span class="tier-ex-gradient">EX</span></span>`;
                     probColor = "#a29bfe";
@@ -1455,7 +1449,8 @@
                 if (!d.last_active) saveGame(); 
 
                 updateUI(); 
-                fetchGlobalLeader(); 
+                // [수정] 로그인 완료 시점에 랭킹 데이터 미리 로딩 (판매 즉시 반영을 위해)
+                setTimeout(() => syncGlobal('rarity'), 500); 
             } else {
                 window.nickname = "User_" + user.uid.slice(0,4);
                 window.gold = 200000;
@@ -1477,4 +1472,3 @@
 </script>
 </body>
 </html>
-
