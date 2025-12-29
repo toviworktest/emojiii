@@ -65,6 +65,10 @@
         .btn-labor { background: #576574; grid-column: span 2; display: flex; flex-direction: column; align-items: center; border: 2px dashed #999; animation: laborPulse 1s infinite; }
         @keyframes laborPulse { 0% { border-color: #999; } 50% { border-color: #fff; } 100% { border-color: #999; } }
 
+        /* 올인 버튼 스타일 */
+        .btn-allin { background: #e74c3c; grid-column: span 2; display: flex; flex-direction: column; align-items: center; border: 1px solid #ff7675; animation: pulse-red 1.5s infinite; }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); } }
+
         .btn-normal-summ { background: var(--success); display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:0.7rem; }
         .btn-premium-summ { background: linear-gradient(135deg, #e1b12c, #fbc531); color:#222; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:0.7rem; box-shadow: 0 0 10px rgba(251, 197, 49, 0.3); }
         
@@ -346,6 +350,35 @@
     <button class="close-btn" onclick="closePage('rank-page')">닫기</button>
 </div>
 
+<div id="allin-modal" class="full-page" style="z-index:4000; display:none; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,0.9);">
+    <div class="login-box" style="border-color:#ff4757; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+        <h2 style="color:#ff4757; margin-top:0; font-size:1.5rem; text-shadow:0 0 10px rgba(255, 71, 87, 0.5);">⚠️ 위험한 도박</h2>
+        <p style="color:#ddd; margin:15px 0; line-height:1.6; font-size:0.9rem;">
+            현재 보유 자산이 강화 비용의 절반 이상입니다.<br>
+            모든 재산을 걸고 강화를 1회 시도하시겠습니까?<br><br>
+            
+            <div style="background:#222; padding:10px; border-radius:8px; border:1px solid #444; margin-bottom:15px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <span style="color:#aaa; font-size:0.8rem;">필요 비용:</span>
+                    <span id="allin-cost-disp" style="color:#ff7675; font-weight:bold;">-</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span style="color:#aaa; font-size:0.8rem;">보유 재산:</span>
+                    <span id="allin-gold-disp" style="color:#ffd700; font-weight:bold;">-</span>
+                </div>
+            </div>
+
+            <span style="color:#ff7675; font-weight:bold; font-size:0.85rem;">
+                (성공/실패 여부와 관계없이 잔액은 0원이 됩니다)
+            </span>
+        </p>
+        <div style="display:flex; gap:10px; width:100%;">
+            <button class="btn-action" onclick="confirmAllIn()" style="background:#ff4757; color:white; flex:1; font-weight:bold;">🔥 진행시켜!</button>
+            <button class="btn-action" onclick="closePage('allin-modal')" style="background:#444; color:white; flex:1;">취소</button>
+        </div>
+    </div>
+</div>
+
 <div id="exit-modal" class="full-page" style="z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,0.85);">
     <div class="login-box" style="border-color:#e74c3c; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
         <h2 style="color:#e74c3c; margin-top:0; font-size:1.5rem;">⚠️ WARNING</h2>
@@ -555,6 +588,7 @@
         }
     }
 
+    // ⭐ [수정] updateUI: 올인 버튼 상태 및 모달 호출 시 비용 전달
     window.updateUI = function() {
         window.gold = Number(window.gold); 
         
@@ -617,6 +651,7 @@
                 else {
                     let cost = Math.floor(2000 * Math.pow(1.8, lvl));
                     const canEvolve = window.gold >= cost;
+                    const canAllIn = !canEvolve && window.gold >= (cost / 2);
                     const canMutate = (window.currentEmoji.gene && !window.currentEmoji.mutated && lvl >= 5 && window.gold >= 500000);
                     
                     let b = (lvl < 5) ? 0.5 : Math.min(20, (lvl - 4) * 2);
@@ -646,12 +681,25 @@
                     
                     if (lvl >= 15) dL.innerText = dR.innerText = "🎆"; else if (lvl >= 10) dL.innerText = dR.innerText = "🔥"; else dL.innerText = dR.innerText = "";
 
-                    html = `
-                    <div class="btn-stack">
+                    let evolveBtnHtml = "";
+                    if (canAllIn) {
+                        // 올인 버튼 클릭 시 비용과 현재 골드 정보를 전달
+                        evolveBtnHtml = `
+                        <button class="btn-action btn-allin" onclick="openAllInModal(${cost}, ${window.gold})">
+                            <span style="font-size:1.1rem;">🔥 ALL-IN</span>
+                            <small style="color:white; opacity:0.9;">(전재산 ${window.gold.toLocaleString()}🟡)</small>
+                        </button>`;
+                    } else {
+                        evolveBtnHtml = `
                         <button class="btn-action btn-evolve" onclick="evolve()" ${canEvolve ? '' : 'disabled'}>
                             <span>강화</span>
                             <small style="font-size:0.6rem; opacity:0.8; ${canEvolve ? '' : 'color:#ff7675'}">${cost.toLocaleString()}🟡</small>
-                        </button>
+                        </button>`;
+                    }
+
+                    html = `
+                    <div class="btn-stack">
+                        ${evolveBtnHtml}
                         <button class="btn-action btn-premium-summ" disabled style="opacity:0.3; filter:grayscale(1);">🌟 고급 소환<br>(슬롯 꽉 참)</button>
                         <button class="btn-action btn-normal-summ" disabled style="opacity:0.3; filter:grayscale(1);">🔮 일반 소환<br>(슬롯 꽉 참)</button>
                         <button class="btn-action btn-gene" onclick="mutateGene()" ${canMutate ? '' : 'disabled'}>🧬 변이 (500k)</button>
@@ -803,7 +851,7 @@
         window.currentEmoji = { 
             pathName: p.name, stages: p.stages, grade: g, level: 0, 
             gene: Math.random() < 0.35, mutated: false, survival: 100, gone: false, 
-            rarity: finalRarity, mutationHistory: null 
+            rarity: finalRarity, mutationHistory: null, allInHistory: null // 올인 기록 초기화
         }; 
         
         const tier = getTier(finalRarity);
@@ -845,6 +893,54 @@
             addLog(`💀 강화 실패... 파괴되었습니다.`); 
             window.currentEmoji.gone = true; 
         } 
+        updateUI(); saveGame(2000); 
+    };
+
+    // ⭐ [수정] 올인 모달 열기 (비용 표시)
+    window.openAllInModal = (cost, currentGold) => {
+        document.getElementById('allin-cost-disp').innerText = cost.toLocaleString() + " 🟡";
+        document.getElementById('allin-gold-disp').innerText = currentGold.toLocaleString() + " 🟡";
+        document.getElementById('allin-modal').style.display = 'flex';
+    };
+
+    // ⭐ [수정] 올인 확정 및 기록
+    window.confirmAllIn = () => {
+        document.getElementById('allin-modal').style.display = 'none';
+        
+        if (!window.currentEmoji) return;
+        
+        addLog(`🔥 ALL-IN 발동! ${window.gold.toLocaleString()}원 소진.`);
+        window.gold = 0;
+        
+        let lvl = window.currentEmoji.level, info = gradeInfo[window.currentEmoji.grade];
+        let b = (lvl < 5) ? 0.5 : Math.min(20, (lvl - 4) * 2);
+        let m = Math.min(50, lvl * (7 / info.mod));
+        let s = Math.max(10, 100 - b - m); 
+        
+        if (Math.random() * 100 < s + m) {
+            if (Math.random() * 100 < s / (s+m) * 100) { 
+                window.currentEmoji.level++; 
+                let improveFactor = s / 100;
+                if(Math.random() < 0.1) { improveFactor *= 0.8; addLog(`⚡ 대성공! (희귀도 대폭 상승)`); }
+                
+                let nextRarity = parseFloat(window.currentEmoji.rarity) * improveFactor;
+                if (nextRarity < 1e-15) nextRarity = 1e-15; 
+                
+                window.currentEmoji.rarity = nextRarity.toFixed(20);
+                
+                // ⭐ 올인 성공 이력 기록
+                window.currentEmoji.allInHistory = "success";
+                
+                addLog(`🔥 올인 성공! +${window.currentEmoji.level}`); 
+            }
+            else { 
+                addLog("💨 올인 결과: 상태 유지 (다행이다...)"); 
+            }
+        } else { 
+            addLog(`💀 올인 실패... 파괴되었습니다. (전재산 0원)`); 
+            window.currentEmoji.gone = true; 
+        } 
+        
         updateUI(); saveGame(2000); 
     };
 
@@ -892,7 +988,8 @@
             lvl: window.currentEmoji.level, 
             date: Date.now(),
             mutated: window.currentEmoji.mutated,
-            mutationHistory: window.currentEmoji.mutationHistory 
+            mutationHistory: window.currentEmoji.mutationHistory,
+            allInHistory: window.currentEmoji.allInHistory // ⭐ 판매 시 올인 이력 저장
         };
         
         window.myHistory.push(rec); 
@@ -920,7 +1017,6 @@
         addLog(`💰 판매: +${rec.val.toLocaleString()}`); 
         window.currentEmoji = null; 
 
-        // ⭐ 로컬 인젝션: 랭킹 데이터가 있으면 즉시 반영
         if (cachedRarityRank && window.currentRankTab === 'rarity') {
             cachedRarityRank.push(rec); 
             cachedRarityRank.sort((a, b) => {
@@ -1121,18 +1217,16 @@
         });
     };
 
-    // ⭐ [수정] 보상 로직 변경: 일반/매직 등급은 5억 지급
     function handleReward(themeName) {
         if(window.claimedRewards.includes(themeName)) { alert("이미 보상을 수령했습니다."); return; }
         
         const pathInfo = evoPaths.find(p => p.name === themeName);
-        let rewardAmount = 50000000; // 기본 5천만
+        let rewardAmount = 50000000; 
         let msg = `축하합니다! [${themeName}] 진화 완성 보상으로\n50,000,000 골드가 지급되었습니다!`;
 
         if(pathInfo) {
-            // 일반 또는 매직 등급이 포함된 루트라면 5억 지급!
             if (pathInfo.grades.includes("일반") || pathInfo.grades.includes("매직")) {
-                rewardAmount = 500000000; // 5억 (0이 8개)
+                rewardAmount = 500000000;
                 msg = `🎉 고진감래! [${themeName}] 완성!\n비효율의 끝에서 기적을 보셨군요!\n보상: 500,000,000 골드 지급!`;
             }
         } else {
@@ -1158,7 +1252,6 @@
     }
 
     async function fetchGlobalLeader() {
-        // 대시보드는 syncGlobal()에서 자동 갱신하므로 비워둠
     }
 
     async function syncGlobal(tabType) { 
@@ -1229,6 +1322,7 @@
         } catch(e) { console.error("Rank Error", e); } 
     }
 
+    // ⭐ [수정] 랭킹 리스트 렌더링 (올인 태그 추가)
     function renderRanking(list, type) {
         if (!list || list.length === 0) return "<div style='text-align:center; padding:20px; color:#555;'>이번 주 기록이 없습니다.<br>첫 번째 주인공이 되어보세요!</div>";
 
@@ -1272,6 +1366,12 @@
                 if(c.mutationHistory === 'success') geneHtml = " <span style='font-size:0.6rem; color:#00cec9; font-weight:bold;'>[🧬성공]</span>";
                 else if(c.mutationHistory === 'fail') geneHtml = " <span style='font-size:0.6rem; color:#ff4757; font-weight:bold;'>[🧬실패]</span>";
 
+                // ⭐ 올인 뱃지 표시
+                let allInHtml = "";
+                if(c.allInHistory === 'success') {
+                    allInHtml = " <span style='font-size:0.6rem; color:#ff4757; font-weight:bold;'>[🔥ALL-IN]</span>";
+                }
+
                 return `
                 <div class="rank-card-styled ${glw}">
                     <div class="rank-col-rank">#${rk}</div>
@@ -1279,7 +1379,7 @@
                     <div class="rank-col-info">
                         <div class="rank-date">${dateStr}</div>
                         <div class="rank-user">${c.owner}</div>
-                        <div class="rank-detail" style="color:${col}">${c.grade} +${c.lvl}${geneHtml}</div>
+                        <div class="rank-detail" style="color:${col}">${c.grade} +${c.lvl}${geneHtml}${allInHtml}</div>
                         <div class="rank-meta-row">
                             ${badgeHtml}
                             <span class="rank-prob-thin" style="color:${probColor};">${probText}</span>
