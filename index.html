@@ -39,6 +39,32 @@
         .deco-icon { font-size: 1.5rem; animation: bounce 1s infinite; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
+        /* ⭐ [추가] 진화 애니메이션 효과 */
+        .anim-success { animation: pop-success 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .anim-fail { animation: shake-destroy 0.5s ease-in-out; }
+        .anim-stay { animation: wobble-stay 0.4s ease-in-out; }
+
+        @keyframes pop-success { 
+            0% { transform: scale(1); } 
+            50% { transform: scale(1.5); filter: brightness(2); } 
+            100% { transform: scale(1); filter: brightness(1); } 
+        }
+        @keyframes shake-destroy { 
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-10px, 0) rotate(-10deg); }
+            40% { transform: translate(10px, 0) rotate(10deg); }
+            60% { transform: translate(-10px, 0) rotate(-10deg); filter: grayscale(1); }
+            100% { transform: translate(0, 0) rotate(0deg); filter: grayscale(1); }
+        }
+        @keyframes wobble-stay {
+            0% { transform: translateX(0%); }
+            15% { transform: translateX(-15%) rotate(-5deg); }
+            30% { transform: translateX(10%) rotate(3deg); }
+            45% { transform: translateX(-10%) rotate(-3deg); }
+            60% { transform: translateX(5%) rotate(2deg); }
+            100% { transform: translateX(0%); }
+        }
+
         .in-game-log { height: 180px; background: #080808; border: 1px solid #222; border-radius: 10px; padding: 10px; font-size: 0.75rem; color: #999; line-height: 1.5; overflow-y: auto; scroll-behavior: smooth; box-shadow: inset 0 0 5px #000; }
 
         /* 정보 패널 */
@@ -65,7 +91,6 @@
         .btn-labor { background: #576574; grid-column: span 2; display: flex; flex-direction: column; align-items: center; border: 2px dashed #999; animation: laborPulse 1s infinite; }
         @keyframes laborPulse { 0% { border-color: #999; } 50% { border-color: #fff; } 100% { border-color: #999; } }
 
-        /* 올인 버튼 스타일 */
         .btn-allin { background: #e74c3c; grid-column: span 2; display: flex; flex-direction: column; align-items: center; border: 1px solid #ff7675; animation: pulse-red 1.5s infinite; }
         @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); } }
 
@@ -588,7 +613,7 @@
         }
     }
 
-    // ⭐ [수정] updateUI: 올인 버튼 상태 및 모달 호출 시 비용 전달
+    // ⭐ [수정] updateUI: 올인 버튼 상태 및 모달 호출 시 비용 전달, 모션 효과 적용
     window.updateUI = function() {
         window.gold = Number(window.gold); 
         
@@ -683,7 +708,6 @@
 
                     let evolveBtnHtml = "";
                     if (canAllIn) {
-                        // 올인 버튼 클릭 시 비용과 현재 골드 정보를 전달
                         evolveBtnHtml = `
                         <button class="btn-action btn-allin" onclick="openAllInModal(${cost}, ${window.gold})">
                             <span style="font-size:1.1rem;">🔥 ALL-IN</span>
@@ -851,7 +875,7 @@
         window.currentEmoji = { 
             pathName: p.name, stages: p.stages, grade: g, level: 0, 
             gene: Math.random() < 0.35, mutated: false, survival: 100, gone: false, 
-            rarity: finalRarity, mutationHistory: null, allInHistory: null // 올인 기록 초기화
+            rarity: finalRarity, mutationHistory: null, allInHistory: null 
         }; 
         
         const tier = getTier(finalRarity);
@@ -860,6 +884,7 @@
         updateUI(); saveGame(2000); 
     };
 
+    // ⭐ [수정] evolve: 애니메이션 및 10강 이상 햅틱 적용
     window.evolve = () => {
         if (!window.currentEmoji) return;
         
@@ -871,6 +896,16 @@
         }
         window.gold -= cost;
         
+        // 10강 이상일 때 햅틱 피드백 (진동)
+        if(window.currentEmoji.level >= 10 && navigator.vibrate) {
+            navigator.vibrate([50, 50, 50]); // 징-징-징
+        }
+
+        // 애니메이션 초기화 (재생을 위해)
+        const emojiEl = document.getElementById('main-emoji');
+        emojiEl.className = ''; 
+        void emojiEl.offsetWidth; // 리플로우 강제 (애니메이션 리셋 트리거)
+
         let lvl = window.currentEmoji.level, info = gradeInfo[window.currentEmoji.grade];
         let b = (lvl < 5) ? 0.5 : Math.min(20, (lvl - 4) * 2);
         let m = Math.min(50, lvl * (7 / info.mod));
@@ -886,12 +921,21 @@
                 if (nextRarity < 1e-15) nextRarity = 1e-15; 
                 
                 window.currentEmoji.rarity = nextRarity.toFixed(20); 
-                addLog(`✨ 강화 성공! +${window.currentEmoji.level}`); 
+                addLog(`✨ 강화 성공! +${window.currentEmoji.level}`);
+                
+                // 성공 애니메이션
+                emojiEl.classList.add('anim-success');
             }
-            else { addLog("💨 상태 유지"); }
+            else { 
+                addLog("💨 상태 유지"); 
+                // 유지 애니메이션
+                emojiEl.classList.add('anim-stay');
+            }
         } else { 
             addLog(`💀 강화 실패... 파괴되었습니다.`); 
             window.currentEmoji.gone = true; 
+            // 파괴 애니메이션
+            emojiEl.classList.add('anim-fail');
         } 
         updateUI(); saveGame(2000); 
     };
@@ -903,7 +947,7 @@
         document.getElementById('allin-modal').style.display = 'flex';
     };
 
-    // ⭐ [수정] 올인 확정 및 기록
+    // ⭐ [수정] 올인 확정 및 기록 (애니메이션 적용)
     window.confirmAllIn = () => {
         document.getElementById('allin-modal').style.display = 'none';
         
@@ -911,6 +955,15 @@
         
         addLog(`🔥 ALL-IN 발동! ${window.gold.toLocaleString()}원 소진.`);
         window.gold = 0;
+
+        // 10강 이상일 때 햅틱 피드백 (진동)
+        if(window.currentEmoji.level >= 10 && navigator.vibrate) {
+            navigator.vibrate([50, 50, 50, 100]); // 더 강한 진동
+        }
+
+        const emojiEl = document.getElementById('main-emoji');
+        emojiEl.className = ''; 
+        void emojiEl.offsetWidth; 
         
         let lvl = window.currentEmoji.level, info = gradeInfo[window.currentEmoji.grade];
         let b = (lvl < 5) ? 0.5 : Math.min(20, (lvl - 4) * 2);
@@ -927,18 +980,19 @@
                 if (nextRarity < 1e-15) nextRarity = 1e-15; 
                 
                 window.currentEmoji.rarity = nextRarity.toFixed(20);
-                
-                // ⭐ 올인 성공 이력 기록
                 window.currentEmoji.allInHistory = "success";
                 
                 addLog(`🔥 올인 성공! +${window.currentEmoji.level}`); 
+                emojiEl.classList.add('anim-success');
             }
             else { 
                 addLog("💨 올인 결과: 상태 유지 (다행이다...)"); 
+                emojiEl.classList.add('anim-stay');
             }
         } else { 
             addLog(`💀 올인 실패... 파괴되었습니다. (전재산 0원)`); 
             window.currentEmoji.gone = true; 
+            emojiEl.classList.add('anim-fail');
         } 
         
         updateUI(); saveGame(2000); 
@@ -948,6 +1002,10 @@
         if (!window.currentEmoji || window.gold < 500000) return; 
         window.gold -= 500000;
         
+        const emojiEl = document.getElementById('main-emoji');
+        emojiEl.className = ''; 
+        void emojiEl.offsetWidth;
+
         const gradeOrder = ["일반", "매직", "레어", "에픽", "레전더리"];
         const currentIdx = gradeOrder.indexOf(window.currentEmoji.grade);
         
@@ -960,6 +1018,7 @@
             window.currentEmoji.rarity = nextRarity.toFixed(20);
             
             addLog(`🔮 변이 성공! [${window.currentEmoji.grade}] (가치 2배 상승)`); 
+            emojiEl.classList.add('anim-success');
         }
         else { 
             window.currentEmoji.gene = false; 
@@ -968,6 +1027,7 @@
             window.currentEmoji.rarity = nextRarity.toFixed(20);
             
             addLog(`🔮 변이 실패.. (유전자 소멸, 희귀도 상승)`); 
+            emojiEl.classList.add('anim-fail');
         } 
         updateUI(); saveGame(2000); 
     };
@@ -989,7 +1049,7 @@
             date: Date.now(),
             mutated: window.currentEmoji.mutated,
             mutationHistory: window.currentEmoji.mutationHistory,
-            allInHistory: window.currentEmoji.allInHistory // ⭐ 판매 시 올인 이력 저장
+            allInHistory: window.currentEmoji.allInHistory 
         };
         
         window.myHistory.push(rec); 
@@ -1322,7 +1382,6 @@
         } catch(e) { console.error("Rank Error", e); } 
     }
 
-    // ⭐ [수정] 랭킹 리스트 렌더링 (올인 태그 추가)
     function renderRanking(list, type) {
         if (!list || list.length === 0) return "<div style='text-align:center; padding:20px; color:#555;'>이번 주 기록이 없습니다.<br>첫 번째 주인공이 되어보세요!</div>";
 
@@ -1366,7 +1425,6 @@
                 if(c.mutationHistory === 'success') geneHtml = " <span style='font-size:0.6rem; color:#00cec9; font-weight:bold;'>[🧬성공]</span>";
                 else if(c.mutationHistory === 'fail') geneHtml = " <span style='font-size:0.6rem; color:#ff4757; font-weight:bold;'>[🧬실패]</span>";
 
-                // ⭐ 올인 뱃지 표시
                 let allInHtml = "";
                 if(c.allInHistory === 'success') {
                     allInHtml = " <span style='font-size:0.6rem; color:#ff4757; font-weight:bold;'>[🔥ALL-IN]</span>";
