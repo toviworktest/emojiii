@@ -11,7 +11,7 @@
             --success: #2ecc71; --stay: #f1c40f; --destroy: #e74c3c; --red-alert: #ff4757;
             --tier-f: #636e72; --tier-c: #00cec9; --tier-b: #a29bfe; --tier-a: #ff4757; --tier-s: #ff4757; --tier-ss: #ffd700; --tier-sss: #fdcb6e;
         }
-        body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; background-color: var(--bg); color: #eee; margin: 0; padding: 10px; overflow-x: hidden; }
+        body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; background-color: var(--bg); color: #eee; margin: 0; padding: 10px; overflow-x: hidden; padding-bottom: 20px; }
         .game-container { width: 100%; max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
         
         /* 헤더 */
@@ -189,9 +189,6 @@
         .banner-value { font-size: 1.1rem; color: #fff; font-weight: 900; text-shadow: 0 0 5px rgba(255,215,0,0.3); }
         .banner-date { font-size: 0.55rem; color: #666; }
 
-        }
-        body { padding-bottom: 80px; }
-
         /* 모달 */
         #nick-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; display: flex; align-items: center; justify-content: center; }
         .login-box { background:#1a1a1a; padding:25px; border-radius:15px; border:2px solid #e74c3c; text-align:center; width:85%; max-width:340px; }
@@ -351,8 +348,8 @@
 
     <div style="text-align:center; margin:10px 0;">
         <div style="font-size:0.6rem; color:#74b9ff; line-height:1.4;">
-            * EX등급은 극악의 확률로 점수(RP)로 표시되며, 높은 숫자가 더 희귀합니다.<br>
-            * 동률일 시, 더 최근에 판매한 이모지가 상위 랭크됩니다.
+            * 점수(RP)가 높을수록 희귀한 이모지입니다.<br>
+            * 동점일 경우, 더 최근에 판매한 기록이 상위 랭크됩니다.
         </div>
     </div>
 
@@ -419,7 +416,7 @@
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
     const firebaseConfig = {
-        apiKey: "AIzaSyA-QVwu7jpUUeLH3jtqYHChfwOW3FHY3pc", 
+        apiKey: "AIzaSyA-QVwu7jpUUeLH3jtqYHChfwOW3FHY3pc", // ⭐ (별 제거됨: 정상 작동)
         authDomain: "gkyoungee.firebaseapp.com",
         projectId: "gkyoungee",
         storageBucket: "gkyoungee.firebasestorage.app",
@@ -440,15 +437,13 @@
 
     const EX_THRESHOLD = 0.000001; 
 
-    // ⭐ [수정] EX 등급 점수 계산 함수 (RP: Rare Point)
-    // 0 이하(에러) 값 처리 추가
+    // ⭐ [수정] 점수 공식 변경 (역수 로그): 확률이 낮을수록 점수가 높아짐 (일반 < 레전더리)
     function getRareScore(prob) {
-        if(prob >= EX_THRESHOLD) return 0;
-        if(prob <= 0) return 0; // 안전장치: 0 이하일 경우 0점 반환
-        return Math.floor(Math.abs(Math.log10(prob)) * 100);
+        if(prob <= 0) return 0; // 안전장치
+        // log10(100 / 확률) * 100
+        return Math.floor(Math.log10(100 / prob) * 100);
     }
 
-    // ⭐ [수정] 확률 표시 함수 (EX일 경우 점수 표시는 updateUI/renderRanking에서 처리)
     function formatProb(num) {
         if (typeof num !== 'number') num = parseFloat(num);
         if (isNaN(num)) return "0.00";
@@ -614,7 +609,7 @@
         }
     }
 
-    // ⭐ [수정] updateUI: 메인 화면에도 '올인 뱃지' 및 'RP 점수' 표시 기능 추가
+    // ⭐ [수정] updateUI: 메인 화면 표시 로직 (색상 통일 적용)
     window.updateUI = function() {
         window.gold = Number(window.gold); 
         
@@ -695,7 +690,6 @@
                     
                     document.getElementById('st-value').innerText = window.currentEmoji.value.toLocaleString(); 
                     
-                    // ⭐ [적용] 메인 화면 등급 옆에 올인 뱃지 표시 로직
                     let allInBadge = "";
                     if(window.currentEmoji.allInHistory === 'success') {
                         allInBadge = " <span style='font-size:0.6rem; color:#ff4757; font-weight:bold;'>[🔥ALL-IN]</span>";
@@ -741,13 +735,14 @@
                     document.getElementById('val-s').innerText = s.toFixed(2) + "%"; 
                     document.getElementById('val-b').innerText = b.toFixed(2) + "%";
                     
-                    // ⭐ [적용] 메인 화면 RP 점수 표시
                     const tier = getTier(window.currentEmoji.rarity);
+                    const rp = getRareScore(parseFloat(window.currentEmoji.rarity));
+
                     if(tier.color === "EX") {
-                        const rp = getRareScore(parseFloat(window.currentEmoji.rarity));
                         document.getElementById('st-rarity').innerHTML = `<span class="tier-ex-gradient">EX</span> <small style="font-size:0.6rem; color:#aaa;">(RP: ${rp.toLocaleString()}점)</small>`;
                     } else {
-                        document.getElementById('st-rarity').innerHTML = `${tier.text} <small style="font-size:0.5rem; opacity:0.7">(${formatProb(window.currentEmoji.rarity)}%)</small>`; 
+                        // ⭐ [수정] 일반 등급도 티어 색상과 RP 텍스트 색상을 일치시킴
+                        document.getElementById('st-rarity').innerHTML = `${tier.text} <small style="font-size:0.6rem; font-weight:bold; color:${tier.color}">(RP: ${rp.toLocaleString()}점)</small>`; 
                         document.getElementById('st-rarity').style.color = tier.color; 
                     }
                 }
@@ -925,7 +920,9 @@
                 if(Math.random() < 0.1) { improveFactor *= 0.8; addLog(`⚡ 대성공! (희귀도 대폭 상승)`); }
                 
                 let nextRarity = parseFloat(window.currentEmoji.rarity) * improveFactor;
-                if (nextRarity < 1e-15) nextRarity = 1e-15; 
+                
+                // ⭐ [수정] 확률 하한선 1e-100 (안전장치)
+                if (nextRarity < 1e-100) nextRarity = 1e-100; 
                 
                 window.currentEmoji.rarity = nextRarity.toFixed(20); 
                 addLog(`✨ 강화 성공! +${window.currentEmoji.level}`);
@@ -977,7 +974,9 @@
                 if(Math.random() < 0.1) { improveFactor *= 0.8; addLog(`⚡ 대성공! (희귀도 대폭 상승)`); }
                 
                 let nextRarity = parseFloat(window.currentEmoji.rarity) * improveFactor;
-                if (nextRarity < 1e-15) nextRarity = 1e-15; 
+                
+                // ⭐ [수정] 확률 하한선 1e-100 (올인 시에도 적용)
+                if (nextRarity < 1e-100) nextRarity = 1e-100; 
                 
                 window.currentEmoji.rarity = nextRarity.toFixed(20);
                 window.currentEmoji.allInHistory = "success";
@@ -1315,7 +1314,13 @@
     }
 
     async function syncGlobal(tabType) { 
-        if(!db) return;
+        if(!db) {
+            document.getElementById('rank-list').innerHTML = "<div style='padding:20px; text-align:center;'>DB 연결 실패</div>";
+            return;
+        }
+        
+        document.getElementById('rank-list').innerHTML = "<div style='text-align:center; padding:20px; color:#888;'>데이터 로딩 중...<br>(잠시만 기다려주세요)</div>";
+
         const weeklyLimit = getWeeklyStartTimestamp();
 
         try {
@@ -1323,6 +1328,7 @@
                 if (!cachedRarityRank || (Date.now() - lastRankFetch > 60000)) { 
                     const q = query(collection(db, "users"), orderBy("best_prob", "asc"), limit(300)); 
                     const snap = await getDocs(q); 
+                    
                     let all = [];
                     snap.forEach(d => { 
                         if(d.data().h) {
@@ -1379,10 +1385,18 @@
                     rankListEl.innerHTML = renderRanking(displayList.slice(0, 50), 'wealth');
                 }
             }
-        } catch(e) { console.error("Rank Error", e); } 
+        } catch(e) { 
+            console.error("Rank Error 상세:", e);
+            document.getElementById('rank-list').innerHTML = 
+                `<div style='padding:20px; text-align:center; color:#ff4757;'>
+                    🚫 랭킹 로딩 실패!<br>
+                    <span style='font-size:0.7rem; color:#aaa;'>${e.message}</span><br><br>
+                    <span style='font-size:0.6rem; color:#888;'>F12 콘솔을 확인하거나,<br>Firebase 규칙/인덱스를 점검하세요.</span>
+                </div>`;
+        } 
     }
 
-    // ⭐ [수정] renderRanking: RP 점수 표기 및 EX 등급 그라데이션 적용
+    // ⭐ [수정] renderRanking: 랭킹 표시 로직 (색상 통일 적용)
     function renderRanking(list, type) {
         if (!list || list.length === 0) return "<div style='text-align:center; padding:20px; color:#555;'>이번 주 기록이 없습니다.<br>첫 번째 주인공이 되어보세요!</div>";
 
@@ -1413,16 +1427,15 @@
                 let probColor = col;
                 let probText = "";
 
-                // ⭐ EX 뱃지 렌더링 시 RP 점수 표시 + 그라데이션 텍스트
+                const rp = getRareScore(c.prob);
                 if (tier.color === "EX") {
                     badgeHtml = `<span class="tier-badge tier-badge-ex"><span class="tier-ex-gradient">EX</span></span>`;
                     probColor = "#a29bfe";
-                    const rp = getRareScore(c.prob);
-                    // EX 점수에 그라데이션 색상 적용
                     probText = `<span style="font-size:0.6rem; font-weight:bold; background: linear-gradient(135deg, #00cec9, #a29bfe, #e056fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">RP : ${rp.toLocaleString()}</span>`;
                 } else {
                     badgeHtml = `<span class="tier-badge" style="color:${tier.color}; border-color:${tier.color}">${tier.text}</span>`;
-                    probText = formatProb(c.prob) + "%";
+                    // ⭐ [수정] 일반 등급도 티어 색상과 RP 텍스트 색상을 일치시킴 (굵게 표시)
+                    probText = `<span style="font-size:0.6rem; font-weight:bold; color:${tier.color};">RP : ${rp.toLocaleString()}</span>`;
                 }
                 
                 let geneHtml = " <span style='font-size:0.6rem; color:#555;'>[ ]</span>";
