@@ -39,31 +39,14 @@
         .deco-icon { font-size: 1.5rem; animation: bounce 1s infinite; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
-        /* ⭐ [추가] 진화 애니메이션 효과 */
+        /* 진화 애니메이션 */
         .anim-success { animation: pop-success 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .anim-fail { animation: shake-destroy 0.5s ease-in-out; }
         .anim-stay { animation: wobble-stay 0.4s ease-in-out; }
 
-        @keyframes pop-success { 
-            0% { transform: scale(1); } 
-            50% { transform: scale(1.5); filter: brightness(2); } 
-            100% { transform: scale(1); filter: brightness(1); } 
-        }
-        @keyframes shake-destroy { 
-            0% { transform: translate(0, 0) rotate(0deg); }
-            20% { transform: translate(-10px, 0) rotate(-10deg); }
-            40% { transform: translate(10px, 0) rotate(10deg); }
-            60% { transform: translate(-10px, 0) rotate(-10deg); filter: grayscale(1); }
-            100% { transform: translate(0, 0) rotate(0deg); filter: grayscale(1); }
-        }
-        @keyframes wobble-stay {
-            0% { transform: translateX(0%); }
-            15% { transform: translateX(-15%) rotate(-5deg); }
-            30% { transform: translateX(10%) rotate(3deg); }
-            45% { transform: translateX(-10%) rotate(-3deg); }
-            60% { transform: translateX(5%) rotate(2deg); }
-            100% { transform: translateX(0%); }
-        }
+        @keyframes pop-success { 0% { transform: scale(1); } 50% { transform: scale(1.5); filter: brightness(2); } 100% { transform: scale(1); filter: brightness(1); } }
+        @keyframes shake-destroy { 0% { transform: translate(0, 0) rotate(0deg); } 20% { transform: translate(-10px, 0) rotate(-10deg); } 40% { transform: translate(10px, 0) rotate(10deg); } 60% { transform: translate(-10px, 0) rotate(-10deg); filter: grayscale(1); } 100% { transform: translate(0, 0) rotate(0deg); filter: grayscale(1); } }
+        @keyframes wobble-stay { 0% { transform: translateX(0%); } 15% { transform: translateX(-15%) rotate(-5deg); } 30% { transform: translateX(10%) rotate(3deg); } 45% { transform: translateX(-10%) rotate(-3deg); } 60% { transform: translateX(5%) rotate(2deg); } 100% { transform: translateX(0%); } }
 
         .in-game-log { height: 180px; background: #080808; border: 1px solid #222; border-radius: 10px; padding: 10px; font-size: 0.75rem; color: #999; line-height: 1.5; overflow-y: auto; scroll-behavior: smooth; box-shadow: inset 0 0 5px #000; }
 
@@ -205,6 +188,9 @@
         .banner-label { font-size: 0.6rem; color: #ffd700; font-weight: bold; margin-bottom: 2px; }
         .banner-value { font-size: 1.1rem; color: #fff; font-weight: 900; text-shadow: 0 0 5px rgba(255,215,0,0.3); }
         .banner-date { font-size: 0.55rem; color: #666; }
+
+        }
+        body { padding-bottom: 80px; }
 
         /* 모달 */
         #nick-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; display: flex; align-items: center; justify-content: center; }
@@ -363,6 +349,13 @@
         <button class="rank-tab" onclick="switchRankTab('wealth')">💰 자산 랭킹</button>
     </div>
 
+    <div style="text-align:center; margin:10px 0;">
+        <div style="font-size:0.6rem; color:#74b9ff; line-height:1.4;">
+            * EX등급은 극악의 확률로 점수(RP)로 표시되며, 높은 숫자가 더 희귀합니다.<br>
+            * 동률일 시, 더 최근에 판매한 이모지가 상위 랭크됩니다.
+        </div>
+    </div>
+
     <div id="my-wealth-banner" class="my-max-asset-banner" style="display:none;">
         <div>
             <div class="banner-label">🏆 나의 역대 최고 자산</div>
@@ -447,10 +440,18 @@
 
     const EX_THRESHOLD = 0.000001; 
 
+    // ⭐ [수정] EX 등급 점수 계산 함수 (RP: Rare Point)
+    // 0 이하(에러) 값 처리 추가
+    function getRareScore(prob) {
+        if(prob >= EX_THRESHOLD) return 0;
+        if(prob <= 0) return 0; // 안전장치: 0 이하일 경우 0점 반환
+        return Math.floor(Math.abs(Math.log10(prob)) * 100);
+    }
+
+    // ⭐ [수정] 확률 표시 함수 (EX일 경우 점수 표시는 updateUI/renderRanking에서 처리)
     function formatProb(num) {
         if (typeof num !== 'number') num = parseFloat(num);
         if (isNaN(num)) return "0.00";
-        if (num < EX_THRESHOLD) return "측정 불가"; 
         if (num < 0.00001) return num.toFixed(9); 
         if (num < 0.001) return num.toFixed(7);
         return parseFloat(num.toFixed(6)); 
@@ -613,7 +614,7 @@
         }
     }
 
-    // ⭐ [수정] updateUI: 올인 버튼 상태 및 모달 호출 시 비용 전달, 모션 효과 적용
+    // ⭐ [수정] updateUI: 메인 화면에도 '올인 뱃지' 및 'RP 점수' 표시 기능 추가
     window.updateUI = function() {
         window.gold = Number(window.gold); 
         
@@ -693,7 +694,13 @@
                     window.currentEmoji.value = finalVal;
                     
                     document.getElementById('st-value').innerText = window.currentEmoji.value.toLocaleString(); 
-                    document.getElementById('st-grade').innerText = window.currentEmoji.grade;
+                    
+                    // ⭐ [적용] 메인 화면 등급 옆에 올인 뱃지 표시 로직
+                    let allInBadge = "";
+                    if(window.currentEmoji.allInHistory === 'success') {
+                        allInBadge = " <span style='font-size:0.6rem; color:#ff4757; font-weight:bold;'>[🔥ALL-IN]</span>";
+                    }
+                    document.getElementById('st-grade').innerHTML = window.currentEmoji.grade + allInBadge;
                     document.getElementById('st-grade').style.color = info.color;
                     
                     let geneText = "-";
@@ -734,9 +741,11 @@
                     document.getElementById('val-s').innerText = s.toFixed(2) + "%"; 
                     document.getElementById('val-b').innerText = b.toFixed(2) + "%";
                     
+                    // ⭐ [적용] 메인 화면 RP 점수 표시
                     const tier = getTier(window.currentEmoji.rarity);
                     if(tier.color === "EX") {
-                        document.getElementById('st-rarity').innerHTML = `<span class="tier-ex-gradient">EX</span> <small style="font-size:0.6rem; color:#aaa;">(측정 불가)</small>`;
+                        const rp = getRareScore(parseFloat(window.currentEmoji.rarity));
+                        document.getElementById('st-rarity').innerHTML = `<span class="tier-ex-gradient">EX</span> <small style="font-size:0.6rem; color:#aaa;">(RP: ${rp.toLocaleString()}점)</small>`;
                     } else {
                         document.getElementById('st-rarity').innerHTML = `${tier.text} <small style="font-size:0.5rem; opacity:0.7">(${formatProb(window.currentEmoji.rarity)}%)</small>`; 
                         document.getElementById('st-rarity').style.color = tier.color; 
@@ -884,7 +893,6 @@
         updateUI(); saveGame(2000); 
     };
 
-    // ⭐ [수정] evolve: 애니메이션 및 10강 이상 햅틱 적용
     window.evolve = () => {
         if (!window.currentEmoji) return;
         
@@ -898,13 +906,12 @@
         
         // 10강 이상일 때 햅틱 피드백 (진동)
         if(window.currentEmoji.level >= 10 && navigator.vibrate) {
-            navigator.vibrate([50, 50, 50]); // 징-징-징
+            navigator.vibrate([50, 50, 50]); 
         }
 
-        // 애니메이션 초기화 (재생을 위해)
         const emojiEl = document.getElementById('main-emoji');
         emojiEl.className = ''; 
-        void emojiEl.offsetWidth; // 리플로우 강제 (애니메이션 리셋 트리거)
+        void emojiEl.offsetWidth;
 
         let lvl = window.currentEmoji.level, info = gradeInfo[window.currentEmoji.grade];
         let b = (lvl < 5) ? 0.5 : Math.min(20, (lvl - 4) * 2);
@@ -922,32 +929,26 @@
                 
                 window.currentEmoji.rarity = nextRarity.toFixed(20); 
                 addLog(`✨ 강화 성공! +${window.currentEmoji.level}`);
-                
-                // 성공 애니메이션
                 emojiEl.classList.add('anim-success');
             }
             else { 
                 addLog("💨 상태 유지"); 
-                // 유지 애니메이션
                 emojiEl.classList.add('anim-stay');
             }
         } else { 
             addLog(`💀 강화 실패... 파괴되었습니다.`); 
             window.currentEmoji.gone = true; 
-            // 파괴 애니메이션
             emojiEl.classList.add('anim-fail');
         } 
         updateUI(); saveGame(2000); 
     };
 
-    // ⭐ [수정] 올인 모달 열기 (비용 표시)
     window.openAllInModal = (cost, currentGold) => {
         document.getElementById('allin-cost-disp').innerText = cost.toLocaleString() + " 🟡";
         document.getElementById('allin-gold-disp').innerText = currentGold.toLocaleString() + " 🟡";
         document.getElementById('allin-modal').style.display = 'flex';
     };
 
-    // ⭐ [수정] 올인 확정 및 기록 (애니메이션 적용)
     window.confirmAllIn = () => {
         document.getElementById('allin-modal').style.display = 'none';
         
@@ -956,9 +957,8 @@
         addLog(`🔥 ALL-IN 발동! ${window.gold.toLocaleString()}원 소진.`);
         window.gold = 0;
 
-        // 10강 이상일 때 햅틱 피드백 (진동)
         if(window.currentEmoji.level >= 10 && navigator.vibrate) {
-            navigator.vibrate([50, 50, 50, 100]); // 더 강한 진동
+            navigator.vibrate([50, 50, 50, 100]); 
         }
 
         const emojiEl = document.getElementById('main-emoji');
@@ -1382,6 +1382,7 @@
         } catch(e) { console.error("Rank Error", e); } 
     }
 
+    // ⭐ [수정] renderRanking: RP 점수 표기 및 EX 등급 그라데이션 적용
     function renderRanking(list, type) {
         if (!list || list.length === 0) return "<div style='text-align:center; padding:20px; color:#555;'>이번 주 기록이 없습니다.<br>첫 번째 주인공이 되어보세요!</div>";
 
@@ -1412,10 +1413,13 @@
                 let probColor = col;
                 let probText = "";
 
+                // ⭐ EX 뱃지 렌더링 시 RP 점수 표시 + 그라데이션 텍스트
                 if (tier.color === "EX") {
                     badgeHtml = `<span class="tier-badge tier-badge-ex"><span class="tier-ex-gradient">EX</span></span>`;
                     probColor = "#a29bfe";
-                    probText = "측정 불가";
+                    const rp = getRareScore(c.prob);
+                    // EX 점수에 그라데이션 색상 적용
+                    probText = `<span style="font-size:0.6rem; font-weight:bold; background: linear-gradient(135deg, #00cec9, #a29bfe, #e056fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">RP : ${rp.toLocaleString()}</span>`;
                 } else {
                     badgeHtml = `<span class="tier-badge" style="color:${tier.color}; border-color:${tier.color}">${tier.text}</span>`;
                     probText = formatProb(c.prob) + "%";
