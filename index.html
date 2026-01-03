@@ -244,6 +244,184 @@
         .login-input { width:100%; padding:12px; background:#000; border:1px solid #444; color:white; border-radius:8px; margin: 5px 0; box-sizing:border-box; }
         .btn-google { width:100%; background:#fff; color:#333; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:15px; padding: 12px; border-radius: 8px; }
         @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        /* --- [🔮 타로 시스템 CSS (v6: 3버튼 정렬 수정)] --- */
+        
+        /* 1. 상단 알림 배너 */
+        .tarot-banner-wrap {
+            background: linear-gradient(90deg, #2c0e33, #000000);
+            border-bottom: 1px solid #9c27b0;
+            border-top: 1px solid #333;
+            height: 22px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .tarot-msg-rolling {
+            white-space: nowrap;
+            font-size: 0.6rem;
+            font-weight: bold;
+            color: #e056fd;
+            text-shadow: 0 0 5px rgba(224, 86, 253, 0.5);
+            animation: text-scroll 12s linear infinite;
+            padding-top: 1px;
+        }
+        @keyframes text-scroll {
+            0% { transform: translateX(100%); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateX(-100%); opacity: 0; }
+        }
+
+        /* 2. 타로 카드 (3D Flip) */
+        .tarot-scene {
+            perspective: 600px;
+            width: 120px;
+            height: 180px;
+            margin: 10px auto;
+            cursor: pointer;
+        }
+        .tarot-card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        .tarot-card.is-flipped {
+            transform: rotateY(180deg);
+        }
+        .tarot-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #444;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .tarot-front {
+            background: repeating-linear-gradient(45deg, #1a1a1a, #1a1a1a 10px, #222 10px, #222 20px);
+            color: #555;
+            transform: rotateY(180deg);
+        }
+        .tarot-back {
+            background: #111;
+            transform: rotateY(0deg);
+            border-color: #ffd700;
+        }
+        
+        /* 3. 타로 도감 테이블 */
+        .tarot-table-wrap {
+            height: auto;
+            max-height: 280px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            background: #0f0f0f;
+        }
+        .tarot-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        .tarot-table th {
+            position: sticky;
+            top: 0;
+            background: #222;
+            color: #aaa;
+            padding: 4px 2px;
+            border-bottom: 1px solid #444;
+            z-index: 2;
+            font-size: 0.55rem;
+        }
+        .tarot-table td {
+            padding: 3px 2px;
+            border-bottom: 1px solid #1a1a1a;
+            color: #888;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 0.6rem;
+            height: 24px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .tarot-row-active {
+            background: rgba(224, 86, 253, 0.1);
+            border: 1px solid #e056fd;
+        }
+        .tarot-row-active td {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* 4. 버튼 스타일 수정 (3열 정렬 완벽 대응) */
+        
+        .btn-action {
+            min-height: 54px; 
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+        }
+        
+        /* [수정] 3개 버튼 전용 스타일 */
+        .menu-btn-square {
+            height: 68px !important; /* 높이: 충분히 여유 있음 */
+            padding: 0 !important;   /* 내부 패딩 제거 (flex로 중앙 정렬) */
+            width: 100%;             /* 그리드 셀 꽉 채우기 */
+            min-width: 0;            /* flex/grid 내부에서 넘침 방지 */
+            justify-content: center;
+            gap: 5px;                /* 이모지와 텍스트 사이 간격 */
+        }
+
+        .menu-btn-square .menu-icon {
+            font-size: 1.15rem;      /* 이모지 크기: 겹치지 않게 약간 축소 */
+            margin-bottom: 0;
+            line-height: 1;
+            display: block;
+        }
+        .menu-btn-square span:not(.menu-icon) {
+            font-size: 0.6rem;       /* 텍스트 크기: 한 줄에 나오도록 축소 */
+            margin-top: 0;
+            white-space: nowrap;     /* 줄바꿈 강제 방지 */
+        }
+
+        /* 3열 버튼 컨테이너 전용 (Part 2 HTML에서 클래스 추가 예정이나, 여기서 미리 정의) */
+        .btn-stack-3col {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr; /* 정확히 3등분 */
+            gap: 5px; /* 버튼 사이 간격 */
+            margin-top: 6px;
+            width: 100%;
+        }
+
+        /* 운세 텍스트 */
+        .fortune-text {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #a29bfe;
+            margin: 5px 0;
+            font-style: italic;
+            min-height: 18px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .fortune-text.show { opacity: 1; }
+
+        /* --- [CSS 끝] --- */
+
     </style>
 </head>
 <body>
@@ -286,6 +464,12 @@
         *정식서비스가 아닌 개인이 학습을 목표로 제작 중입니다 다소 불안정한 운영이 있을 수 있으므로 양해 부탁드립니다
     </div>
 
+    <div class="tarot-banner-wrap" onclick="openTarotModal()">
+        <div id="tarot-msg-box" class="tarot-msg-rolling">
+            🔯 타로를 뒤집어 오늘의 운세를 확인하세요!
+        </div>
+    </div>
+
     <div class="main-split">
         <div class="left-col">
             <div class="canvas-area" id="display-area" title="아이템 조작">
@@ -310,14 +494,14 @@
                 <div class="info-cell"><span class="info-label" style="color:#ffd700;">희귀도 (Tier)</span><span class="info-value" id="st-rarity" style="color:#ffd700;">-</span></div>
             </div>
             <div class="gauge-mini">
-                <div class="gauge-text"><span style="color:var(--success)">성공 <span id="val-s">0%</span></span><span style="color:var(--destroy)">파괴 <span id="val-b">0%</span></span></div>
+                <div class="gauge-text"><span id="val-s-text" style="color:var(--success)">성공 <span id="val-s">0%</span></span><span style="color:var(--destroy)">파괴 <span id="val-b">0%</span></span></div>
                 <div class="gauge-bar"><div id="seg-s" class="gauge-seg" style="background:var(--success); width:0%"></div><div id="seg-m" class="gauge-seg" style="background:var(--stay); width:0%"></div><div id="seg-b" class="gauge-seg" style="background:var(--destroy); width:0%"></div></div>
             </div>
             <div class="wealth-box" id="gold-display">0 🟡</div>
             
             <div id="dynamic-btn-area"></div>
 
-            <div class="btn-stack" style="margin-top:6px;">
+            <div class="btn-stack" style="margin-top:6px; grid-template-columns: 1fr 1fr 1fr;">
                 <button class="menu-btn-square" onclick="openInventory()">
                     <span class="menu-icon">🎒</span>
                     <span>인벤토리</span>
@@ -326,6 +510,10 @@
                     <span class="menu-icon">📕</span>
                     <span>도감</span>
                     <div id="book-alert" class="status-dot"></div>
+                </button>
+                <button class="menu-btn-square" onclick="openTarotModal()">
+                    <span class="menu-icon">🔯</span>
+                    <span>타로점</span>
                 </button>
             </div>
         </div>
@@ -344,6 +532,8 @@
         </div>
     </div>
 </div>
+
+
 <!-- ⭐ Part 3: 모달 창 (인벤토리, 도감, 랭킹, 경고창) -->
 
 <div id="inv-page" class="full-page">
@@ -433,135 +623,58 @@
     <button class="close-btn" onclick="closePage('rank-page')">닫기</button>
 </div>
 
-<div id="allin-modal" class="full-page" style="z-index:4000; display:none; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,0.9);">
-    <div class="login-box" style="border-color:#ff4757; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
-        <h2 style="color:#ff4757; margin-top:0; font-size:1.5rem; text-shadow:0 0 10px rgba(255, 71, 87, 0.5);">⚠️ 위험한 도박</h2>
-        <p style="color:#ddd; margin:15px 0; line-height:1.6; font-size:0.9rem;">
-            현재 보유 자산이 강화 비용의 절반 이상입니다.<br>
-            모든 재산을 걸고 강화를 1회 시도하시겠습니까?<br><br>
-            
-            <div style="background:#222; padding:10px; border-radius:8px; border:1px solid #444; margin-bottom:15px;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                    <span style="color:#aaa; font-size:0.8rem;">필요 비용:</span>
-                    <span id="allin-cost-disp" style="color:#ff7675; font-weight:bold;">-</span>
-                </div>
-                <div style="display:flex; justify-content:space-between;">
-                    <span style="color:#aaa; font-size:0.8rem;">보유 재산:</span>
-                    <span id="allin-gold-disp" style="color:#ffd700; font-weight:bold;">-</span>
-                </div>
-            </div>
-
-            <span style="color:#ff7675; font-weight:bold; font-size:0.85rem;">
-                (성공/실패 여부와 관계없이 잔액은 0원이 됩니다)
-            </span>
-        </p>
-        <div style="display:flex; gap:10px; width:100%;">
-            <button class="btn-action" onclick="confirmAllIn()" style="background:#ff4757; color:white; flex:1; font-weight:bold;">🔥 진행시켜!</button>
-            <button class="btn-action" onclick="closePage('allin-modal')" style="background:#444; color:white; flex:1;">취소</button>
-        </div>
-    </div>
-</div>
-
-<div id="exit-modal" class="full-page" style="z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,0.85);">
-    <div class="login-box" style="border-color:#e74c3c; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
-        <h2 style="color:#e74c3c; margin-top:0; font-size:1.5rem;">⚠️ WARNING</h2>
-        <p style="color:#ddd; margin:20px 0; line-height:1.6; font-size:0.9rem;">
-            정말로 게임을 종료하시겠습니까?<br>
-            <span style="color:#4cd137; font-size:0.8rem; font-weight:bold;">
-                (현재 내용은 서버에 자동 저장됩니다)
-            </span>
-        </p>
-        <div style="display:flex; gap:10px; width:100%;">
-            <button class="btn-action" onclick="realExit()" style="background:#e74c3c; color:white; flex:1;">종료</button>
-            <button class="btn-action" onclick="cancelExit()" style="background:#444; color:white; flex:1;">취소</button>
-        </div>
-    </div>
-</div>
-<div id="inv-page" class="full-page">
-    <div class="modal-header"><h2 class="modal-title">🎒 인벤토리</h2></div>
-    <div class="inv-status-bar" onclick="swapWithMain()">
-        <div class="inv-current-info">
-            <div id="inv-current-emoji" class="inv-current-icon">🔒</div>
-            <div>
-                <span style="font-size:0.6rem; color:#aaa;">현재 장착 중</span>
-                <div id="inv-current-name" style="font-weight:bold; font-size:0.9rem; color:#fff;">없음</div>
-            </div>
-        </div>
-        <div id="inv-total-gold" style="font-size:1.2rem; font-weight:bold; color:#ffd700;">0 🟡</div>
-    </div>
-    <div class="inv-grid" id="inv-grid-list"></div>
-    <button class="close-btn" onclick="closePage('inv-page')">닫기</button>
-</div>
-
-<div id="book-page" class="full-page">
+<div id="tarot-modal" class="full-page">
     <div class="modal-header">
-        <h2 class="modal-title">📕 도감 컬렉션</h2>
+        <h2 class="modal-title">🔯 오늘의 운세</h2>
+        <div style="font-size:0.6rem; color:#aaa; margin-top:2px;">매일 한 번, 운명의 카드를 뒤집으세요!</div>
     </div>
-    
-    <div class="chart-section">
-        <div class="chart-header">이모지 확률 정보</div>
-        <div class="chart-grid">
-            <div class="chart-box">
-                <div class="chart-title">등급별 소환 확률</div>
-                <table class="rate-table" id="grade-rate-table"></table>
+
+    <div class="tarot-scene">
+        <div class="tarot-card" id="tarot-card-el" onclick="flipTarotCard()">
+            <div class="tarot-face tarot-front" id="tarot-front-face">
+                <div style="font-size:3rem; margin-bottom:10px;" id="tarot-result-icon">❓</div>
+                <div style="font-size:0.8rem; font-weight:bold; text-align:center; width:100%; padding:0 5px; box-sizing:border-box; word-break:keep-all; line-height:1.2;" id="tarot-result-name">-</div>
+                <div style="font-size:0.6rem; color:#e056fd; text-align:center; width:100%; margin-top:2px;" id="tarot-result-desc">-</div>
             </div>
-            <div class="chart-box">
-                <div class="chart-title">희귀도(Tier) 확률</div>
-                <table class="rate-table">
-                    <tr><td><span class="tier-ex-gradient">EX</span></td><td>0.000001% ↓</td></tr>
-                    <tr><td style="color:var(--tier-sss)">SSS</td><td>0.01% ↓</td></tr>
-                    <tr><td style="color:var(--tier-ss)">SS</td><td>0.1% ↓</td></tr>
-                    <tr><td style="color:var(--tier-s)">S</td><td>1.0% ↓</td></tr>
-                    <tr><td style="color:var(--tier-a)">A</td><td>5.0% ↓</td></tr>
-                    <tr><td style="color:var(--tier-b)">B</td><td>15.0% ↓</td></tr>
-                </table>
+            <div class="tarot-face tarot-back">
+                <div style="font-size:3rem;">🔯</div>
             </div>
         </div>
     </div>
 
-    <div class="book-tabs" id="book-grade-tabs">
-        <button class="book-tab-btn active" onclick="switchBookTab('일반')">일반</button>
-        <button class="book-tab-btn" onclick="switchBookTab('매직')">매직</button>
-        <button class="book-tab-btn" onclick="switchBookTab('레어')">레어</button>
-        <button class="book-tab-btn" onclick="switchBookTab('에픽')">에픽</button>
-        <button class="book-tab-btn" onclick="switchBookTab('레전더리')">레전더리</button>
+    <div id="tarot-fortune-text" class="fortune-text">
+        "카드를 터치하여 뒤집으세요..."
     </div>
 
-    <div style="font-size:0.8rem; color:#aaa; margin-bottom:2px; text-align:center;">🧬 수집 현황 (태생 등급 기준)</div>
-    <div id="book-hint-text" style="font-size:0.6rem; color:#ffd700; margin-bottom:10px; text-align:center; font-weight:bold;">* 고진감래 : 쓴 것이 다하면 단 것이 온다.</div>
-    <div id="book-list" class="book-compact-grid"></div>
-    <button class="close-btn" onclick="closePage('book-page')">닫기</button>
-</div>
-
-<div id="rank-page" class="full-page">
-    <div class="modal-header">
-        <h2 id="rank-title" class="modal-title">전당</h2>
-        <div id="reset-timer" class="reset-timer-box">주간랭킹 갱신까지 0일 0시간 남음</div>
-        <div style="font-size:0.6rem; color:#ff7675; margin-top:5px; margin-bottom:-5px;">* 희귀도 랭킹은 매주 월요일 0시에 갱신(리셋)됩니다.</div>
-    </div>
-    
-    <div class="rank-tabs" id="rank-tabs-container" style="display:none;">
-        <button class="rank-tab active" onclick="switchRankTab('rarity')">💎 희귀도 랭킹</button>
-        <button class="rank-tab" onclick="switchRankTab('wealth')">💰 자산 랭킹</button>
+    <div style="background:#1a1a1a; padding:10px; border-radius:8px; margin-top:10px; border:1px solid #333;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+            <span style="color:#aaa; font-size:0.7rem;">내 보유 골드:</span>
+            <span id="tarot-my-gold" style="color:#ffd700; font-weight:bold; font-size:0.9rem;">0 🟡</span>
+        </div>
+        <button id="btn-reroll" class="btn-action" style="width:100%; height:40px; background:#9c27b0; border:1px solid #e056fd;" onclick="rerollTarot()">
+            <span id="reroll-btn-text" style="font-size:0.8rem;">🔄 운명 바꾸기</span>
+            <div id="reroll-cost-text" style="font-size:0.6rem; opacity:0.8;">비용: 50,000,000 🟡</div>
+        </button>
     </div>
 
-    <div style="text-align:center; margin:10px 0;">
-        <div style="font-size:0.6rem; color:#74b9ff; line-height:1.4;">
-            * 점수(RP)가 높을수록 희귀한 이모지입니다.<br>
-            * 동점일 경우, 더 최근에 판매한 기록이 상위 랭크됩니다.
+    <div style="margin-top: 15px; border-top: 1px dashed #333; padding-top: 10px;">
+        <div style="text-align:center; font-size:0.5rem; color:#666; margin-bottom:5px;">▼ 획득 가능 카드 목록 ▼</div>
+        <div class="tarot-table-wrap">
+            <table class="tarot-table">
+                <thead>
+                    <tr>
+                        <th width="15%">이모지</th>
+                        <th width="45%">이름</th>
+                        <th width="40%">효과</th>
+                    </tr>
+                </thead>
+                <tbody id="tarot-table-body">
+                    </tbody>
+            </table>
         </div>
     </div>
 
-    <div id="my-wealth-banner" class="my-max-asset-banner" style="display:none;">
-        <div>
-            <div class="banner-label">🏆 나의 역대 최고 자산</div>
-            <div class="banner-date" id="my-wealth-date">-</div>
-        </div>
-        <div class="banner-value" id="my-wealth-val">0 🟡</div>
-    </div>
-
-    <div id="rank-list"></div>
-    <button class="close-btn" onclick="closePage('rank-page')">닫기</button>
+    <button class="close-btn" onclick="closePage('tarot-modal')">닫기</button>
 </div>
 
 <div id="allin-modal" class="full-page" style="z-index:4000; display:none; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,0.9);">
@@ -608,6 +721,7 @@
         </div>
     </div>
 </div>
+
 <!-- ⭐ Part 4: 스크립트 시작 (Firebase 설정 및 유틸 함수) -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
@@ -634,7 +748,6 @@
         "일반": { color: "#b2bec3", mod: 1.0, rank: 0, prob: 45.0, weight: 1.0, sellMod: 0.5 }   
     };
 
-    // 등급별 차등 보상 설정
     const rewardInfo = {
         "일반": 1000000000,
         "매직": 800000000,
@@ -644,6 +757,25 @@
     };
 
     const EX_THRESHOLD = 0.000001; 
+
+    // [🔮 타로 시스템] 카드 데이터 정의 (13종)
+    // type: enhance_prob(강화), sell_bonus(판매), summon_discount(소환), mutation_prob(변이)
+    // grade: low(하급), mid(중급), high(상급), legendary(최상급), fail(꽝)
+    const tarotCards = [
+        { id: 0, name: "THE FOOL", icon: "🤡", desc: "꽝! 다음 기회에...", type: "none", val: 0, prob: 15, grade: "fail" },
+        { id: 1, name: "THE MAGICIAN", icon: "🎩", desc: "변이 확률 +5%", type: "mutation_prob", val: 5, prob: 10, grade: "low" },
+        { id: 2, name: "THE CHARIOT", icon: "🛒", desc: "소환 비용 -10%", type: "summon_discount", val: 10, prob: 10, grade: "low" },
+        { id: 3, name: "THE EMPRESS", icon: "👑", desc: "판매 가격 +10%", type: "sell_bonus", val: 10, prob: 10, grade: "low" },
+        { id: 4, name: "STRENGTH", icon: "🦁", desc: "강화 성공 +1%", type: "enhance_prob", val: 1, prob: 10, grade: "low" },
+        { id: 5, name: "THE LOVERS", icon: "❤️", desc: "변이 확률 +15%", type: "mutation_prob", val: 15, prob: 8, grade: "mid" },
+        { id: 6, name: "THE HIEROPHANT", icon: "⚖️", desc: "소환 비용 -30%", type: "summon_discount", val: 30, prob: 8, grade: "mid" },
+        { id: 7, name: "THE HERMIT", icon: "🕯️", desc: "판매 가격 +30%", type: "sell_bonus", val: 30, prob: 8, grade: "mid" },
+        { id: 8, name: "JUSTICE", icon: "⚔️", desc: "강화 성공 +2%", type: "enhance_prob", val: 2, prob: 8, grade: "mid" },
+        { id: 9, name: "WHEEL OF FORTUNE", icon: "🎡", desc: "소환 비용 -50%", type: "summon_discount", val: 50, prob: 5, grade: "high" },
+        { id: 10, name: "THE SUN", icon: "☀️", desc: "판매 가격 +50%", type: "sell_bonus", val: 50, prob: 4, grade: "high" },
+        { id: 11, name: "THE JUDGEMENT", icon: "🎺", desc: "강화 성공 +3%", type: "enhance_prob", val: 3, prob: 3, grade: "high" },
+        { id: 12, name: "THE WORLD", icon: "🌍", desc: "강화 성공 +5%", type: "enhance_prob", val: 5, prob: 1, grade: "legendary" }
+    ];
 
     function getRareScore(prob) {
         if(prob <= 0) return 0;
@@ -702,8 +834,14 @@
     window.maxGold = 200000;
     window.maxGoldDate = Date.now();
     window.lastRewardDate = 0;
-    window.currentBookTab = '일반'; // 도감 기본 탭
+    window.currentBookTab = '일반'; 
     
+    // [🔮 타로 시스템] 글로벌 변수 초기화
+    window.tarotBuff = null; // 현재 적용된 버프
+    window.todayTarotCount = 0; // 오늘 타로 뽑은 횟수
+    window.tarotRerollCost = 50000000; // 리롤 비용
+    window.lastTarotDate = 0; // 마지막 타로 뽑은 날짜
+
     let saveTimeout = null;
     let cachedRarityRank = null;
     let cachedWealthRank = null;
@@ -822,14 +960,54 @@
             window.book[key] = stageIdx;
         }
     }
-    // ⭐ Part 5: 게임 핵심 로직 및 스크립트 종료
+
+    // ⭐ Part 5: 게임 핵심 로직 및 스크립트 종료 (타로 시스템 연동 완료 v6)
+    
+    // [🔮 타로] 일일 초기화 체크 함수
+    function checkDailyTarotReset() {
+        const now = new Date();
+        const kstNow = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+        const todayStr = kstNow.toISOString().split('T')[0];
+        
+        // 마지막으로 타로를 뽑은 날짜와 오늘이 다르면 횟수 초기화
+        const lastDate = new Date(window.lastTarotDate);
+        const lastDateStr = new Date(lastDate.getTime() + (9 * 60 * 60 * 1000)).toISOString().split('T')[0];
+
+        if(todayStr !== lastDateStr) {
+            window.todayTarotCount = 0; // 무료 기회 부활
+            // 버프는 초기화하지 않음 (어제 뽑은 운세 유지)
+            window.lastTarotDate = Date.now();
+            saveGame(0);
+        }
+    }
+
     window.updateUI = function() {
         window.gold = Number(window.gold); 
+        checkDailyTarotReset(); // UI 갱신 때마다 날짜 체크
         
         try {
             document.getElementById('gold-display').innerText = window.gold.toLocaleString() + " 🟡";
             document.getElementById('my-id-label').innerText = `ID: ${window.nickname || "GUEST"}`;
             document.getElementById('inv-total-gold').innerText = window.gold.toLocaleString() + " 🟡";
+            
+            // [🔮 타로] 배너 및 버프 상태 표시 로직
+            const bannerBox = document.getElementById('tarot-msg-box');
+            if(window.tarotBuff) {
+                const cardInfo = tarotCards.find(c => c.id === window.tarotBuff.id);
+                // 롤링 배너에는 항상 풀 네임과 효과 표시
+                let buffText = `${cardInfo.icon} ${cardInfo.name} : ${cardInfo.desc} 적용 중!`;
+                if(cardInfo.grade === 'fail') buffText = "🤡 THE FOOL : 오늘은 그냥 즐기세요! (효과 없음)";
+                
+                bannerBox.innerText = buffText;
+                bannerBox.style.color = "#e056fd";
+            } else {
+                bannerBox.innerText = "🔯 타로를 뒤집어 오늘의 운세를 확인하세요!";
+                bannerBox.style.color = "#aaa";
+            }
+
+            // [테스트 모드] 리롤 비용 100원 고정 (테스트 후 주석 처리, 아래 코드 주석 해제)
+            //window.tarotRerollCost = (window.todayTarotCount === 0) ? 0 : 100;
+            window.tarotRerollCost = (window.todayTarotCount === 0) ? 0 : 5000000 * Math.pow(2, window.todayTarotCount - 1);
             
             if (window.gold > window.maxGold) {
                 window.maxGold = window.gold;
@@ -845,17 +1023,11 @@
             let isPoor = window.gold < 10000;
 
             if (hasItem) {
-                if(typeof window.currentEmoji.grade === 'undefined' || typeof window.currentEmoji.level === 'undefined') {
-                    console.warn("Corrupted Emoji Data -> Resetting safely.");
-                    window.currentEmoji = null;
-                    updateUI(); return;
+                if(typeof window.currentEmoji.grade === 'undefined') {
+                    window.currentEmoji = null; updateUI(); return;
                 }
 
-                let pathObj = evoPaths.find(p => p.name === window.currentEmoji.pathName);
-                if (!pathObj) {
-                    pathObj = { stages: ["❓", "❓", "❓", "❓"] };
-                }
-
+                let pathObj = evoPaths.find(p => p.name === window.currentEmoji.pathName) || { stages: ["❓", "❓", "❓", "❓"] };
                 isDead = window.currentEmoji.gone;
                 const info = gradeInfo[window.currentEmoji.grade] || gradeInfo["일반"]; 
                 const lvl = window.currentEmoji.level;
@@ -888,12 +1060,28 @@
                     const canAllIn = !canEvolve && window.gold >= (cost / 2);
                     const canMutate = (window.currentEmoji.gene && !window.currentEmoji.mutated && lvl >= 5 && window.gold >= 500000);
                     
-                    let b = (lvl < 5) ? 0.5 : Math.min(20, (lvl - 4) * 2);
-                    let m = Math.min(50, lvl * (7 / info.mod));
-                    let s = Math.max(10, 100 - b - m); 
+                    // [🔮 타로] 변이 확률 UI 효과
+                    let geneBtnStyle = canMutate ? "" : "disabled";
+                    if(canMutate && window.tarotBuff?.type === 'mutation_prob') {
+                        geneBtnStyle += ` style="border: 2px solid #a29bfe; box-shadow: 0 0 10px #a29bfe;"`;
+                    }
+
+                    // 확률 계산
+                    let b = (lvl < 5) ? 0.5 : Math.min(20, (lvl - 4) * 2); // 파괴
+                    let m = Math.min(50, lvl * (7 / info.mod)); // 유지
+                    let s = Math.max(10, 100 - b - m); // 성공
+
+                    // [🔮 타로] 강화 성공 확률 버프 적용
+                    let s_bonus = 0;
+                    if(window.tarotBuff?.type === 'enhance_prob') {
+                        s_bonus = window.tarotBuff.val;
+                        if(m >= s_bonus) { m -= s_bonus; s += s_bonus; } 
+                        else { s += m; m = 0; }
+                    }
                     
-                    let finalVal = Math.floor(1000 * info.weight * 10 * info.sellMod * Math.pow(1.6, lvl) * (window.currentEmoji.mutated ? 1.5 : 1.0));
+                    let sellBonus = (window.tarotBuff?.type === 'sell_bonus') ? (1 + window.tarotBuff.val/100) : 1.0;
                     
+                    let finalVal = Math.floor(1000 * info.weight * 10 * info.sellMod * Math.pow(1.6, lvl) * (window.currentEmoji.mutated ? 1.5 : 1.0) * sellBonus);
                     if(lvl >= 10) {
                         if(window.currentEmoji.grade === "일반") finalVal *= 5; 
                         else if(window.currentEmoji.grade === "매직") finalVal *= 3; 
@@ -901,23 +1089,25 @@
                     if(finalVal > 9007199254740991) finalVal = 9007199254740991; 
                     window.currentEmoji.value = finalVal;
                     
-                    document.getElementById('st-value').innerText = window.currentEmoji.value.toLocaleString(); 
-                    
-                    let allInBadge = "";
-                    if(window.currentEmoji.allInHistory === 'success') {
-                        allInBadge = " <span style='font-size:0.6rem; color:#ff4757; font-weight:bold;'>[🔥ALL-IN]</span>";
+                    // 판매 가격 UI 표시
+                    const valEl = document.getElementById('st-value');
+                    valEl.innerText = window.currentEmoji.value.toLocaleString();
+                    if(sellBonus > 1.0) {
+                        valEl.style.color = "#ffd700";
+                        valEl.innerHTML += ` <small style='color:#e056fd'>(+${window.tarotBuff.val}%)</small>`;
+                    } else {
+                        valEl.style.color = "#fff";
                     }
+                    
+                    let allInBadge = window.currentEmoji.allInHistory === 'success' ? " <span style='font-size:0.6rem; color:#ff4757; font-weight:bold;'>[🔥ALL-IN]</span>" : "";
                     document.getElementById('st-grade').innerHTML = window.currentEmoji.grade + allInBadge;
                     document.getElementById('st-grade').style.color = info.color;
                     
-                    let geneText = "-";
-                    if(window.currentEmoji.mutated) geneText = "🧬 변이됨";
-                    else if(window.currentEmoji.gene) geneText = "🧬 보유";
+                    let geneText = window.currentEmoji.mutated ? "🧬 변이됨" : (window.currentEmoji.gene ? "🧬 보유" : "-");
                     document.getElementById('st-gene').innerText = geneText;
 
                     const dL = document.getElementById('deco-l'), dR = document.getElementById('deco-r');
                     document.getElementById('main-emoji').innerText = currentIcon;
-                    
                     if (lvl >= 15) dL.innerText = dR.innerText = "🎆"; else if (lvl >= 10) dL.innerText = dR.innerText = "🔥"; else dL.innerText = dR.innerText = "";
 
                     let evolveBtnHtml = "";
@@ -940,17 +1130,25 @@
                         ${evolveBtnHtml}
                         <button class="btn-action btn-premium-summ" disabled style="opacity:0.3; filter:grayscale(1);">🌟 고급 소환<br>(슬롯 꽉 참)</button>
                         <button class="btn-action btn-normal-summ" disabled style="opacity:0.3; filter:grayscale(1);">🔮 일반 소환<br>(슬롯 꽉 참)</button>
-                        <button class="btn-action btn-gene" onclick="mutateGene()" ${canMutate ? '' : 'disabled'}>🧬 변이 (500k)</button>
+                        <button class="btn-action btn-gene" onclick="mutateGene()" ${geneBtnStyle}>🧬 변이 (500k)</button>
                         <button class="btn-action btn-sell" onclick="sellItem()">💰 판매</button>
                     </div>`;
                     
-                    document.getElementById('seg-s').style.width = s + "%"; document.getElementById('seg-m').style.width = m + "%"; document.getElementById('seg-b').style.width = b + "%";
-                    document.getElementById('val-s').innerText = s.toFixed(2) + "%"; 
+                    // 게이지 UI 업데이트
+                    document.getElementById('seg-s').style.width = s + "%"; 
+                    document.getElementById('seg-m').style.width = m + "%"; 
+                    document.getElementById('seg-b').style.width = b + "%";
+                    
+                    const valSText = document.getElementById('val-s-text');
+                    if(s_bonus > 0) {
+                        valSText.innerHTML = `성공 ${s.toFixed(2)}% <span style='color:#00cec9; animation:blink 1s infinite;'>(+${s_bonus}%)</span>`;
+                    } else {
+                        valSText.innerText = `성공 ${s.toFixed(2)}%`;
+                    }
                     document.getElementById('val-b').innerText = b.toFixed(2) + "%";
                     
                     const tier = getTier(window.currentEmoji.rarity);
                     const rp = getRareScore(parseFloat(window.currentEmoji.rarity));
-
                     if(tier.color === "EX") {
                         document.getElementById('st-rarity').innerHTML = `<span class="tier-ex-gradient">EX</span> <small style="font-size:0.6rem; color:#aaa;">(RP: ${rp.toLocaleString()}점)</small>`;
                     } else {
@@ -976,15 +1174,49 @@
             }
             else {
                 resetDisplay();
-                const canNormal = window.gold >= 10000;
-                // [수정] 10만 -> 100만으로 조건 변경
-                const canPremium = window.gold >= 1000000; 
+                
+                // [🔮 타로] 소환 비용 할인 로직
+                let discountRate = (window.tarotBuff?.type === 'summon_discount') ? (window.tarotBuff.val / 100) : 0;
+                let normCost = 10000 * (1 - discountRate);
+                let premCost = 1000000 * (1 - discountRate);
+
+                const canNormal = window.gold >= normCost;
+                const canPremium = window.gold >= premCost;
+
+                // [수정됨] 할인 시 버튼 디자인 최적화 (찐한 파란색 & 컴팩트한 레이아웃)
+                let normBtnContent = "";
+                let premBtnContent = "";
+                
+                // 텍스트 스타일: 할인 가격은 진한 파란색(#0022aa) + 굵게
+                if(discountRate > 0) {
+                    normBtnContent = `
+                        🔮 일반 소환
+                        <div style="line-height:1; margin-top:2px; display:flex; flex-direction:column; align-items:center;">
+                            <span style="text-decoration:line-through; font-size:0.5rem; opacity:0.7; color:#333;">1만</span>
+                            <span style="font-size:0.65rem; color:#0022aa; font-weight:900;">${(normCost/10000).toFixed(1)}만</span>
+                        </div>`;
+                        
+                    premBtnContent = `
+                        🌟 고급 소환
+                        <div style="line-height:1; margin-top:2px; display:flex; flex-direction:column; align-items:center;">
+                            <span style="text-decoration:line-through; font-size:0.5rem; opacity:0.7; color:#333;">100만</span>
+                            <span style="font-size:0.65rem; color:#0022aa; font-weight:900;">${(premCost/10000).toFixed(0)}만</span>
+                        </div>`;
+                } else {
+                    // 할인 없을 때 (기본)
+                    normBtnContent = `🔮 일반 소환<br><span style="font-size:0.6rem;">(1만)</span>`;
+                    premBtnContent = `🌟 고급 소환<br><span style="font-size:0.6rem;">(100만)</span>`;
+                }
 
                 html = `
                 <div class="btn-stack">
                     <button class="btn-action btn-evolve" disabled><span>강화</span><small>-</small></button>
-                    <button class="btn-action btn-premium-summ" onclick="fetchNew('premium')" ${canPremium ? '' : 'disabled'}>🌟 고급 소환<br>(100만)</button>
-                    <button class="btn-action btn-normal-summ" onclick="fetchNew('normal')" ${canNormal ? '' : 'disabled'}>🔮 일반 소환<br>(1만)</button>
+                    <button class="btn-action btn-premium-summ" onclick="fetchNew('premium')" ${canPremium ? '' : 'disabled'}>
+                        ${premBtnContent}
+                    </button>
+                    <button class="btn-action btn-normal-summ" onclick="fetchNew('normal')" ${canNormal ? '' : 'disabled'}>
+                        ${normBtnContent}
+                    </button>
                     <button class="btn-action btn-gene" disabled>🧬 변이</button>
                     <button class="btn-action btn-sell" disabled style="opacity:0.3;">💰 판매</button>
                 </div>`;
@@ -1000,7 +1232,6 @@
 
         } catch(e) { 
             console.error("Critical UpdateUI Error:", e);
-            addLog("⚠️ 화면 갱신 중 오류가 발생했습니다. (자동 복구 시도)");
         }
     };
 
@@ -1009,7 +1240,15 @@
         document.getElementById('overlay-grade').innerText = "-"; document.getElementById('deco-l').innerText = document.getElementById('deco-r').innerText = "";
         document.querySelectorAll('.gauge-seg').forEach(el => el.style.width = "0%"); 
         ["st-value", "st-grade", "st-rarity"].forEach(id => document.getElementById(id).innerText = "-");
-        document.getElementById('st-gene').innerText = "-";
+        
+        // [🔮 타로] 변이 버프가 있으면 소환 전에도 상태창에 표시
+        if(window.tarotBuff && window.tarotBuff.type === 'mutation_prob') {
+            document.getElementById('st-gene').innerHTML = `<span style="color:#a29bfe; animation:blink 1s infinite;">🧬 +${window.tarotBuff.val}%</span>`;
+        } else {
+            document.getElementById('st-gene').innerText = "-";
+        }
+        
+        document.getElementById('val-s-text').innerText = "성공 0%";
     }
 
     function updateInvStatusBar() {
@@ -1039,43 +1278,35 @@
         if(window.gold >= 10000) return;
         window.gold += 200;
         window.vibrate();
-        if(window.gold >= 10000) {
-            addLog("⛏️ 10,000원 달성! 이제 소환이 가능합니다.");
-            updateUI(); 
-        } else {
-            document.getElementById('gold-display').innerText = window.gold.toLocaleString() + " 🟡";
-        }
+        if(window.gold >= 10000) { addLog("⛏️ 10,000원 달성!"); updateUI(); } 
+        else { document.getElementById('gold-display').innerText = window.gold.toLocaleString() + " 🟡"; }
     };
 
     window.cleanup = () => {
         window.currentEmoji = null;
-        addLog("🧹 잔해를 치웠습니다. (슬롯 비워짐)");
-        saveGame(1000); 
-        updateUI();
+        addLog("🧹 잔해를 치웠습니다.");
+        saveGame(1000); updateUI();
     }
 
     window.fetchNew = (type) => { 
         if (window.currentEmoji) return; 
+        let baseCost = (type === 'premium') ? 1000000 : 10000;
+        let discountRate = (window.tarotBuff?.type === 'summon_discount') ? (window.tarotBuff.val / 100) : 0;
+        let finalCost = Math.floor(baseCost * (1 - discountRate));
 
-        let cost = 0;
-        if (type === 'normal') cost = 10000;
-        // [수정] 고급 소환 가격 100만으로 변경
-        else if (type === 'premium') cost = 1000000; 
-        
-        if (window.gold < cost) {
-            addLog(`잔액 부족! (${cost.toLocaleString()} 필요)`);
+        if (window.gold < finalCost) {
+            addLog(`잔액 부족! (${finalCost.toLocaleString()} 필요)`);
             return; 
         }
-        window.gold -= cost; 
+        window.gold -= finalCost; 
         
         let g = "일반";
         let r = Math.random() * 100;
         
         if (type === 'premium') {
-            // [수정] 고급 소환: 레어 이상 확정 (매직 제거)
-            if (r < 10) g = "레전더리";      // 10% 유지
-            else if (r < 40) g = "에픽";     // 30%로 상향 (기존 20%)
-            else g = "레어";                 // 60%로 상향 (나머지 전부)
+            if (r < 10) g = "레전더리";
+            else if (r < 40) g = "에픽";
+            else g = "레어";
         } else {
             if (r < 5) g = "레전더리";
             else if (r < 15) g = "에픽";
@@ -1086,7 +1317,6 @@
 
         const paths = evoPaths.filter(p => p.grades.includes(g)); 
         const p = paths[Math.floor(Math.random() * paths.length)]; 
-        
         let variance = (Math.random() * 0.1) + 0.95; 
         let finalRarity = (gradeInfo[g].prob * variance).toFixed(8);
 
@@ -1098,53 +1328,47 @@
         
         const tier = getTier(finalRarity);
         const typeName = type === 'premium' ? "🌟 고급" : "🔮 일반";
-        addLog(`${typeName} 소환! [${g}] (Tier: ${tier.text})`); 
+        addLog(`${typeName} 소환! [${g}] (비용: ${finalCost.toLocaleString()})`); 
         updateUI(); saveGame(2000); 
     };
 
     window.evolve = () => {
         if (!window.currentEmoji) return;
-        
         let cost = Math.floor(2000 * Math.pow(1.8, window.currentEmoji.level)); 
-        if (window.gold < cost) {
-            addLog("돈이 부족합니다!");
-            updateUI(); 
-            return; 
-        }
+        if (window.gold < cost) { addLog("돈이 부족합니다!"); return; }
         window.gold -= cost;
         
-        // 10강 이상일 때 햅틱 피드백 (진동)
-        if(window.currentEmoji.level >= 10 && navigator.vibrate) {
-            navigator.vibrate([50, 50, 50]); 
-        }
+        if(window.currentEmoji.level >= 10 && navigator.vibrate) { navigator.vibrate([50, 50, 50]); }
 
         const emojiEl = document.getElementById('main-emoji');
-        emojiEl.className = ''; 
-        void emojiEl.offsetWidth;
+        emojiEl.className = ''; void emojiEl.offsetWidth;
 
         let lvl = window.currentEmoji.level, info = gradeInfo[window.currentEmoji.grade];
-        let b = (lvl < 5) ? 0.5 : Math.min(20, (lvl - 4) * 2);
-        let m = Math.min(50, lvl * (7 / info.mod));
+        let b = (lvl < 5) ? 0.5 : Math.min(20, (lvl - 4) * 2); 
+        let m = Math.min(50, lvl * (7 / info.mod)); 
         let s = Math.max(10, 100 - b - m); 
         
-        if (Math.random() * 100 < s + m) {
-            if (Math.random() * 100 < s / (s+m) * 100) { 
-                window.currentEmoji.level++; 
-                let improveFactor = s / 100;
-                if(Math.random() < 0.1) { improveFactor *= 0.8; addLog(`⚡ 대성공! (희귀도 대폭 상승)`); }
-                
-                let nextRarity = parseFloat(window.currentEmoji.rarity) * improveFactor;
-                
-                if (nextRarity < 1e-100) nextRarity = 1e-100; 
-                
-                window.currentEmoji.rarity = nextRarity.toFixed(20); 
-                addLog(`✨ 강화 성공! +${window.currentEmoji.level}`);
-                emojiEl.classList.add('anim-success');
-            }
-            else { 
-                addLog("💨 상태 유지"); 
-                emojiEl.classList.add('anim-stay');
-            }
+        if(window.tarotBuff?.type === 'enhance_prob') {
+            let bonus = window.tarotBuff.val;
+            if (m >= bonus) { s += bonus; m -= bonus; } 
+            else { s += m; m = 0; } 
+        }
+
+        let rand = Math.random() * 100;
+
+        if (rand < s) { 
+            window.currentEmoji.level++; 
+            let improveFactor = (s - (window.tarotBuff?.type==='enhance_prob' ? window.tarotBuff.val : 0)) / 100;
+            if(Math.random() < 0.1) { improveFactor *= 0.8; addLog(`⚡ 대성공! (희귀도 대폭 상승)`); }
+            
+            let nextRarity = parseFloat(window.currentEmoji.rarity) * improveFactor;
+            if (nextRarity < 1e-100) nextRarity = 1e-100; 
+            window.currentEmoji.rarity = nextRarity.toFixed(20); 
+            addLog(`✨ 강화 성공! +${window.currentEmoji.level}`);
+            emojiEl.classList.add('anim-success');
+        } else if (rand < s + m) { 
+            addLog("💨 상태 유지"); 
+            emojiEl.classList.add('anim-stay');
         } else { 
             addLog(`💀 강화 실패... 파괴되었습니다.`); 
             window.currentEmoji.gone = true; 
@@ -1161,51 +1385,42 @@
 
     window.confirmAllIn = () => {
         document.getElementById('allin-modal').style.display = 'none';
-        
         if (!window.currentEmoji) return;
         
         addLog(`🔥 ALL-IN 발동! ${window.gold.toLocaleString()}원 소진.`);
         window.gold = 0;
 
-        if(window.currentEmoji.level >= 10 && navigator.vibrate) {
-            navigator.vibrate([50, 50, 50, 100]); 
-        }
-
         const emojiEl = document.getElementById('main-emoji');
-        emojiEl.className = ''; 
-        void emojiEl.offsetWidth; 
+        emojiEl.className = ''; void emojiEl.offsetWidth; 
         
         let lvl = window.currentEmoji.level, info = gradeInfo[window.currentEmoji.grade];
         let b = (lvl < 5) ? 0.5 : Math.min(20, (lvl - 4) * 2);
         let m = Math.min(50, lvl * (7 / info.mod));
         let s = Math.max(10, 100 - b - m); 
         
-        if (Math.random() * 100 < s + m) {
-            if (Math.random() * 100 < s / (s+m) * 100) { 
-                window.currentEmoji.level++; 
-                let improveFactor = s / 100;
-                if(Math.random() < 0.1) { improveFactor *= 0.8; addLog(`⚡ 대성공! (희귀도 대폭 상승)`); }
-                
-                let nextRarity = parseFloat(window.currentEmoji.rarity) * improveFactor;
-                
-                if (nextRarity < 1e-100) nextRarity = 1e-100; 
-                
-                window.currentEmoji.rarity = nextRarity.toFixed(20);
-                window.currentEmoji.allInHistory = "success";
-                
-                addLog(`🔥 올인 성공! +${window.currentEmoji.level}`); 
-                emojiEl.classList.add('anim-success');
-            }
-            else { 
-                addLog("💨 올인 결과: 상태 유지 (다행이다...)"); 
-                emojiEl.classList.add('anim-stay');
-            }
+        if(window.tarotBuff?.type === 'enhance_prob') {
+            let bonus = window.tarotBuff.val;
+            if (m >= bonus) { s += bonus; m -= bonus; }
+            else { s += m; m = 0; }
+        }
+        
+        let rand = Math.random() * 100;
+
+        if (rand < s) {
+            window.currentEmoji.level++; 
+            let nextRarity = parseFloat(window.currentEmoji.rarity) * (s/100);
+            window.currentEmoji.rarity = nextRarity.toFixed(20);
+            window.currentEmoji.allInHistory = "success";
+            addLog(`🔥 올인 성공! +${window.currentEmoji.level}`); 
+            emojiEl.classList.add('anim-success');
+        } else if (rand < s + m) {
+            addLog("💨 올인 결과: 상태 유지 (다행이다...)"); 
+            emojiEl.classList.add('anim-stay');
         } else { 
-            addLog(`💀 올인 실패... 파괴되었습니다. (전재산 0원)`); 
+            addLog(`💀 올인 실패... 파괴되었습니다.`); 
             window.currentEmoji.gone = true; 
             emojiEl.classList.add('anim-fail');
         } 
-        
         updateUI(); saveGame(2000); 
     };
 
@@ -1214,30 +1429,30 @@
         window.gold -= 500000;
         
         const emojiEl = document.getElementById('main-emoji');
-        emojiEl.className = ''; 
-        void emojiEl.offsetWidth;
+        emojiEl.className = ''; void emojiEl.offsetWidth;
 
         const gradeOrder = ["일반", "매직", "레어", "에픽", "레전더리"];
         const currentIdx = gradeOrder.indexOf(window.currentEmoji.grade);
         
-        if (currentIdx < 4 && Math.random() < 0.6) { 
+        let successRate = 0.6;
+        if(window.tarotBuff?.type === 'mutation_prob') {
+            successRate += (window.tarotBuff.val / 100);
+        }
+
+        if (currentIdx < 4 && Math.random() < successRate) { 
             window.currentEmoji.grade = gradeOrder[currentIdx+1]; 
             window.currentEmoji.mutated = true; 
             window.currentEmoji.mutationHistory = "success"; 
-            
             let nextRarity = parseFloat(window.currentEmoji.rarity) * 0.5;
             window.currentEmoji.rarity = nextRarity.toFixed(20);
-            
-            addLog(`🔮 변이 성공! [${window.currentEmoji.grade}] (가치 2배 상승)`); 
+            addLog(`🔮 변이 성공! [${window.currentEmoji.grade}]`); 
             emojiEl.classList.add('anim-success');
-        }
-        else { 
+        } else { 
             window.currentEmoji.gene = false; 
             window.currentEmoji.mutationHistory = "fail"; 
             let nextRarity = parseFloat(window.currentEmoji.rarity) * 0.9;
             window.currentEmoji.rarity = nextRarity.toFixed(20);
-            
-            addLog(`🔮 변이 실패.. (유전자 소멸, 희귀도 상승)`); 
+            addLog(`🔮 변이 실패..`); 
             emojiEl.classList.add('anim-fail');
         } 
         updateUI(); saveGame(2000); 
@@ -1246,71 +1461,211 @@
     window.sellItem = async function() { 
         if (!window.currentEmoji || window.currentEmoji.gone) return;
         
-        let pathObj = evoPaths.find(p => p.name === window.currentEmoji.pathName);
-        if(!pathObj) pathObj = { stages: ["❓","❓","❓","❓"] };
+        let pathObj = evoPaths.find(p => p.name === window.currentEmoji.pathName) || { stages: ["❓","❓","❓","❓"] };
         const currentIcon = pathObj.stages[Math.min(3, Math.floor(window.currentEmoji.level / 5))];
 
+        let sellBonus = (window.tarotBuff?.type === 'sell_bonus') ? (1 + window.tarotBuff.val/100) : 1.0;
+        let finalVal = Math.floor(window.currentEmoji.value); 
+
         let rec = { 
-            owner: window.nickname, 
-            emoji: currentIcon,
-            prob: parseFloat(window.currentEmoji.rarity), 
-            val: window.currentEmoji.value, 
-            grade: window.currentEmoji.grade, 
-            lvl: window.currentEmoji.level, 
-            date: Date.now(),
-            mutated: window.currentEmoji.mutated,
-            mutationHistory: window.currentEmoji.mutationHistory,
-            allInHistory: window.currentEmoji.allInHistory 
+            owner: window.nickname, emoji: currentIcon, prob: parseFloat(window.currentEmoji.rarity), 
+            val: finalVal, grade: window.currentEmoji.grade, lvl: window.currentEmoji.level, 
+            date: Date.now(), mutated: window.currentEmoji.mutated, mutationHistory: window.currentEmoji.mutationHistory, allInHistory: window.currentEmoji.allInHistory 
         };
         
         window.myHistory.push(rec); 
-        const weeklyStart = getWeeklyStartTimestamp();
-
-        let thisWeekItems = window.myHistory.filter(h => h.date >= weeklyStart);
-        thisWeekItems.sort((a, b) => {
-            if(a.prob === b.prob) return b.date - a.date; 
-            return a.prob - b.prob;
-        });
-        thisWeekItems = thisWeekItems.slice(0, 50); 
-
-        let pastItems = window.myHistory.filter(h => h.date < weeklyStart);
-        pastItems.sort((a, b) => a.prob - b.prob);
-        pastItems = pastItems.slice(0, 30);
-
-        window.myHistory = [...thisWeekItems, ...pastItems];
+        window.gold += finalVal;
         
-        window.myHistory.sort((a, b) => {
-            if(a.prob === b.prob) return b.date - a.date; 
-            return a.prob - b.prob;
-        });
-
-        window.gold += rec.val; 
-        addLog(`💰 판매: +${rec.val.toLocaleString()}`); 
+        addLog(`💰 판매: +${finalVal.toLocaleString()}`); 
         window.currentEmoji = null; 
+        
+        saveGame(2000); updateUI(); 
+    };
 
-        if (cachedRarityRank && window.currentRankTab === 'rarity') {
-            cachedRarityRank.push(rec); 
-            cachedRarityRank.sort((a, b) => {
-                if(a.prob === b.prob) return b.date - a.date;
-                return a.prob - b.prob;
-            });
-            cachedRarityRank = cachedRarityRank.slice(0, 50);
+    /* --- [🔮 타로 시스템 함수 (v4) - 3열 컴팩트 도감 렌더링 포함] --- */
+    
+    // 모달 열기
+    window.openTarotModal = () => {
+        if(isGameModalOpen()) return;
+        checkDailyTarotReset();
+        history.pushState({ modal: true }, '', '');
+        document.getElementById('tarot-modal').style.display = 'block';
+        
+        // 테이블 렌더링 (3열)
+        renderTarotTable();
+
+        // 리롤 버튼 상태 업데이트
+        updateTarotBtnState();
+        
+        // 카드 상태 초기화 (이미 뽑았다면 앞면 보여주기)
+        const cardEl = document.getElementById('tarot-card-el');
+        const textEl = document.getElementById('tarot-fortune-text');
+        
+        if(window.tarotBuff) {
+            // 이미 뽑은 상태 -> 앞면(결과) 바로 보여주기
+            cardEl.classList.add('is-flipped');
+            const info = tarotCards.find(c => c.id === window.tarotBuff.id);
+            updateTarotFace(info);
+            textEl.innerText = getRandomFortuneMsg(info.grade);
+            textEl.classList.add('show');
+        } else {
+            // 아직 안 뽑음 -> 뒷면
+            cardEl.classList.remove('is-flipped');
+            textEl.innerText = "카드를 터치하여 뒤집으세요...";
+            textEl.classList.remove('show');
+        }
+        
+        document.getElementById('tarot-my-gold').innerText = window.gold.toLocaleString() + " 🟡";
+    };
+
+    // 타로 도감 테이블 렌더링 함수 (3열: 이모지|이름|효과)
+    function renderTarotTable() {
+        const tbody = document.getElementById('tarot-table-body');
+        tbody.innerHTML = "";
+        
+        tarotCards.forEach(card => {
+            const tr = document.createElement('tr');
             
-            const rankListEl = document.getElementById('rank-list');
-            if (rankListEl && rankListEl.offsetParent !== null) {
-                rankListEl.innerHTML = renderRanking(cachedRarityRank, 'rarity');
+            // 현재 적용중인 버프인지 체크
+            const isActive = (window.tarotBuff && window.tarotBuff.id === card.id);
+            if(isActive) tr.classList.add('tarot-row-active');
+            
+            // 시크릿 여부 (상급 이상이면서 아직 안 뽑은 상태)
+            // 이름은 공개하되, 효과만 가림
+            const isSecret = (card.grade === 'high' || card.grade === 'legendary') && !isActive;
+            
+            // 1열: 이모지 (작게)
+            const iconTd = document.createElement('td');
+            iconTd.innerText = card.icon;
+            iconTd.style.fontSize = "1rem";
+            
+            // 2열: 이름 (작게)
+            const nameTd = document.createElement('td');
+            nameTd.innerText = card.name.replace("THE ", ""); // "THE" 제거하여 공간 확보
+            
+            // 3열: 효과 (작게, 색상 강조)
+            const effectTd = document.createElement('td');
+            if(isSecret) {
+                effectTd.innerText = "???";
+            } else {
+                if(card.grade === 'fail') effectTd.innerText = "-";
+                else if(card.type === 'enhance_prob') effectTd.innerHTML = `성공 <span style="color:#00cec9">+${card.val}%</span>`;
+                else if(card.type === 'summon_discount') effectTd.innerHTML = `비용 <span style="color:#74b9ff">-${card.val}%</span>`;
+                else if(card.type === 'sell_bonus') effectTd.innerHTML = `판매 <span style="color:#ffd700">+${card.val}%</span>`;
+                else if(card.type === 'mutation_prob') effectTd.innerHTML = `변이 <span style="color:#a29bfe">+${card.val}%</span>`;
             }
             
-            if(cachedRarityRank.length > 0) {
-                const best = cachedRarityRank[0];
-                document.getElementById('world-best-info').innerText = `🏆 1위: ${best.owner}`;
-                document.getElementById('world-best-icon').innerText = best.emoji;
+            tr.appendChild(iconTd);
+            tr.appendChild(nameTd);
+            tr.appendChild(effectTd);
+            tbody.appendChild(tr);
+        });
+    }
+
+    function updateTarotBtnState() {
+        const btn = document.getElementById('btn-reroll');
+        const txt = document.getElementById('reroll-btn-text');
+        const costTxt = document.getElementById('reroll-cost-text');
+        
+        if(window.todayTarotCount === 0) {
+            btn.style.display = 'none'; 
+        } else {
+            btn.style.display = 'block';
+            txt.innerText = "🔄 운명 바꾸기";
+            costTxt.innerText = `비용: ${window.tarotRerollCost.toLocaleString()} 🟡`;
+            
+            if(window.gold < window.tarotRerollCost) {
+                btn.disabled = true;
+                btn.style.opacity = "0.5";
+            } else {
+                btn.disabled = false;
+                btn.style.opacity = "1";
             }
         }
+    }
 
-        saveGame(2000); 
-        updateUI(); 
+    window.flipTarotCard = () => {
+        if(window.todayTarotCount > 0 && window.tarotBuff) return;
+        performTarotDraw();
     };
+
+    window.rerollTarot = () => {
+        if(window.gold < window.tarotRerollCost) return;
+        
+        if(confirm(`현재 운명을 버리고 다시 뽑으시겠습니까?\n비용: ${window.tarotRerollCost.toLocaleString()} 골드`)) {
+            window.gold -= window.tarotRerollCost;
+            
+            const cardEl = document.getElementById('tarot-card-el');
+            cardEl.classList.remove('is-flipped'); // 뒷면으로
+            
+            document.getElementById('tarot-fortune-text').classList.remove('show');
+            
+            setTimeout(() => {
+                performTarotDraw();
+            }, 800); 
+        }
+    };
+
+    function performTarotDraw() {
+        let r = Math.random() * 100; 
+        let acc = 0;
+        let selected = tarotCards[0];
+        
+        for(let c of tarotCards) {
+            acc += c.prob;
+            if(r <= acc) {
+                selected = c;
+                break;
+            }
+        }
+        
+        window.tarotBuff = selected;
+        window.todayTarotCount++;
+        window.lastTarotDate = Date.now();
+        
+        updateTarotFace(selected);
+        
+        // 카드 뒤집기 애니메이션 시작
+        document.getElementById('tarot-card-el').classList.add('is-flipped');
+        
+        const textEl = document.getElementById('tarot-fortune-text');
+        textEl.innerText = getRandomFortuneMsg(selected.grade);
+        textEl.classList.add('show');
+        
+        addLog(`🎴 타로 결과: [${selected.name}]`);
+        window.vibrate();
+        
+        // 즉시 데이터 저장 및 UI 갱신 (리롤 즉시 반영)
+        saveGame(0);
+        updateUI(); 
+        
+        // 애니메이션 종료 즈음 테이블 갱신
+        setTimeout(() => {
+            renderTarotTable();
+            updateTarotBtnState();
+            document.getElementById('tarot-my-gold').innerText = window.gold.toLocaleString() + " 🟡";
+        }, 600);
+    }
+
+    function updateTarotFace(card) {
+        document.getElementById('tarot-result-icon').innerText = card.icon;
+        document.getElementById('tarot-result-name').innerText = card.name;
+        document.getElementById('tarot-result-desc').innerText = card.desc;
+    }
+
+    function getRandomFortuneMsg(grade) {
+        const msgs = {
+            "fail": ["흐림... 오늘은 조심하는 게 좋겠군요.", "욕심을 버려야 할 때입니다.", "잠시 쉬어가도 좋습니다."],
+            "low": ["소소한 행운이 따릅니다.", "나쁘지 않은 흐름이네요.", "노력하면 닿을 거리입니다."],
+            "mid": ["좋은 기운이 느껴집니다!", "망설이지 말고 도전하세요.", "순풍이 불고 있습니다."],
+            "high": ["대박의 징조가 보입니다!!", "지금이 바로 기회입니다!", "운명이 당신 편입니다."],
+            "legendary": ["전설적인 행운입니다!!!", "세상이 당신을 중심으로 돕니다!", "무엇을 해도 되는 날!"]
+        };
+        const list = msgs[grade] || msgs["low"];
+        return list[Math.floor(Math.random() * list.length)];
+    }
+
+    /* --- [타로 시스템 끝] --- */
 
     window.openInventory = () => { 
         if(isGameModalOpen()) return;
@@ -1330,7 +1685,6 @@
             else if (slot.item) { 
                 const pathObj = evoPaths.find(p => p.name === slot.item.pathName) || { stages: ["❓", "❓", "❓", "❓"] };
                 const currentIcon = pathObj.stages[Math.min(3, Math.floor(slot.item.level / 5))];
-                
                 div.style.borderColor = gradeInfo[slot.item.grade].color; 
                 div.innerHTML = `<span class="inv-emoji">${currentIcon}</span><div class="inv-tag">+${slot.item.level}</div>`; 
             }
@@ -1340,11 +1694,7 @@
 
     window.swapWithMain = () => {
         if (window.selectedInvIdx === null) return;
-        
-        if (window.currentEmoji && window.currentEmoji.gone) { 
-            addLog("🚫 파괴된 이모지는 인벤토리에 넣을 수 없습니다. 먼저 치우세요."); 
-            return; 
-        }
+        if (window.currentEmoji && window.currentEmoji.gone) { addLog("🚫 파괴된 이모지는 인벤토리에 넣을 수 없습니다."); return; }
         
         const slot = window.inventory[window.selectedInvIdx];
         if (!slot || !slot.unlocked) return;
@@ -1354,69 +1704,38 @@
         window.currentEmoji = slot.item;
         slot.item = temp; 
         
-        const getEmojiName = (emoji) => {
-            if(!emoji) return "없음";
-            const p = evoPaths.find(obj => obj.name === emoji.pathName);
-            return p ? p.stages[0] : "알수없음";
-        };
-        
-        const newItemName = getEmojiName(window.currentEmoji);
-        const oldItemName = getEmojiName(slot.item);
-        
-        addLog(`🔄 [${newItemName}] ↔ [${oldItemName}] 교체/장착 완료.`);
-        
-        window.vibrate();
         window.selectedInvIdx = null; 
-        
-        saveGame(1000); 
-        updateUI(); renderInventory();
+        saveGame(1000); updateUI(); renderInventory();
     };
 
     async function handleSlotClick(idx) {
         let slot = window.inventory[idx];
         if (!slot.unlocked) { 
             const cost = idx < 5 ? 100000000 : 200000000;
-            const costText = idx < 5 ? "1억" : "2억";
-            
-            if (window.gold >= cost && confirm(`슬롯 잠금 해제? (${costText} 골드)`)) { 
-                window.gold -= cost; 
-                slot.unlocked = true; 
-                saveGame(1000); 
-                renderInventory(); updateUI(); 
-            } 
-            return; 
+            if (window.gold >= cost && confirm(`슬롯 잠금 해제? (${idx < 5 ? "1억":"2억"} 골드)`)) { 
+                window.gold -= cost; slot.unlocked = true; saveGame(1000); renderInventory(); updateUI(); 
+            } return; 
         }
         if (window.selectedInvIdx === null) {
             if (slot.item) { window.selectedInvIdx = idx; renderInventory(); } 
             else {
                 if (window.currentEmoji && !window.currentEmoji.gone) { 
-                    slot.item = window.currentEmoji; 
-                    window.currentEmoji = null; 
-                    addLog("🎒 인벤토리에 보관함."); 
-                    window.vibrate(); 
-                    saveGame(1000); 
-                    updateUI(); renderInventory(); 
+                    slot.item = window.currentEmoji; window.currentEmoji = null; 
+                    addLog("🎒 인벤토리에 보관함."); window.vibrate(); saveGame(1000); updateUI(); renderInventory(); 
                 } 
-                else if(window.currentEmoji && window.currentEmoji.gone) { addLog("🚫 파괴된 이모지는 보관 불가."); }
             }
         } else {
-            if (window.selectedInvIdx === idx) { 
-                window.swapWithMain(); 
-            } 
+            if (window.selectedInvIdx === idx) { window.swapWithMain(); } 
             else { 
                 let temp = window.inventory[window.selectedInvIdx].item; 
-                window.inventory[window.selectedInvIdx].item = slot.item; 
-                slot.item = temp; 
-                window.selectedInvIdx = null; 
-                saveGame(1000); 
-                renderInventory(); 
+                window.inventory[window.selectedInvIdx].item = slot.item; slot.item = temp; 
+                window.selectedInvIdx = null; saveGame(1000); renderInventory(); 
             }
         }
     }
 
     document.getElementById('display-area').onclick = () => { if (window.selectedInvIdx !== null) { window.swapWithMain(); } };
 
-    // 도감 열기
     window.openBook = () => { 
         if(isGameModalOpen()) return;
         history.pushState({ modal: true }, '', '');
@@ -1425,162 +1744,78 @@
         let gradeHtml = `<tr><th>등급</th><th>🔮 일반</th><th>🌟 고급</th></tr>`;
         const grades = ["레전더리", "에픽", "레어", "매직", "일반"];
         const normalRate = [5, 10, 15, 25, 45];
-        // [수정] 고급 소환 확률 표기 업데이트 (레어 이상만 등장)
         const premiumRate = [10, 30, 60, 0, 0]; 
 
         grades.forEach((g, i) => { 
-            const info = gradeInfo[g]; 
-            const nR = normalRate[i];
-            const pR = premiumRate[i];
+            const info = gradeInfo[g]; const nR = normalRate[i]; const pR = premiumRate[i];
             const pStyle = pR > nR ? `color:#ffd700; font-weight:bold;` : `color:#555;`;
-            
-            gradeHtml += `<tr>
-                <td style="color:${info.color}; font-weight:bold;">${g}</td>
-                <td>${nR}%</td>
-                <td style="${pStyle}">${pR > 0 ? pR + '%' : '-'}</td>
-            </tr>`; 
+            gradeHtml += `<tr><td style="color:${info.color}; font-weight:bold;">${g}</td><td>${nR}%</td><td style="${pStyle}">${pR > 0 ? pR + '%' : '-'}</td></tr>`; 
         });
         document.getElementById('grade-rate-table').innerHTML = gradeHtml;
-
         renderBookGrid();
     };
 
-    // 도감 탭 전환
     window.switchBookTab = (tabName) => {
         window.currentBookTab = tabName;
         const color = gradeInfo[tabName].color;
-        
         document.querySelectorAll('.book-tab-btn').forEach(btn => {
-            if(btn.innerText === tabName) {
-                btn.classList.add('active');
-                btn.style.borderColor = color;
-                btn.style.color = color;
-            } else {
-                btn.classList.remove('active');
-                btn.style.borderColor = "#444";
-                btn.style.color = "#888";
-            }
+            if(btn.innerText === tabName) { btn.classList.add('active'); btn.style.borderColor = color; btn.style.color = color; } 
+            else { btn.classList.remove('active'); btn.style.borderColor = "#444"; btn.style.color = "#888"; }
         });
         renderBookGrid();
     }
 
-    // 도감 그리드 렌더링 (수정 완료: 시인성 개선 및 오류 해결)
     function renderBookGrid() {
-        const grid = document.getElementById('book-list');
-        grid.innerHTML = "";
-
-        if(!window.book) window.book = {};
-        if(!window.claimedRewards) window.claimedRewards = [];
-
+        const grid = document.getElementById('book-list'); grid.innerHTML = "";
+        if(!window.book) window.book = {}; if(!window.claimedRewards) window.claimedRewards = [];
         const targetPaths = evoPaths.filter(p => p.grades.includes(window.currentBookTab));
         const currentGradeInfo = gradeInfo[window.currentBookTab];
         
-        // 탭별 힌트 텍스트 변경
         const hintEl = document.getElementById('book-hint-text');
-        if(window.currentBookTab === "일반" || window.currentBookTab === "매직") {
-            hintEl.innerText = "* 고진감래 : 쓴 것이 다하면 단 것이 온다.";
-        } else {
-            const reward = rewardInfo[window.currentBookTab];
-            hintEl.innerText = `* ${window.currentBookTab} 등급 완성 시 ${reward.toLocaleString()} 골드 지급!`;
-        }
+        if(window.currentBookTab === "일반" || window.currentBookTab === "매직") { hintEl.innerText = "* 고진감래 : 쓴 것이 다하면 단 것이 온다."; } 
+        else { const reward = rewardInfo[window.currentBookTab]; hintEl.innerText = `* ${window.currentBookTab} 등급 완성 시 ${reward.toLocaleString()} 골드 지급!`; }
         hintEl.style.color = currentGradeInfo.color;
 
-        // 정렬
         const gradeWeight = { "레전더리": 5, "에픽": 4, "레어": 3, "매직": 2, "일반": 1 };
-        targetPaths.sort((a, b) => {
-            const maxA = Math.max(...a.grades.map(g => gradeWeight[g]));
-            const maxB = Math.max(...b.grades.map(g => gradeWeight[g]));
-            return maxB - maxA;
-        });
+        targetPaths.sort((a, b) => Math.max(...b.grades.map(g => gradeWeight[g])) - Math.max(...a.grades.map(g => gradeWeight[g])));
 
         targetPaths.forEach(path => {
             const bookKey = `${path.name}_${window.currentBookTab}`;
             const myLevel = window.book[bookKey] || 0; 
-            const isDiscovered = myLevel > 0;
-            const isCompleted = myLevel >= 4;
-            const isClaimed = window.claimedRewards.includes(bookKey);
-            
-            const card = document.createElement('div');
-            card.className = `book-card-mini`; 
-            // 잠긴 상태라도 해당 등급 색상으로 테두리 표시
-            card.style.borderColor = currentGradeInfo.color;
-            
-            // [수정 포인트 1] 미발견 시 투명도를 0.5 -> 0.8로 올려서 잘 보이게 함
-            if(!isDiscovered) card.style.opacity = "0.8"; 
-            
-            if(isCompleted) {
-                card.className += " book-completed";
-                card.style.boxShadow = `0 0 10px ${currentGradeInfo.color}`;
-                card.onclick = () => handleReward(path.name, window.currentBookTab);
-                if(!isClaimed) card.innerHTML += `<div class="mini-reward-dot"></div>`;
-            }
+            const isDiscovered = myLevel > 0; const isCompleted = myLevel >= 4; const isClaimed = window.claimedRewards.includes(bookKey);
+            const card = document.createElement('div'); card.className = `book-card-mini ${isCompleted?'book-completed':''}`; 
+            card.style.borderColor = currentGradeInfo.color; if(!isDiscovered) card.style.opacity = "0.8"; 
+            if(isCompleted) { card.onclick = () => handleReward(path.name, window.currentBookTab); if(!isClaimed) card.innerHTML += `<div class="mini-reward-dot"></div>`; }
 
-            // [수정 포인트 2] 미발견 시 텍스트 색상을 밝게 변경
             let headerHtml = `<div class="book-mini-header" style="font-size:0.55rem; color:${isDiscovered ? '#fff' : '#ccc'}">${path.name}</div>`;
-            
             let slotsHtml = `<div class="book-mini-slots">`;
             for(let i=0; i<4; i++) {
-                let content = "";
-                if(isDiscovered) {
-                    if(i < myLevel) content = `<span class="inv-emoji">${path.stages[i]}</span>`;
-                    else content = `<span class="inv-emoji silhouette">${path.stages[i]}</span>`;
-                } else {
-                    // [수정 포인트 3] 물음표 색상 적용
-                    content = `<span class="hidden-mark" style="color:${currentGradeInfo.color}">?</span>`;
-                }
+                let content = isDiscovered ? (i < myLevel ? `<span class="inv-emoji">${path.stages[i]}</span>` : `<span class="inv-emoji silhouette">${path.stages[i]}</span>`) : `<span class="hidden-mark" style="color:${currentGradeInfo.color}">?</span>`;
                 slotsHtml += `<div class="book-mini-slot">${content}</div>`;
             }
             slotsHtml += `</div>`;
-            card.innerHTML += headerHtml + slotsHtml;
-            grid.appendChild(card);
+            card.innerHTML += headerHtml + slotsHtml; grid.appendChild(card);
         });
     }
 
-    // 보상 수령 (차등 지급)
     function handleReward(themeName, grade) {
         const key = `${themeName}_${grade}`;
         if(window.claimedRewards.includes(key)) { alert("이미 보상을 수령했습니다."); return; }
-        
         const rewardAmount = rewardInfo[grade] || 50000000;
-        let msg = "";
-
-        if (grade === "일반" || grade === "매직") {
-            msg = `🎉 고진감래! [${themeName}] (${grade}) 완성!\n인내의 결실입니다!\n보상: ${rewardAmount.toLocaleString()} 골드 지급!`;
-        } else {
-            msg = `축하합니다! [${themeName}] (${grade}) 완성 보상으로\n${rewardAmount.toLocaleString()} 골드가 지급되었습니다!`;
-        }
-
-        window.gold += rewardAmount;
-        window.claimedRewards.push(key);
-        addLog(`💰 [${themeName}-${grade}] 도감 보상 ${rewardAmount.toLocaleString()} 골드 지급!`);
-        
-        window.vibrate();
-        saveGame(2000); 
-        updateUI(); 
-        renderBookGrid(); 
-        alert(msg);
+        window.gold += rewardAmount; window.claimedRewards.push(key);
+        addLog(`💰 도감 보상 ${rewardAmount.toLocaleString()} 골드 지급!`);
+        window.vibrate(); saveGame(2000); updateUI(); renderBookGrid(); alert("보상이 지급되었습니다!");
     }
 
     function formatDateSimple(ts) {
         if(!ts) return "-";
         const d = new Date(ts);
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${y}.${m}.${day}`;
-    }
-
-    async function fetchGlobalLeader() {
+        return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
     }
 
     async function syncGlobal(tabType) { 
-        if(!db) {
-            document.getElementById('rank-list').innerHTML = "<div style='padding:20px; text-align:center;'>DB 연결 실패</div>";
-            return;
-        }
-        
-        document.getElementById('rank-list').innerHTML = "<div style='text-align:center; padding:20px; color:#888;'>데이터 로딩 중...<br>(잠시만 기다려주세요)</div>";
-
+        if(!db) { document.getElementById('rank-list').innerHTML = "<div style='padding:20px; text-align:center;'>DB 연결 실패</div>"; return; }
+        document.getElementById('rank-list').innerHTML = "<div style='text-align:center; padding:20px; color:#888;'>데이터 로딩 중...</div>";
         const weeklyLimit = getWeeklyStartTimestamp();
 
         try {
@@ -1588,138 +1823,51 @@
                 if (!cachedRarityRank || (Date.now() - lastRankFetch > 60000)) { 
                     const q = query(collection(db, "users"), orderBy("best_prob", "asc"), limit(300)); 
                     const snap = await getDocs(q); 
-                    
                     let all = [];
-                    snap.forEach(d => { 
-                        if(d.data().h) {
-                            const userItems = d.data().h.filter(item => item.date >= weeklyLimit);
-                            all = all.concat(userItems); 
-                        }
-                    }); 
-                    
-                    cachedRarityRank = all.sort((a, b) => {
-                        if(a.prob === b.prob) return b.date - a.date; 
-                        return a.prob - b.prob;
-                    }).slice(0, 50); 
-                    
+                    snap.forEach(d => { if(d.data().h) { const userItems = d.data().h.filter(item => item.date >= weeklyLimit); all = all.concat(userItems); }}); 
+                    cachedRarityRank = all.sort((a, b) => (a.prob === b.prob) ? b.date - a.date : a.prob - b.prob).slice(0, 50); 
                     lastRankFetch = Date.now();
                 }
-                
-                let displayList = cachedRarityRank;
-                
-                if(displayList.length > 0) {
-                    const best = displayList[0];
-                    document.getElementById('world-best-info').innerText = `🏆 1위: ${best.owner}`;
-                    document.getElementById('world-best-icon').innerText = best.emoji;
-                } else {
-                    document.getElementById('world-best-info').innerText = "기록 없음";
-                    document.getElementById('world-best-icon').innerText = "👑";
-                }
-
                 const rankListEl = document.getElementById('rank-list');
-                if (rankListEl && rankListEl.offsetParent !== null) {
-                    rankListEl.innerHTML = renderRanking(displayList, 'rarity');
-                }
+                if (rankListEl && rankListEl.offsetParent !== null) { rankListEl.innerHTML = renderRanking(cachedRarityRank, 'rarity'); }
+                if(cachedRarityRank.length > 0) { document.getElementById('world-best-info').innerText = `🏆 1위: ${cachedRarityRank[0].owner}`; document.getElementById('world-best-icon').innerText = cachedRarityRank[0].emoji; }
 
             } else if (tabType === 'wealth') {
                 if (!cachedWealthRank || (Date.now() - lastRankFetch > 60000)) {
                     const q = query(collection(db, "users"), orderBy("max_gold", "desc"), limit(50));
                     const snap = await getDocs(q);
                     let all = [];
-                    snap.forEach(d => {
-                        const data = d.data();
-                        const val = data.max_gold || data.g || 0; 
-                        all.push({ owner: data.nickname, val: val, date: data.max_gold_date || Date.now() });
-                    });
-                    cachedWealthRank = all;
-                    lastRankFetch = Date.now();
+                    snap.forEach(d => { const data = d.data(); all.push({ owner: data.nickname, val: data.max_gold || data.g || 0, date: data.max_gold_date || Date.now() }); });
+                    cachedWealthRank = all; lastRankFetch = Date.now();
                 }
-                
-                let displayList = [...cachedWealthRank];
-                displayList = displayList.filter(item => item.owner !== window.nickname);
+                let displayList = [...cachedWealthRank].filter(item => item.owner !== window.nickname);
                 displayList.push({ owner: window.nickname, val: window.maxGold, date: window.maxGoldDate });
                 displayList.sort((a, b) => b.val - a.val);
                 
                 const rankListEl = document.getElementById('rank-list');
-                if (rankListEl.offsetParent !== null) {
-                    rankListEl.innerHTML = renderRanking(displayList.slice(0, 50), 'wealth');
-                }
+                if (rankListEl.offsetParent !== null) { rankListEl.innerHTML = renderRanking(displayList.slice(0, 50), 'wealth'); }
             }
-        } catch(e) { 
-            console.error("Rank Error 상세:", e);
-            document.getElementById('rank-list').innerHTML = 
-                `<div style='padding:20px; text-align:center; color:#ff4757;'>
-                    🚫 랭킹 로딩 실패!<br>
-                    <span style='font-size:0.7rem; color:#aaa;'>${e.message}</span><br><br>
-                    <span style='font-size:0.6rem; color:#888;'>F12 콘솔을 확인하거나,<br>Firebase 규칙/인덱스를 점검하세요.</span>
-                </div>`;
-        } 
+        } catch(e) { console.error(e); document.getElementById('rank-list').innerHTML = "랭킹 로딩 실패"; } 
     }
 
     function renderRanking(list, type) {
-        if (!list || list.length === 0) return "<div style='text-align:center; padding:20px; color:#555;'>이번 주 기록이 없습니다.<br>첫 번째 주인공이 되어보세요!</div>";
-
+        if (!list || list.length === 0) return "<div style='text-align:center; padding:20px; color:#555;'>기록이 없습니다.</div>";
         return list.map((c, i) => {
-            const rk = i + 1; 
-            let glw = '';
-            if (rk === 1) glw = 'rank-glow-1'; else if (rk === 2) glw = 'rank-glow-2'; else if (rk === 3) glw = 'rank-glow-3';
-            
+            const rk = i + 1; const glw = (rk===1)?'rank-glow-1':(rk===2)?'rank-glow-2':(rk===3)?'rank-glow-3':'';
             const dateStr = formatDateSimple(c.date);
 
             if (type === 'wealth') {
-                return `
-                <div class="rank-card-wealth ${glw}">
-                    <div class="rank-col-rank">#${rk}</div>
-                    <div class="rank-col-info" style="border-right:1px solid #222; justify-content:center; align-items:center;">
-                        <div class="rank-user" style="font-size:0.9rem;">${c.owner}</div>
-                    </div>
-                    <div class="rank-col-info" style="align-items:flex-end; padding-right:15px;">
-                        <div class="rank-date" style="top:5px; right:5px;">${dateStr}</div>
-                        <div style="font-size:0.55rem; color:#888; margin-top:5px;">최고 자산</div>
-                        <div class="rank-gold" style="font-size:0.8rem; font-weight:bold; color:#ffd700;">${c.val.toLocaleString()} 🟡</div>
-                    </div>
-                </div>`;
+                return `<div class="rank-card-wealth ${glw}"><div class="rank-col-rank">#${rk}</div><div class="rank-col-info" style="border-right:1px solid #222; justify-content:center; align-items:center;"><div class="rank-user">${c.owner}</div></div><div class="rank-col-info" style="align-items:flex-end; padding-right:15px;"><div class="rank-date" style="top:5px; right:5px;">${dateStr}</div><div style="font-size:0.55rem; color:#888; margin-top:5px;">최고 자산</div><div class="rank-gold" style="font-size:0.8rem; font-weight:bold; color:#ffd700;">${c.val.toLocaleString()} 🟡</div></div></div>`;
             } else {
-                const col = gradeInfo[c.grade]?.color; 
-                const tier = getTier(c.prob);
-                let badgeHtml = "";
-                let probColor = col;
-                let probText = "";
-
+                const col = gradeInfo[c.grade]?.color; const tier = getTier(c.prob);
                 const rp = getRareScore(c.prob);
-                if (tier.color === "EX") {
-                    badgeHtml = `<span class="tier-badge tier-badge-ex"><span class="tier-ex-gradient">EX</span></span>`;
-                    probColor = "#a29bfe";
-                    probText = `<span style="font-size:0.6rem; font-weight:bold; background: linear-gradient(135deg, #00cec9, #a29bfe, #e056fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">RP : ${rp.toLocaleString()}</span>`;
-                } else {
-                    badgeHtml = `<span class="tier-badge" style="color:${tier.color}; border-color:${tier.color}">${tier.text}</span>`;
-                    probText = `<span style="font-size:0.6rem; font-weight:bold; color:${tier.color};">RP : ${rp.toLocaleString()}</span>`;
-                }
+                let badgeHtml = (tier.color==="EX") ? `<span class="tier-badge tier-badge-ex"><span class="tier-ex-gradient">EX</span></span>` : `<span class="tier-badge" style="color:${tier.color}; border-color:${tier.color}">${tier.text}</span>`;
+                let probText = `<span style="font-size:0.6rem; font-weight:bold; color:${tier.color==="EX"?"#a29bfe":tier.color};">RP : ${rp.toLocaleString()}</span>`;
                 
-                let geneHtml = " <span style='font-size:0.6rem; color:#555;'>[ ]</span>";
-                if(c.mutationHistory === 'success') geneHtml = " <span style='font-size:0.6rem; color:#00cec9; font-weight:bold;'>[🧬성공]</span>";
-                else if(c.mutationHistory === 'fail') geneHtml = " <span style='font-size:0.6rem; color:#ff4757; font-weight:bold;'>[🧬실패]</span>";
+                let geneHtml = c.mutationHistory==='success'?" <span style='font-size:0.6rem; color:#00cec9; font-weight:bold;'>[🧬성공]</span>":(c.mutationHistory==='fail'?" <span style='font-size:0.6rem; color:#ff4757; font-weight:bold;'>[🧬실패]</span>":"");
+                let allInHtml = c.allInHistory==='success'?" <span style='font-size:0.6rem; color:#ff4757; font-weight:bold;'>[🔥ALL-IN]</span>":"";
 
-                let allInHtml = "";
-                if(c.allInHistory === 'success') {
-                    allInHtml = " <span style='font-size:0.6rem; color:#ff4757; font-weight:bold;'>[🔥ALL-IN]</span>";
-                }
-
-                return `
-                <div class="rank-card-styled ${glw}">
-                    <div class="rank-col-rank">#${rk}</div>
-                    <div class="rank-col-icon">${c.emoji}</div>
-                    <div class="rank-col-info">
-                        <div class="rank-date">${dateStr}</div>
-                        <div class="rank-user">${c.owner}</div>
-                        <div class="rank-detail" style="color:${col}">${c.grade} +${c.lvl}${geneHtml}${allInHtml}</div>
-                        <div class="rank-meta-row">
-                            ${badgeHtml}
-                            <span class="rank-prob-thin" style="color:${probColor};">${probText}</span>
-                        </div>
-                        <div class="rank-gold">${c.val.toLocaleString()} 🟡</div>
-                    </div>
-                </div>`;
+                return `<div class="rank-card-styled ${glw}"><div class="rank-col-rank">#${rk}</div><div class="rank-col-icon">${c.emoji}</div><div class="rank-col-info"><div class="rank-date">${dateStr}</div><div class="rank-user">${c.owner}</div><div class="rank-detail" style="color:${col}">${c.grade} +${c.lvl}${geneHtml}${allInHtml}</div><div class="rank-meta-row">${badgeHtml}<span class="rank-prob-thin">${probText}</span></div><div class="rank-gold">${c.val.toLocaleString()} 🟡</div></div></div>`;
             }
         }).join('');
     }
@@ -1729,7 +1877,6 @@
         document.querySelectorAll('.rank-tab').forEach(b => b.classList.remove('active'));
         if(tab === 'rarity') document.querySelectorAll('.rank-tab')[0].classList.add('active');
         else document.querySelectorAll('.rank-tab')[1].classList.add('active');
-        
         syncGlobal(tab);
     }
     
@@ -1738,14 +1885,11 @@
         history.pushState({ modal: true }, '', '');
         document.getElementById('rank-page').style.display = 'block';
         document.getElementById('rank-title').innerText = "📜 나의 명예의 전당"; 
-        
         document.getElementById('reset-timer').style.display = 'none';
         document.getElementById('rank-tabs-container').style.display = 'none';
         document.getElementById('my-wealth-banner').style.display = 'flex';
-        
         document.getElementById('my-wealth-val').innerText = window.maxGold.toLocaleString() + " 🟡";
         document.getElementById('my-wealth-date').innerText = formatDateSimple(window.maxGoldDate);
-
         document.getElementById('rank-list').innerHTML = renderRanking(window.myHistory, 'rarity'); 
     };
     
@@ -1754,16 +1898,10 @@
         history.pushState({ modal: true }, '', '');
         document.getElementById('rank-page').style.display = 'block';
         document.getElementById('rank-title').innerText = "🌏 글로벌 명예의 전당"; 
-        
         document.getElementById('reset-timer').style.display = 'inline-block';
-
         document.getElementById('rank-tabs-container').style.display = 'flex';
         document.getElementById('my-wealth-banner').style.display = 'none';
-        
         updateResetTimer(); 
-        document.getElementById('rank-list').innerHTML = "<div style='text-align:center; padding:20px; color:#888;'>데이터 불러오는 중...</div>";
-        
-        if(!db) { document.getElementById('rank-list').innerText = "서버 연결 안됨"; return; }
         await syncGlobal(window.currentRankTab); 
     };
     
@@ -1776,36 +1914,25 @@
                 nickname: window.nickname, 
                 g: window.gold, c: window.currentEmoji, h: window.myHistory, i: window.inventory,
                 b: window.book, r: window.claimedRewards,
-                max_gold: window.maxGold,
-                max_gold_date: window.maxGoldDate,
-                last_active: Date.now(),
-                best_prob: bestProb,
-                last_reward_date: window.lastRewardDate 
+                max_gold: window.maxGold, max_gold_date: window.maxGoldDate,
+                last_active: Date.now(), best_prob: bestProb, last_reward_date: window.lastRewardDate,
+                tarot_buff: window.tarotBuff,
+                today_tarot_count: window.todayTarotCount,
+                last_tarot_date: window.lastTarotDate
             };
             
             localStorage.setItem('catSave_' + window.nickname, JSON.stringify(dataToSave)); 
-
             if(db) { 
                 if(saveTimeout) clearTimeout(saveTimeout);
-                
-                if (delay === 0) {
-                    try { await setDoc(doc(db, "users", window.currentUserUid), dataToSave, { merge: true }); } catch(e) {}
-                } else {
-                    saveTimeout = setTimeout(async () => {
-                        try { await setDoc(doc(db, "users", window.currentUserUid), dataToSave, { merge: true }); } catch(e) {} 
-                    }, delay);
-                }
+                const saveFunc = async () => { try { await setDoc(doc(db, "users", window.currentUserUid), dataToSave, { merge: true }); } catch(e) {} };
+                if (delay === 0) saveFunc(); else saveTimeout = setTimeout(saveFunc, delay);
             }
         }
     }
 
     async function checkNicknameDuplicate(nick) {
         if(!db) return false;
-        try {
-            const q = query(collection(db, "users"), where("nickname", "==", nick));
-            const snap = await getDocs(q);
-            return !snap.empty;
-        } catch(e) { return false; }
+        try { const q = query(collection(db, "users"), where("nickname", "==", nick)); const snap = await getDocs(q); return !snap.empty; } catch(e) { return false; }
     }
 
     window.googleLogin = async () => {
@@ -1865,32 +1992,24 @@
                 window.inventory = d.i || window.inventory;
                 window.lastRewardDate = d.last_reward_date || 0;
                 
-                if(window.inventory.length < 10) {
-                    const diff = 10 - window.inventory.length;
-                    for(let k=0; k<diff; k++) { window.inventory.push({ unlocked: false, item: null }); }
-                }
+                // [🔮 타로] 데이터 로드
+                window.tarotBuff = d.tarot_buff || null;
+                window.todayTarotCount = d.today_tarot_count || 0;
+                window.lastTarotDate = d.last_tarot_date || 0;
 
-                window.maxGold = d.max_gold || d.g || 200000;
-                window.maxGoldDate = d.max_gold_date || Date.now();
+                if(window.inventory.length < 10) { for(let k=0; k<10-window.inventory.length; k++) { window.inventory.push({ unlocked: false, item: null }); } }
+                window.maxGold = d.max_gold || d.g || 200000; window.maxGoldDate = d.max_gold_date || Date.now();
                 
-                const today = new Date().toDateString();
-                const lastDate = new Date(window.lastRewardDate).toDateString();
+                const today = new Date().toDateString(); const lastDate = new Date(window.lastRewardDate).toDateString();
                 if(today !== lastDate) {
-                    window.gold += 100000;
-                    window.lastRewardDate = Date.now();
-                    alert("📅 일일 지원금이 도착했습니다!\n+100,000 🟡 (오늘도 대박 나세요!)");
-                    saveGame(0);
+                    window.gold += 100000; window.lastRewardDate = Date.now();
+                    alert("📅 일일 지원금이 도착했습니다!\n+100,000 🟡"); saveGame(0);
                 }
 
-                if (!d.last_active) saveGame(); 
-
-                updateUI(); 
-                // [수정] 로그인 완료 시점에 랭킹 데이터 미리 로딩 (판매 즉시 반영을 위해)
-                setTimeout(() => syncGlobal('rarity'), 500); 
+                updateUI(); setTimeout(() => syncGlobal('rarity'), 500); 
             } else {
                 window.nickname = "User_" + user.uid.slice(0,4);
-                window.gold = 200000;
-                window.maxGold = 200000;
+                window.gold = 200000; window.maxGold = 200000;
                 saveGame(0); updateUI();
             }
         } else { document.getElementById('nick-modal').style.display = 'flex'; }
@@ -1901,8 +2020,7 @@
     async function init() {
         history.replaceState(null, '', location.href);
         history.pushState({ main: true }, '', '');
-        updateResetTimer();
-        updateUI();
+        updateResetTimer(); updateUI();
     }
     init();
 </script>
