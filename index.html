@@ -9,16 +9,54 @@
             --common: #b2bec3; --magic: #00cec9; --rare: #a29bfe; --epic: #ff4757; --legendary: #ffd700;
             --bg: #0d0d0d; --panel: #161616; --border: #333;
             --success: #2ecc71; --stay: #f1c40f; --destroy: #e74c3c; --red-alert: #ff4757;
-            --tier-f: #636e72; --tier-c: #00cec9; --tier-b: #a29bfe; --tier-a: #ff4757; --tier-s: #ff4757; --tier-ss: #ffd700; --tier-sss: #fdcb6e;
+            /* [수정] Tier F 색상 밝게 변경 (검은 배경에서 보이도록) */
+            --tier-f: #b2bec3; 
+            --tier-c: #00cec9; --tier-b: #a29bfe; --tier-a: #ff4757; --tier-s: #ff4757; --tier-ss: #ffd700; --tier-sss: #fdcb6e;
         }
         body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; background-color: var(--bg); color: #eee; margin: 0; padding: 10px; overflow-x: hidden; padding-bottom: 20px; }
         .game-container { width: 100%; max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
         
         /* 헤더 */
-        .game-header { display: flex; justify-content: space-between; align-items: flex-end; padding: 5px 2px; border-bottom: 1px solid #222; margin-bottom: 2px; }
-        .header-left { display: flex; flex-direction: column; position: relative; }
+        .game-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 8px 4px; 
+            border-bottom: 1px solid #222; 
+            margin-bottom: 0; 
+        }
+        
+        .header-left { 
+            display: flex; 
+            align-items: baseline; 
+            gap: 6px; 
+        }
+        
         .game-title { font-size: 1.3rem; font-weight: 900; color: #fff; letter-spacing: -0.5px; margin: 0; line-height: 1; }
-        .game-author { font-size: 0.5rem; color: #555; position: absolute; bottom: -8px; left: 2px; font-weight: bold; }
+        
+        /* 인스타그램 링크 스타일 (하늘색) */
+        .insta-link {
+            font-size: 0.5rem; 
+            color: #74b9ff; 
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .insta-link:hover { color: #fff; text-decoration: underline; }
+
+        /* 하단 안내 문구 */
+        .header-notice-bar {
+            width: 100%;
+            text-align: center;
+            font-size: 0.4rem;
+            color: #666;
+            margin-bottom: 3px; 
+            line-height: 1.2;
+            padding: 2px 0;
+            word-break: keep-all;
+        }
+
         .header-right { display: flex; align-items: center; gap: 6px; }
         .id-box { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 4px 10px; font-size: 0.7rem; font-weight: bold; color: #ccc; display: flex; align-items: center; justify-content: center; }
         .header-btn { background: #222; border: 1px solid #444; color: #888; border-radius: 6px; padding: 5px 8px; font-size: 0.7rem; cursor: pointer; transition: 0.2s; }
@@ -119,15 +157,19 @@
         .inv-status-bar { background: #222; padding: 12px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #444; cursor: pointer; }
 
         /* 도감 */
-        .chart-grid { display: flex; flex-direction:column; gap: 8px; margin-bottom: 15px; }
-        .chart-box { background: #111; border: 1px solid #333; border-radius: 8px; padding: 8px; }
-        .chart-title { font-size: 0.8rem; color: #888; text-align: center; margin-bottom: 6px; font-weight: bold; border-bottom: 1px solid #222; padding-bottom: 4px; }
-        .rate-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; }
-        .rate-table th { color:#888; border-bottom:1px solid #444; padding:5px;}
-        .rate-table td { padding: 5px 2px; text-align: center !important; vertical-align: middle; border-bottom: 1px solid #222; color: #aaa; }
+        .chart-section { background: #161616; border: 1px solid #333; border-radius: 12px; padding: 12px; margin-bottom: 15px; }
+        .chart-header { text-align:center; font-weight:900; color:#fff; font-size:0.9rem; margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:5px; }
+        .chart-grid { display: flex; gap: 8px; justify-content: space-between; }
+        .chart-box { flex: 1; background: #1a1a1a; border: 1px solid #222; border-radius: 8px; padding: 6px; }
+        .chart-title { font-size: 0.7rem; color: #888; text-align: center; margin-bottom: 4px; font-weight: bold; border-bottom: 1px solid #222; padding-bottom: 4px; }
+        
+        .rate-table { width: 100%; border-collapse: collapse; font-size: 0.6rem; }
+        .rate-table th { color:#888; border-bottom:1px solid #444; padding:3px;}
+        .rate-table td { padding: 3px 1px; text-align: center !important; vertical-align: middle; border-bottom: 1px solid #222; color: #aaa; }
+        
         .book-compact-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 2px; }
         .book-card-mini { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; display: flex; flex-direction: column; padding: 4px; position: relative; width: 100%; aspect-ratio: 0.85/1; box-sizing: border-box; overflow: hidden; cursor: pointer; transition: all 0.2s ease; }
-        .book-card-mini:hover { transform: translateY(-3px); background: #252525; }
+        .book-card-mini:hover { transform: translateY(-3px); }
         .book-legendary { border: 1px solid #ffd700 !important; box-shadow: 0 0 5px rgba(255, 215, 0, 0.2); }
         .book-mini-header { font-size: 0.5rem; font-weight: bold; text-align: center; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #555; height: 12px; }
         .book-mini-slots { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 1px; flex: 1; }
@@ -135,6 +177,11 @@
         .silhouette { filter: brightness(0); opacity: 0.3; }
         .book-completed { border-color: #ffd700; box-shadow: 0 0 5px rgba(255,215,0,0.2); }
         .mini-reward-dot { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; background: var(--red-alert); border-radius: 50%; border: 1px solid #fff; z-index: 10; animation: blink 0.8s infinite alternate; }
+
+        /* 도감 탭 */
+        .book-tabs { display: flex; gap: 4px; margin-bottom: 10px; justify-content: center; flex-wrap: wrap; }
+        .book-tab-btn { background: #222; border: 1px solid #444; color: #888; padding: 6px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: bold; cursor: pointer; transition:0.2s; }
+        .book-tab-btn.active { color: #000; font-weight: 900; border-color: #fff; transform: scale(1.05); }
 
         /* 랭킹 탭 */
         .rank-tabs { display: flex; gap: 5px; margin-bottom: 10px; justify-content: center; width: 100%; }
@@ -198,7 +245,6 @@
     </style>
 </head>
 <body>
-
 <div id="nick-modal">
     <div class="login-box">
         <h2 style="color:#ffd700; margin-top:0;">GAME START</h2>
@@ -224,7 +270,7 @@
     <header class="game-header">
         <div class="header-left">
             <h1 class="game-title">이모지 진화</h1>
-            <div class="game-author">by.tovi</div>
+            <a href="https://www.instagram.com/tovi_work" target="_blank" class="insta-link">by. @tovi_work</a>
         </div>
         <div class="header-right">
             <div class="id-box" id="my-id-label">ID: -</div>
@@ -232,6 +278,10 @@
             <button class="header-btn" onclick="logout()">OUT</button>
         </div>
     </header>
+    
+    <div class="header-notice-bar">
+        *정식서비스가 아닌 개인이 학습을 목표로 제작 중입니다 다소 불안정한 운영이 있을 수 있으므로 양해 부탁드립니다
+    </div>
 
     <div class="main-split">
         <div class="left-col">
@@ -291,7 +341,6 @@
         </div>
     </div>
 </div>
-
 <div id="inv-page" class="full-page">
     <div class="modal-header"><h2 class="modal-title">🎒 인벤토리</h2></div>
     <div class="inv-status-bar" onclick="swapWithMain()">
@@ -309,27 +358,41 @@
 </div>
 
 <div id="book-page" class="full-page">
-    <div class="modal-header"><h2 class="modal-title">📕 도감 컬렉션</h2></div>
-    <div class="chart-grid">
-        <div class="chart-box">
-            <div class="chart-title">등급별 소환 확률</div>
-            <table class="rate-table" id="grade-rate-table">
+    <div class="modal-header">
+        <h2 class="modal-title">📕 도감 컬렉션</h2>
+    </div>
+    
+    <div class="chart-section">
+        <div class="chart-header">이모지 확률 정보</div>
+        <div class="chart-grid">
+            <div class="chart-box">
+                <div class="chart-title">등급별 소환 확률</div>
+                <table class="rate-table" id="grade-rate-table"></table>
+            </div>
+            <div class="chart-box">
+                <div class="chart-title">희귀도(Tier) 확률</div>
+                <table class="rate-table">
+                    <tr><td><span class="tier-ex-gradient">EX</span></td><td>0.000001% ↓</td></tr>
+                    <tr><td style="color:var(--tier-sss)">SSS</td><td>0.01% ↓</td></tr>
+                    <tr><td style="color:var(--tier-ss)">SS</td><td>0.1% ↓</td></tr>
+                    <tr><td style="color:var(--tier-s)">S</td><td>1.0% ↓</td></tr>
+                    <tr><td style="color:var(--tier-a)">A</td><td>5.0% ↓</td></tr>
+                    <tr><td style="color:var(--tier-b)">B</td><td>15.0% ↓</td></tr>
                 </table>
-        </div>
-        <div class="chart-box">
-            <div class="chart-title">희귀도(Tier) 확률</div>
-            <table class="rate-table">
-                <tr><td class="tier-ex-gradient">EX</td><td>0.000001% ↓</td></tr>
-                <tr><td style="color:var(--tier-sss)">SSS</td><td>0.01% ↓</td></tr>
-                <tr><td style="color:var(--tier-ss)">SS</td><td>0.1% ↓</td></tr>
-                <tr><td style="color:var(--tier-s)">S</td><td>1.0% ↓</td></tr>
-                <tr><td style="color:var(--tier-a)">A</td><td>5.0% ↓</td></tr>
-                <tr><td style="color:var(--tier-b)">B</td><td>15.0% ↓</td></tr>
-            </table>
+            </div>
         </div>
     </div>
-    <div style="font-size:0.8rem; color:#aaa; margin-bottom:2px; text-align:center;">🧬 수집 현황 (등급순 정렬)</div>
-    <div style="font-size:0.6rem; color:#ffd700; margin-bottom:10px; text-align:center; font-weight:bold;">* 일반, 매직 등급은 고진감래.</div>
+
+    <div class="book-tabs" id="book-grade-tabs">
+        <button class="book-tab-btn active" onclick="switchBookTab('일반')">일반</button>
+        <button class="book-tab-btn" onclick="switchBookTab('매직')">매직</button>
+        <button class="book-tab-btn" onclick="switchBookTab('레어')">레어</button>
+        <button class="book-tab-btn" onclick="switchBookTab('에픽')">에픽</button>
+        <button class="book-tab-btn" onclick="switchBookTab('레전더리')">레전더리</button>
+    </div>
+
+    <div style="font-size:0.8rem; color:#aaa; margin-bottom:2px; text-align:center;">🧬 수집 현황 (태생 등급 기준)</div>
+    <div id="book-hint-text" style="font-size:0.6rem; color:#ffd700; margin-bottom:10px; text-align:center; font-weight:bold;">* 고진감래 : 쓴 것이 다하면 단 것이 온다.</div>
     <div id="book-list" class="book-compact-grid"></div>
     <button class="close-btn" onclick="closePage('book-page')">닫기</button>
 </div>
@@ -409,14 +472,144 @@
         </div>
     </div>
 </div>
+<div id="inv-page" class="full-page">
+    <div class="modal-header"><h2 class="modal-title">🎒 인벤토리</h2></div>
+    <div class="inv-status-bar" onclick="swapWithMain()">
+        <div class="inv-current-info">
+            <div id="inv-current-emoji" class="inv-current-icon">🔒</div>
+            <div>
+                <span style="font-size:0.6rem; color:#aaa;">현재 장착 중</span>
+                <div id="inv-current-name" style="font-weight:bold; font-size:0.9rem; color:#fff;">없음</div>
+            </div>
+        </div>
+        <div id="inv-total-gold" style="font-size:1.2rem; font-weight:bold; color:#ffd700;">0 🟡</div>
+    </div>
+    <div class="inv-grid" id="inv-grid-list"></div>
+    <button class="close-btn" onclick="closePage('inv-page')">닫기</button>
+</div>
 
+<div id="book-page" class="full-page">
+    <div class="modal-header">
+        <h2 class="modal-title">📕 도감 컬렉션</h2>
+    </div>
+    
+    <div class="chart-section">
+        <div class="chart-header">이모지 확률 정보</div>
+        <div class="chart-grid">
+            <div class="chart-box">
+                <div class="chart-title">등급별 소환 확률</div>
+                <table class="rate-table" id="grade-rate-table"></table>
+            </div>
+            <div class="chart-box">
+                <div class="chart-title">희귀도(Tier) 확률</div>
+                <table class="rate-table">
+                    <tr><td><span class="tier-ex-gradient">EX</span></td><td>0.000001% ↓</td></tr>
+                    <tr><td style="color:var(--tier-sss)">SSS</td><td>0.01% ↓</td></tr>
+                    <tr><td style="color:var(--tier-ss)">SS</td><td>0.1% ↓</td></tr>
+                    <tr><td style="color:var(--tier-s)">S</td><td>1.0% ↓</td></tr>
+                    <tr><td style="color:var(--tier-a)">A</td><td>5.0% ↓</td></tr>
+                    <tr><td style="color:var(--tier-b)">B</td><td>15.0% ↓</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="book-tabs" id="book-grade-tabs">
+        <button class="book-tab-btn active" onclick="switchBookTab('일반')">일반</button>
+        <button class="book-tab-btn" onclick="switchBookTab('매직')">매직</button>
+        <button class="book-tab-btn" onclick="switchBookTab('레어')">레어</button>
+        <button class="book-tab-btn" onclick="switchBookTab('에픽')">에픽</button>
+        <button class="book-tab-btn" onclick="switchBookTab('레전더리')">레전더리</button>
+    </div>
+
+    <div style="font-size:0.8rem; color:#aaa; margin-bottom:2px; text-align:center;">🧬 수집 현황 (태생 등급 기준)</div>
+    <div id="book-hint-text" style="font-size:0.6rem; color:#ffd700; margin-bottom:10px; text-align:center; font-weight:bold;">* 고진감래 : 쓴 것이 다하면 단 것이 온다.</div>
+    <div id="book-list" class="book-compact-grid"></div>
+    <button class="close-btn" onclick="closePage('book-page')">닫기</button>
+</div>
+
+<div id="rank-page" class="full-page">
+    <div class="modal-header">
+        <h2 id="rank-title" class="modal-title">전당</h2>
+        <div id="reset-timer" class="reset-timer-box">주간랭킹 갱신까지 0일 0시간 남음</div>
+        <div style="font-size:0.6rem; color:#ff7675; margin-top:5px; margin-bottom:-5px;">* 희귀도 랭킹은 매주 월요일 0시에 갱신(리셋)됩니다.</div>
+    </div>
+    
+    <div class="rank-tabs" id="rank-tabs-container" style="display:none;">
+        <button class="rank-tab active" onclick="switchRankTab('rarity')">💎 희귀도 랭킹</button>
+        <button class="rank-tab" onclick="switchRankTab('wealth')">💰 자산 랭킹</button>
+    </div>
+
+    <div style="text-align:center; margin:10px 0;">
+        <div style="font-size:0.6rem; color:#74b9ff; line-height:1.4;">
+            * 점수(RP)가 높을수록 희귀한 이모지입니다.<br>
+            * 동점일 경우, 더 최근에 판매한 기록이 상위 랭크됩니다.
+        </div>
+    </div>
+
+    <div id="my-wealth-banner" class="my-max-asset-banner" style="display:none;">
+        <div>
+            <div class="banner-label">🏆 나의 역대 최고 자산</div>
+            <div class="banner-date" id="my-wealth-date">-</div>
+        </div>
+        <div class="banner-value" id="my-wealth-val">0 🟡</div>
+    </div>
+
+    <div id="rank-list"></div>
+    <button class="close-btn" onclick="closePage('rank-page')">닫기</button>
+</div>
+
+<div id="allin-modal" class="full-page" style="z-index:4000; display:none; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,0.9);">
+    <div class="login-box" style="border-color:#ff4757; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+        <h2 style="color:#ff4757; margin-top:0; font-size:1.5rem; text-shadow:0 0 10px rgba(255, 71, 87, 0.5);">⚠️ 위험한 도박</h2>
+        <p style="color:#ddd; margin:15px 0; line-height:1.6; font-size:0.9rem;">
+            현재 보유 자산이 강화 비용의 절반 이상입니다.<br>
+            모든 재산을 걸고 강화를 1회 시도하시겠습니까?<br><br>
+            
+            <div style="background:#222; padding:10px; border-radius:8px; border:1px solid #444; margin-bottom:15px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <span style="color:#aaa; font-size:0.8rem;">필요 비용:</span>
+                    <span id="allin-cost-disp" style="color:#ff7675; font-weight:bold;">-</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span style="color:#aaa; font-size:0.8rem;">보유 재산:</span>
+                    <span id="allin-gold-disp" style="color:#ffd700; font-weight:bold;">-</span>
+                </div>
+            </div>
+
+            <span style="color:#ff7675; font-weight:bold; font-size:0.85rem;">
+                (성공/실패 여부와 관계없이 잔액은 0원이 됩니다)
+            </span>
+        </p>
+        <div style="display:flex; gap:10px; width:100%;">
+            <button class="btn-action" onclick="confirmAllIn()" style="background:#ff4757; color:white; flex:1; font-weight:bold;">🔥 진행시켜!</button>
+            <button class="btn-action" onclick="closePage('allin-modal')" style="background:#444; color:white; flex:1;">취소</button>
+        </div>
+    </div>
+</div>
+
+<div id="exit-modal" class="full-page" style="z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,0.85);">
+    <div class="login-box" style="border-color:#e74c3c; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+        <h2 style="color:#e74c3c; margin-top:0; font-size:1.5rem;">⚠️ WARNING</h2>
+        <p style="color:#ddd; margin:20px 0; line-height:1.6; font-size:0.9rem;">
+            정말로 게임을 종료하시겠습니까?<br>
+            <span style="color:#4cd137; font-size:0.8rem; font-weight:bold;">
+                (현재 내용은 서버에 자동 저장됩니다)
+            </span>
+        </p>
+        <div style="display:flex; gap:10px; width:100%;">
+            <button class="btn-action" onclick="realExit()" style="background:#e74c3c; color:white; flex:1;">종료</button>
+            <button class="btn-action" onclick="cancelExit()" style="background:#444; color:white; flex:1;">취소</button>
+        </div>
+    </div>
+</div>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
     import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, query, where, limit, orderBy } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
     const firebaseConfig = {
-        apiKey: "AIzaSyA-QVwu7jpUUeLH3jtqYHChfwOW3FHY3pc", // ⭐ (별 제거됨: 정상 작동)
+        apiKey: "AIzaSyA-QVwu7jpUUeLH3jtqYHChfwOW3FHY3pc", 
         authDomain: "gkyoungee.firebaseapp.com",
         projectId: "gkyoungee",
         storageBucket: "gkyoungee.firebasestorage.app",
@@ -435,12 +628,19 @@
         "일반": { color: "#b2bec3", mod: 1.0, rank: 0, prob: 45.0, weight: 1.0, sellMod: 0.5 }   
     };
 
+    // 등급별 차등 보상 설정
+    const rewardInfo = {
+        "일반": 1000000000,
+        "매직": 800000000,
+        "레어": 700000000,
+        "에픽": 500000000,
+        "레전더리": 500000000
+    };
+
     const EX_THRESHOLD = 0.000001; 
 
-    // ⭐ [수정] 점수 공식 변경 (역수 로그): 확률이 낮을수록 점수가 높아짐 (일반 < 레전더리)
     function getRareScore(prob) {
-        if(prob <= 0) return 0; // 안전장치
-        // log10(100 / 확률) * 100
+        if(prob <= 0) return 0;
         return Math.floor(Math.log10(100 / prob) * 100);
     }
 
@@ -495,7 +695,8 @@
     
     window.maxGold = 200000;
     window.maxGoldDate = Date.now();
-    window.lastRewardDate = 0; 
+    window.lastRewardDate = 0;
+    window.currentBookTab = '일반'; // 도감 기본 탭
     
     let saveTimeout = null;
     let cachedRarityRank = null;
@@ -581,12 +782,15 @@
         if(!window.book) return;
         const alertDot = document.getElementById('book-alert');
         let hasReward = false;
-        evoPaths.forEach(path => {
-            const level = window.book[path.name] || 0;
-            if(level >= 4 && !window.claimedRewards.includes(path.name)) {
+        
+        for (const key in window.book) {
+            const level = window.book[key];
+            if (level >= 4 && !window.claimedRewards.includes(key)) {
                 hasReward = true;
+                break;
             }
-        });
+        }
+        
         if(hasReward) alertDot.style.display = 'block';
         else alertDot.style.display = 'none';
     }
@@ -601,15 +805,17 @@
         }
     };
     
-    function updateBook(pathName, level) {
+    function updateBook(pathName, level, originalGrade) {
         if(!window.book) window.book = {};
+        if(!originalGrade) return; 
+
+        const key = `${pathName}_${originalGrade}`;
         const stageIdx = Math.min(4, Math.floor(level / 5) + 1); 
-        if (!window.book[pathName] || window.book[pathName] < stageIdx) {
-            window.book[pathName] = stageIdx;
+        
+        if (!window.book[key] || window.book[key] < stageIdx) {
+            window.book[key] = stageIdx;
         }
     }
-
-    // ⭐ [수정] updateUI: 메인 화면 표시 로직 (색상 통일 적용)
     window.updateUI = function() {
         window.gold = Number(window.gold); 
         
@@ -741,8 +947,7 @@
                     if(tier.color === "EX") {
                         document.getElementById('st-rarity').innerHTML = `<span class="tier-ex-gradient">EX</span> <small style="font-size:0.6rem; color:#aaa;">(RP: ${rp.toLocaleString()}점)</small>`;
                     } else {
-                        // ⭐ [수정] 일반 등급도 티어 색상과 RP 텍스트 색상을 일치시킴
-                        document.getElementById('st-rarity').innerHTML = `${tier.text} <small style="font-size:0.6rem; font-weight:bold; color:${tier.color}">(RP: ${rp.toLocaleString()}점)</small>`; 
+                        document.getElementById('st-rarity').innerHTML = `${tier.text} <small style="font-size:0.6rem; opacity:0.7">(RP: ${rp.toLocaleString()}점)</small>`; 
                         document.getElementById('st-rarity').style.color = tier.color; 
                     }
                 }
@@ -765,12 +970,13 @@
             else {
                 resetDisplay();
                 const canNormal = window.gold >= 10000;
-                const canPremium = window.gold >= 100000;
+                // [수정] 10만 -> 100만으로 조건 변경
+                const canPremium = window.gold >= 1000000; 
 
                 html = `
                 <div class="btn-stack">
                     <button class="btn-action btn-evolve" disabled><span>강화</span><small>-</small></button>
-                    <button class="btn-action btn-premium-summ" onclick="fetchNew('premium')" ${canPremium ? '' : 'disabled'}>🌟 고급 소환<br>(10만)</button>
+                    <button class="btn-action btn-premium-summ" onclick="fetchNew('premium')" ${canPremium ? '' : 'disabled'}>🌟 고급 소환<br>(100만)</button>
                     <button class="btn-action btn-normal-summ" onclick="fetchNew('normal')" ${canNormal ? '' : 'disabled'}>🔮 일반 소환<br>(1만)</button>
                     <button class="btn-action btn-gene" disabled>🧬 변이</button>
                     <button class="btn-action btn-sell" disabled style="opacity:0.3;">💰 판매</button>
@@ -780,7 +986,7 @@
             mainBtns.innerHTML = html;
             
             if(hasItem && !isDead) {
-                updateBook(window.currentEmoji.pathName, window.currentEmoji.level);
+                updateBook(window.currentEmoji.pathName, window.currentEmoji.level, window.currentEmoji.originalGrade);
             }
             checkBookAlert();
             updateInvStatusBar();
@@ -846,7 +1052,8 @@
 
         let cost = 0;
         if (type === 'normal') cost = 10000;
-        else if (type === 'premium') cost = 100000; 
+        // [수정] 고급 소환 가격 100만으로 변경
+        else if (type === 'premium') cost = 1000000; 
         
         if (window.gold < cost) {
             addLog(`잔액 부족! (${cost.toLocaleString()} 필요)`);
@@ -877,7 +1084,7 @@
         let finalRarity = (gradeInfo[g].prob * variance).toFixed(8);
 
         window.currentEmoji = { 
-            pathName: p.name, stages: p.stages, grade: g, level: 0, 
+            pathName: p.name, stages: p.stages, grade: g, originalGrade: g, level: 0, 
             gene: Math.random() < 0.35, mutated: false, survival: 100, gone: false, 
             rarity: finalRarity, mutationHistory: null, allInHistory: null 
         }; 
@@ -921,7 +1128,6 @@
                 
                 let nextRarity = parseFloat(window.currentEmoji.rarity) * improveFactor;
                 
-                // ⭐ [수정] 확률 하한선 1e-100 (안전장치)
                 if (nextRarity < 1e-100) nextRarity = 1e-100; 
                 
                 window.currentEmoji.rarity = nextRarity.toFixed(20); 
@@ -975,7 +1181,6 @@
                 
                 let nextRarity = parseFloat(window.currentEmoji.rarity) * improveFactor;
                 
-                // ⭐ [수정] 확률 하한선 1e-100 (올인 시에도 적용)
                 if (nextRarity < 1e-100) nextRarity = 1e-100; 
                 
                 window.currentEmoji.rarity = nextRarity.toFixed(20);
@@ -1204,6 +1409,7 @@
 
     document.getElementById('display-area').onclick = () => { if (window.selectedInvIdx !== null) { window.swapWithMain(); } };
 
+    // 도감 열기
     window.openBook = () => { 
         if(isGameModalOpen()) return;
         history.pushState({ modal: true }, '', '');
@@ -1228,76 +1434,122 @@
         });
         document.getElementById('grade-rate-table').innerHTML = gradeHtml;
 
+        renderBookGrid();
+    };
+
+    // 도감 탭 전환
+    window.switchBookTab = (tabName) => {
+        window.currentBookTab = tabName;
+        const color = gradeInfo[tabName].color;
+        
+        document.querySelectorAll('.book-tab-btn').forEach(btn => {
+            if(btn.innerText === tabName) {
+                btn.classList.add('active');
+                btn.style.borderColor = color;
+                btn.style.color = color;
+            } else {
+                btn.classList.remove('active');
+                btn.style.borderColor = "#444";
+                btn.style.color = "#888";
+            }
+        });
+        renderBookGrid();
+    }
+
+    // 도감 그리드 렌더링 (수정 완료: 시인성 개선 및 오류 해결)
+    function renderBookGrid() {
         const grid = document.getElementById('book-list');
         grid.innerHTML = "";
 
         if(!window.book) window.book = {};
         if(!window.claimedRewards) window.claimedRewards = [];
 
+        const targetPaths = evoPaths.filter(p => p.grades.includes(window.currentBookTab));
+        const currentGradeInfo = gradeInfo[window.currentBookTab];
+        
+        // 탭별 힌트 텍스트 변경
+        const hintEl = document.getElementById('book-hint-text');
+        if(window.currentBookTab === "일반" || window.currentBookTab === "매직") {
+            hintEl.innerText = "* 고진감래 : 쓴 것이 다하면 단 것이 온다.";
+        } else {
+            const reward = rewardInfo[window.currentBookTab];
+            hintEl.innerText = `* ${window.currentBookTab} 등급 완성 시 ${reward.toLocaleString()} 골드 지급!`;
+        }
+        hintEl.style.color = currentGradeInfo.color;
+
+        // 정렬
         const gradeWeight = { "레전더리": 5, "에픽": 4, "레어": 3, "매직": 2, "일반": 1 };
-        const sortedPaths = [...evoPaths].sort((a, b) => {
-            const getMaxWeight = (path) => Math.max(...path.grades.map(g => gradeWeight[g]));
-            return getMaxWeight(b) - getMaxWeight(a);
+        targetPaths.sort((a, b) => {
+            const maxA = Math.max(...a.grades.map(g => gradeWeight[g]));
+            const maxB = Math.max(...b.grades.map(g => gradeWeight[g]));
+            return maxB - maxA;
         });
 
-        sortedPaths.forEach(path => {
-            const myLevel = window.book[path.name] || 0; 
+        targetPaths.forEach(path => {
+            const bookKey = `${path.name}_${window.currentBookTab}`;
+            const myLevel = window.book[bookKey] || 0; 
             const isDiscovered = myLevel > 0;
             const isCompleted = myLevel >= 4;
-            const isClaimed = window.claimedRewards.includes(path.name);
-            const maxGrade = path.grades.reduce((prev, curr) => gradeWeight[curr] > gradeWeight[prev] ? curr : prev, path.grades[0]);
-            const info = gradeInfo[maxGrade];
-            const isLegendary = path.grades.includes("레전더리");
-            const legendaryClass = isLegendary ? "book-legendary" : "";
-
+            const isClaimed = window.claimedRewards.includes(bookKey);
+            
             const card = document.createElement('div');
-            card.className = `book-card-mini ${legendaryClass}`; 
-            card.style.borderColor = isDiscovered ? info.color : '#333';
+            card.className = `book-card-mini`; 
+            // 잠긴 상태라도 해당 등급 색상으로 테두리 표시
+            card.style.borderColor = currentGradeInfo.color;
+            
+            // [수정 포인트 1] 미발견 시 투명도를 0.5 -> 0.8로 올려서 잘 보이게 함
+            if(!isDiscovered) card.style.opacity = "0.8"; 
             
             if(isCompleted) {
                 card.className += " book-completed";
-                card.onclick = () => handleReward(path.name);
+                card.style.boxShadow = `0 0 10px ${currentGradeInfo.color}`;
+                card.onclick = () => handleReward(path.name, window.currentBookTab);
                 if(!isClaimed) card.innerHTML += `<div class="mini-reward-dot"></div>`;
             }
 
-            let headerHtml = `<div class="book-mini-header" style="font-size:0.55rem; color:${isDiscovered ? '#fff' : '#444'}">${isDiscovered ? path.name : '???'}</div>`;
+            // [수정 포인트 2] 미발견 시 텍스트 색상을 밝게 변경
+            let headerHtml = `<div class="book-mini-header" style="font-size:0.55rem; color:${isDiscovered ? '#fff' : '#ccc'}">${path.name}</div>`;
+            
             let slotsHtml = `<div class="book-mini-slots">`;
             for(let i=0; i<4; i++) {
                 let content = "";
                 if(isDiscovered) {
                     if(i < myLevel) content = `<span class="inv-emoji">${path.stages[i]}</span>`;
                     else content = `<span class="inv-emoji silhouette">${path.stages[i]}</span>`;
-                } else content = `<span class="hidden-mark">?</span>`;
+                } else {
+                    // [수정 포인트 3] 물음표 색상 적용
+                    content = `<span class="hidden-mark" style="color:${currentGradeInfo.color}">?</span>`;
+                }
                 slotsHtml += `<div class="book-mini-slot">${content}</div>`;
             }
             slotsHtml += `</div>`;
             card.innerHTML += headerHtml + slotsHtml;
             grid.appendChild(card);
         });
-    };
+    }
 
-    function handleReward(themeName) {
-        if(window.claimedRewards.includes(themeName)) { alert("이미 보상을 수령했습니다."); return; }
+    // 보상 수령 (차등 지급)
+    function handleReward(themeName, grade) {
+        const key = `${themeName}_${grade}`;
+        if(window.claimedRewards.includes(key)) { alert("이미 보상을 수령했습니다."); return; }
         
-        const pathInfo = evoPaths.find(p => p.name === themeName);
-        let rewardAmount = 50000000; 
-        let msg = `축하합니다! [${themeName}] 진화 완성 보상으로\n50,000,000 골드가 지급되었습니다!`;
+        const rewardAmount = rewardInfo[grade] || 50000000;
+        let msg = "";
 
-        if(pathInfo) {
-            if (pathInfo.grades.includes("일반") || pathInfo.grades.includes("매직")) {
-                rewardAmount = 500000000;
-                msg = `🎉 고진감래! [${themeName}] 완성!\n비효율의 끝에서 기적을 보셨군요!\n보상: 500,000,000 골드 지급!`;
-            }
+        if (grade === "일반" || grade === "매직") {
+            msg = `🎉 고진감래! [${themeName}] (${grade}) 완성!\n인내의 결실입니다!\n보상: ${rewardAmount.toLocaleString()} 골드 지급!`;
         } else {
-            console.warn("Reward path info missing, giving default reward.");
+            msg = `축하합니다! [${themeName}] (${grade}) 완성 보상으로\n${rewardAmount.toLocaleString()} 골드가 지급되었습니다!`;
         }
 
         window.gold += rewardAmount;
-        window.claimedRewards.push(themeName);
-        addLog(`💰 [${themeName}] 도감 보상 ${rewardAmount.toLocaleString()} 골드 지급!`);
+        window.claimedRewards.push(key);
+        addLog(`💰 [${themeName}-${grade}] 도감 보상 ${rewardAmount.toLocaleString()} 골드 지급!`);
+        
         window.vibrate();
         saveGame(2000); 
-        updateUI(); window.openBook(); 
+        updateUI(); 
+        renderBookGrid(); 
         alert(msg);
     }
 
@@ -1396,7 +1648,6 @@
         } 
     }
 
-    // ⭐ [수정] renderRanking: 랭킹 표시 로직 (색상 통일 적용)
     function renderRanking(list, type) {
         if (!list || list.length === 0) return "<div style='text-align:center; padding:20px; color:#555;'>이번 주 기록이 없습니다.<br>첫 번째 주인공이 되어보세요!</div>";
 
@@ -1434,7 +1685,6 @@
                     probText = `<span style="font-size:0.6rem; font-weight:bold; background: linear-gradient(135deg, #00cec9, #a29bfe, #e056fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">RP : ${rp.toLocaleString()}</span>`;
                 } else {
                     badgeHtml = `<span class="tier-badge" style="color:${tier.color}; border-color:${tier.color}">${tier.text}</span>`;
-                    // ⭐ [수정] 일반 등급도 티어 색상과 RP 텍스트 색상을 일치시킴 (굵게 표시)
                     probText = `<span style="font-size:0.6rem; font-weight:bold; color:${tier.color};">RP : ${rp.toLocaleString()}</span>`;
                 }
                 
