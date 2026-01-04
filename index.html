@@ -768,11 +768,11 @@
     // grade: low(하급), mid(중급), high(상급), legendary(최상급), fail(꽝)
     const tarotCards = [
         { id: 0, name: "THE FOOL", icon: "🤡", desc: "꽝! 다음 기회에...", type: "none", val: 0, prob: 15, grade: "fail" },
-        { id: 1, name: "THE MAGICIAN", icon: "🎩", desc: "변이 확률 +5%", type: "mutation_prob", val: 5, prob: 10, grade: "low" },
+        { id: 1, name: "THE MAGICIAN", icon: "🎩", desc: "변이 성공 확률 +5%", type: "mutation_prob", val: 5, prob: 10, grade: "low" },
         { id: 2, name: "THE CHARIOT", icon: "🛒", desc: "소환 비용 -10%", type: "summon_discount", val: 10, prob: 10, grade: "low" },
         { id: 3, name: "THE EMPRESS", icon: "👑", desc: "판매 가격 +10%", type: "sell_bonus", val: 10, prob: 10, grade: "low" },
         { id: 4, name: "STRENGTH", icon: "🦁", desc: "강화 성공 +1%", type: "enhance_prob", val: 1, prob: 10, grade: "low" },
-        { id: 5, name: "THE LOVERS", icon: "❤️", desc: "변이 확률 +15%", type: "mutation_prob", val: 15, prob: 8, grade: "mid" },
+        { id: 5, name: "THE LOVERS", icon: "❤️", desc: "변이 성공 확률 +15%", type: "mutation_prob", val: 15, prob: 8, grade: "mid" },
         { id: 6, name: "THE HIEROPHANT", icon: "⚖️", desc: "소환 비용 -30%", type: "summon_discount", val: 30, prob: 8, grade: "mid" },
         { id: 7, name: "THE HERMIT", icon: "🕯️", desc: "판매 가격 +30%", type: "sell_bonus", val: 30, prob: 8, grade: "mid" },
         { id: 8, name: "JUSTICE", icon: "⚔️", desc: "강화 성공 +2%", type: "enhance_prob", val: 2, prob: 8, grade: "mid" },
@@ -1623,7 +1623,7 @@
                 else if(card.type === 'enhance_prob') effectTd.innerHTML = `성공 <span style="color:#00cec9">+${card.val}%</span>`;
                 else if(card.type === 'summon_discount') effectTd.innerHTML = `비용 <span style="color:#74b9ff">-${card.val}%</span>`;
                 else if(card.type === 'sell_bonus') effectTd.innerHTML = `판매 <span style="color:#ffd700">+${card.val}%</span>`;
-                else if(card.type === 'mutation_prob') effectTd.innerHTML = `변이 <span style="color:#a29bfe">+${card.val}%</span>`;
+                else if(card.type === 'mutation_prob') effectTd.innerHTML = `변이 성공 <span style="color:#a29bfe">+${card.val}%</span>`;
             }
             tr.appendChild(iconTd); tr.appendChild(nameTd); tr.appendChild(effectTd);
             tbody.appendChild(tr);
@@ -1847,8 +1847,11 @@
         const rewardAmount = rewardInfo[grade] || 50000000;
         window.gold += rewardAmount; window.claimedRewards.push(key);
         addLog(`💰 도감 보상 ${rewardAmount.toLocaleString()} 골드 지급!`);
-        window.vibrate(); saveGame(2000); updateUI(); renderBookGrid(); alert("보상이 지급되었습니다!");
-    }
+    window.vibrate(); saveGame(2000); updateUI(); renderBookGrid(); 
+    
+    // [수정] 금액을 명확히 보여주어 만족감 높이기
+    alert(`🎉 축하합니다! [${grade}] 등급 완성!\n\n💰 ${rewardAmount.toLocaleString()} 골드가 지급되었습니다!`);
+}
 
     function formatDateSimple(ts) {
         if(!ts) return "-";
