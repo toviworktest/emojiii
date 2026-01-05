@@ -1411,24 +1411,42 @@
         'charm_5': "📜 부적(+5%)", 'charm_10': "📜 부적(+10%)", 'charm_30': "🌟 부적(+30%)", 'protect': "🛡️ 파괴방지권"
     };
 
+    // [수정됨] 아이템 클릭 핸들러 (구매 후 안내 추가)
     window.toggleBuff = (type) => {
-        // 1. 개수가 없으면 구매 확인
+        // 1. 없으면 구매 프로세스
         if (!window.consumables[type] || window.consumables[type] <= 0) {
             const price = itemPrices[type];
-            if (window.gold < price) { alert(`골드가 부족합니다.\n필요: ${price.toLocaleString()} 🟡`); return; }
+            if (window.gold < price) {
+                alert(`골드가 부족합니다.\n필요: ${price.toLocaleString()} 🟡`);
+                return;
+            }
             if (confirm(`${itemNames[type]}을(를) 구매하시겠습니까?\n가격: ${price.toLocaleString()} 🟡`)) {
                 window.gold -= price;
                 window.consumables[type]++;
+                
+                // [안내 메시지 추가된 부분]
                 addLog(`🛒 ${itemNames[type]} 구매 완료!`);
-                saveGame(0); updateBuffUI(); updateUI();
+                alert(`✅ 구매가 완료되었습니다!\n\n💡 사용법:\n버튼이 밝아졌습니다. 다시 한 번 터치하여\n[테두리가 켜진 상태(장착)]로 만들어주세요.`);
+                
+                saveGame(0);
+                updateBuffUI();
+                updateUI();
             }
             return;
         }
-        // 2. 있으면 장착/해제
-        if (window.selectedBuff === type) { window.selectedBuff = null; addLog("아이템 장착 해제"); } 
-        else { window.selectedBuff = type; addLog(`👉 ${itemNames[type]} 장착됨 (강화 시 소모)`); }
-        updateBuffUI(); updateUI();
+
+        // 2. 있으면 장착/해제 토글
+        if (window.selectedBuff === type) {
+            window.selectedBuff = null; // 이미 선택된거면 해제
+            addLog("아이템 장착 해제");
+        } else {
+            window.selectedBuff = type; // 장착
+            addLog(`👉 ${itemNames[type]} 장착됨 (강화 시 소모)`);
+        }
+        updateBuffUI();
+        updateUI(); // 확률 미리보기 갱신용
     };
+
 
     function updateBuffUI() {
         ['charm_5', 'charm_10', 'charm_30', 'protect'].forEach(key => {
