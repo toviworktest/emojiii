@@ -1769,49 +1769,86 @@
     }
 
     // [핵심 수정 4] 글로벌 랭킹 호출 (50명 제한)
+    // [수정된 랭킹 불러오기 함수]
     async function syncGlobal(tabType) { 
         if(!db) { document.getElementById('rank-list').innerHTML = "<div style='padding:20px; text-align:center;'>DB 연결 실패</div>"; return; }
         document.getElementById('rank-list').innerHTML = "<div style='text-align:center; padding:20px; color:#888;'>데이터 로딩 중...</div>";
+        
+        // 이번 주 월요일 0시 타임스탬프 (이 시간 이전 기록은 무시)
         const weeklyLimit = getWeeklyStartTimestamp();
 
         try {
             if (tabType === 'rarity') {
+                // 1. 유저를 100명까지 넉넉하게 불러옵니다 (과거 기록 때문에 1등인 사람도 포함해서 가져옴)
                 const q = query(
                     collection(db, "users"), 
-                    orderBy("best_prob", "asc"), // 희귀도 정렬
-                    limit(50) // 50명만 호출
+                    orderBy("best_prob", "asc"), 
+                    limit(100) 
                 ); 
                 const snap = await getDocs(q); 
                 let all = [];
+                
                 snap.forEach(d => { 
                     const data = d.data();
-                    if(data.h && data.h.length > 0) {
-                        const bestOne = data.h.sort((a, b) => a.prob - b.prob)[0];
-                        if (bestOne.date >= weeklyLimit) all.push(bestOne);
+                    // 2. [핵심 수정] 각 유저의 기록(h)을 다 뒤져서 '이번 주' 기록만 쏙쏙 뽑아냅니다.
+                    // 기존에는 '대표 기록' 1개만 보고 날짜가 안 맞으면 유저를 버렸지만,
+                    // 이제는 날짜 맞는 기록이 있으면 다 가져옵니다.
+                    if(data.h && Array.isArray(data.h)) {
+                        const weeklyRecords = data.h.filter(item => item.date >= weeklyLimit);
+                        all = all.concat(weeklyRecords); 
                     }
                 }); 
-                cachedRarityRank = all.sort((a, b) => (a.prob === b.prob) ? b.date - a.date : a.prob - b.prob);
+
+                // 3. 모아진 이번 주 기록들을 희귀도 순(낮을수록 1등)으로 정렬
+                cachedRarityRank = all.sort((a, b) => {
+                    if (a.prob === b.prob) return b.date - a.date; // 확률 같으면 최신순
+                    return a.prob - b.prob; // 확률 낮은순(희귀)
+                }).slice(0, 50); // 상위 50개만 자름
+
                 lastRankFetch = Date.now();
+                
+                // 4. 화면에 그리기
                 const rankListEl = document.getElementById('rank-list');
-                if (rankListEl && rankListEl.offsetParent !== null) { rankListEl.innerHTML = renderRanking(cachedRarityRank, 'rarity'); }
-                if(cachedRarityRank.length > 0) { document.getElementById('world-best-info').innerText = `🏆 1위: ${cachedRarityRank[0].owner}`; document.getElementById('world-best-icon').innerText = cachedRarityRank[0].emoji; }
+                if (rankListEl && rankListEl.offsetParent !== null) { 
+                    rankListEl.innerHTML = renderRanking(cachedRarityRank, 'rarity'); 
+                }
+                
+                // 1등 전광판 업데이트
+                if(cachedRarityRank.length > 0) { 
+                    document.getElementById('world-best-info').innerText = `🏆 1위: ${cachedRarityRank[0].owner}`; 
+                    document.getElementById('world-best-icon').innerText = cachedRarityRank[0].emoji; 
+                } else {
+                    document.getElementById('world-best-info').innerText = "이번 주 기록 없음";
+                    document.getElementById('world-best-icon').innerText = "👑";
+                }
 
             } else if (tabType === 'wealth') {
+                // 자산 랭킹 로직 (기존과 동일)
                 const q = query(collection(db, "users"), orderBy("max_gold", "desc"), limit(50));
                 const snap = await getDocs(q);
                 let all = [];
-                snap.forEach(d => { const data = d.data(); all.push({ owner: data.nickname, val: data.max_gold || data.g || 0, date: data.max_gold_date || Date.now() }); });
-                cachedWealthRank = all; lastRankFetch = Date.now();
+                snap.forEach(d => { 
+                    const data = d.data(); 
+                    all.push({ owner: data.nickname, val: data.max_gold || data.g || 0, date: data.max_gold_date || Date.now() }); 
+                });
+                cachedWealthRank = all; 
+                lastRankFetch = Date.now();
                 
                 let displayList = [...cachedWealthRank].filter(item => item.owner !== window.nickname);
                 displayList.push({ owner: window.nickname, val: window.maxGold, date: window.maxGoldDate });
                 displayList.sort((a, b) => b.val - a.val);
                 
                 const rankListEl = document.getElementById('rank-list');
-                if (rankListEl.offsetParent !== null) { rankListEl.innerHTML = renderRanking(displayList.slice(0, 50), 'wealth'); }
+                if (rankListEl.offsetParent !== null) { 
+                    rankListEl.innerHTML = renderRanking(displayList.slice(0, 50), 'wealth'); 
+                }
             }
-        } catch(e) { console.error(e); document.getElementById('rank-list').innerHTML = "랭킹 로딩 실패"; } 
+        } catch(e) { 
+            console.error(e); 
+            document.getElementById('rank-list').innerHTML = "랭킹 로딩 실패"; 
+        } 
     }
+
 
     function renderRanking(list, type) {
         if (!list || list.length === 0) return "<div style='text-align:center; padding:20px; color:#555;'>기록이 없습니다.</div>";
