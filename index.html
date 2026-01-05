@@ -406,6 +406,56 @@
             transition: opacity 0.5s;
         }
         .fortune-text.show { opacity: 1; }
+        /* --- [강화 보조 아이템 바 스타일] --- */
+        .buff-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            background: #111;
+            padding: 5px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            margin-bottom: 5px;
+        }
+        .buff-item {
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 6px 0; /* 패딩 조정 */
+            transition: 0.2s;
+            position: relative;
+            height: auto; /* 높이 자동 */
+            opacity: 1;
+        }
+        .buff-item:active { transform: scale(0.95); }
+        
+        /* 보유량이 0일 때 (흐릿하게) */
+        .buff-item.empty {
+            opacity: 0.5;
+            filter: grayscale(0.8);
+        }
+
+        /* 장착(선택) 중 상태 */
+        .buff-item.active {
+            background: #2c3e50;
+            border-color: #00cec9;
+            box-shadow: 0 0 8px rgba(0, 206, 201, 0.4);
+            opacity: 1 !important; /* 선택되면 선명하게 */
+            filter: grayscale(0);
+        }
+        /* 파괴 방지권 특수 컬러 */
+        .buff-item.protect.active {
+            border-color: #e74c3c;
+            box-shadow: 0 0 8px rgba(231, 76, 60, 0.4);
+        }
+        
+        .buff-icon { font-size: 1.1rem; line-height: 1; margin-bottom: 3px; }
+        .buff-name { font-size: 0.55rem; color: #ccc; font-weight: bold; letter-spacing: -0.5px; }
 
     </style>
 </head>
@@ -465,6 +515,24 @@
                     <span id="deco-l" class="deco-icon"></span>
                     <span id="main-emoji">🔒</span>
                     <span id="deco-r" class="deco-icon"></span>
+                </div>
+            </div>
+            <div class="buff-bar">
+                <div class="buff-item" id="btn-buff-5" onclick="toggleBuff('charm_5')">
+                    <div class="buff-icon">📜</div>
+                    <div class="buff-name">5%</div>
+                </div>
+                <div class="buff-item" id="btn-buff-10" onclick="toggleBuff('charm_10')">
+                    <div class="buff-icon">📜</div>
+                    <div class="buff-name">10%</div>
+                </div>
+                <div class="buff-item" id="btn-buff-30" onclick="toggleBuff('charm_30')">
+                    <div class="buff-icon">🌟</div>
+                    <div class="buff-name">30%</div>
+                </div>
+                <div class="buff-item protect" id="btn-buff-protect" onclick="toggleBuff('protect')">
+                    <div class="buff-icon">🛡️</div>
+                    <div class="buff-name">방지권</div>
                 </div>
             </div>
             <div id="game-log" class="in-game-log"></div>
@@ -1329,6 +1397,58 @@
     }
 
     /* --- [누락된 중간 코드 끝] --- */
+    /* --- [강화 아이템 시스템 로직 시작] --- */
+    window.consumables = { protect: 0, charm_5: 0, charm_10: 0, charm_30: 0 };
+    window.selectedBuff = null;
+
+    const itemPrices = {
+        'charm_5': 50000000,    // 5천만원
+        'charm_10': 150000000,  // 1.5억
+        'charm_30': 500000000,  // 5억
+        'protect': 1500000000,    // 15억
+    };
+    const itemNames = {
+        'charm_5': "📜 부적(+5%)", 'charm_10': "📜 부적(+10%)", 'charm_30': "🌟 부적(+30%)", 'protect': "🛡️ 파괴방지권"
+    };
+
+    window.toggleBuff = (type) => {
+        // 1. 개수가 없으면 구매 확인
+        if (!window.consumables[type] || window.consumables[type] <= 0) {
+            const price = itemPrices[type];
+            if (window.gold < price) { alert(`골드가 부족합니다.\n필요: ${price.toLocaleString()} 🟡`); return; }
+            if (confirm(`${itemNames[type]}을(를) 구매하시겠습니까?\n가격: ${price.toLocaleString()} 🟡`)) {
+                window.gold -= price;
+                window.consumables[type]++;
+                addLog(`🛒 ${itemNames[type]} 구매 완료!`);
+                saveGame(0); updateBuffUI(); updateUI();
+            }
+            return;
+        }
+        // 2. 있으면 장착/해제
+        if (window.selectedBuff === type) { window.selectedBuff = null; addLog("아이템 장착 해제"); } 
+        else { window.selectedBuff = type; addLog(`👉 ${itemNames[type]} 장착됨 (강화 시 소모)`); }
+        updateBuffUI(); updateUI();
+    };
+
+    function updateBuffUI() {
+        ['charm_5', 'charm_10', 'charm_30', 'protect'].forEach(key => {
+            const el = document.getElementById(`btn-buff-${key.replace('charm_','')}`);
+            if(el) {
+                // 1. 보유량이 없으면 흐릿하게(.empty) 처리
+                if(!window.consumables[key] || window.consumables[key] <= 0) {
+                    el.classList.add('empty');
+                } else {
+                    el.classList.remove('empty');
+                }
+
+                // 2. 선택된 아이템 활성화(.active) 처리
+                if (window.selectedBuff === key) el.classList.add('active'); 
+                else el.classList.remove('active');
+            }
+        });
+    }
+    /* --- [강화 아이템 시스템 로직 끝] --- */
+
 
     window.updateUI = function() {
         window.gold = Number(window.gold); 
@@ -1433,6 +1553,12 @@
                     const dL = document.getElementById('deco-l'), dR = document.getElementById('deco-r');
                     document.getElementById('main-emoji').innerText = currentIcon;
                     if (lvl >= 15) dL.innerText = dR.innerText = "🎆"; else if (lvl >= 10) dL.innerText = dR.innerText = "🔥"; else dL.innerText = dR.innerText = "";
+                                        // [아이템] 부적 장착 시 확률 미리보기 적용
+                    if (window.selectedBuff && window.selectedBuff.startsWith('charm')) {
+                        let cVal = (window.selectedBuff === 'charm_5') ? 5 : (window.selectedBuff === 'charm_10' ? 10 : 30);
+                        let conv = Math.min(m, cVal);
+                        s += conv; m -= conv;
+                    }
 
                     // [핵심 수정 1] 20레벨 제한 버튼 처리
                     let evolveBtnHtml = "";
@@ -1609,6 +1735,12 @@
     window.evolve = () => {
         if (!window.currentEmoji) return;
         let cost = Math.floor(2000 * Math.pow(1.8, window.currentEmoji.level)); 
+        
+        // 아이템 체크 (선택했는데 없으면 해제)
+        if (window.selectedBuff && window.consumables[window.selectedBuff] <= 0) {
+            window.selectedBuff = null; updateBuffUI();
+        }
+
         if (window.gold < cost) { addLog("돈이 부족합니다!"); return; }
         window.gold -= cost;
         
@@ -1618,17 +1750,33 @@
         emojiEl.className = ''; void emojiEl.offsetWidth;
 
         let lvl = window.currentEmoji.level, info = gradeInfo[window.currentEmoji.grade];
+        
+        // 1. 기본 확률
         let b = (lvl < 5) ? 0.5 : Math.min(20, (lvl - 4) * 2); 
         let m = Math.min(50, lvl * (7 / info.mod)); 
         let s = Math.max(10, 100 - b - m); 
         
+        // 2. 타로 버프
         if(window.tarotBuff?.type === 'enhance_prob') {
             let bonus = window.tarotBuff.val;
             if (m >= bonus) { s += bonus; m -= bonus; } else { s += m; m = 0; } 
         }
 
+        // 3. 아이템(부적) 적용 - 파괴확률(b)은 건드리지 않음
+        let usedItem = null; 
+        if (window.selectedBuff && window.selectedBuff.startsWith('charm')) {
+            let charmVal = (window.selectedBuff === 'charm_5') ? 5 : (window.selectedBuff === 'charm_10' ? 10 : 30);
+            let conversion = Math.min(m, charmVal); // 유지확률에서 깎아서 성공으로
+            s += conversion; m -= conversion;
+            usedItem = window.selectedBuff;
+        }
+
         let rand = Math.random() * 100;
+        
         if (rand < s) { 
+            // [성공]
+            if (usedItem) { window.consumables[usedItem]--; addLog(`✨ 부적 효과 적용됨!`); }
+            
             window.currentEmoji.level++; 
             let improveFactor = (s - (window.tarotBuff?.type==='enhance_prob' ? window.tarotBuff.val : 0)) / 100;
             if(Math.random() < 0.1) { improveFactor *= 0.8; addLog(`⚡ 대성공! (희귀도 대폭 상승)`); }
@@ -1637,22 +1785,36 @@
             if (nextRarity < 1e-100) nextRarity = 1e-100; 
             window.currentEmoji.rarity = nextRarity.toFixed(20); 
             
-            // [핵심 수정 2] 20레벨 달성 축하 메시지
             if (window.currentEmoji.level >= 20) {
                 addLog(`👑 축하합니다! 최고 레벨(20)에 도달했습니다!`);
-                alert(`🎉 위대한 업적 달성! 🎉\n\n[${window.currentEmoji.grade}] 등급의 정점,\n레벨 20에 도달했습니다!`);
-                if(navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
-            } else {
-                addLog(`✨ 강화 성공! +${window.currentEmoji.level}`);
-            }
+                alert(`🎉 위대한 업적 달성! 🎉\n\n레벨 20에 도달했습니다!`);
+            } else { addLog(`✨ 강화 성공! +${window.currentEmoji.level}`); }
             emojiEl.classList.add('anim-success');
+
         } else if (rand < s + m) { 
+            // [유지]
+            if (usedItem) { window.consumables[usedItem]--; addLog(`💨 부적을 썼지만 유지됨...`); }
             addLog("💨 상태 유지"); emojiEl.classList.add('anim-stay');
+
         } else { 
-            addLog(`💀 강화 실패... 파괴되었습니다.`); window.currentEmoji.gone = true; emojiEl.classList.add('anim-fail');
-        } 
-        updateUI(); saveGame(2000); 
+            // [파괴]
+            if (window.selectedBuff === 'protect') {
+                window.consumables['protect']--; 
+                addLog(`🛡️ 파괴 방지권 발동! (파괴 면함)`);
+                emojiEl.classList.add('anim-stay'); // 파괴 대신 유지 모션
+                window.selectedBuff = null; // 사용 후 해제
+            } else {
+                if (usedItem) { window.consumables[usedItem]--; } 
+                addLog(`💀 강화 실패... 파괴되었습니다.`); 
+                window.currentEmoji.gone = true; 
+                emojiEl.classList.add('anim-fail');
+            }
+        }
+        
+        if (usedItem) window.selectedBuff = null; // 부적은 1회용이므로 해제
+        updateBuffUI(); updateUI(); saveGame(2000); 
     };
+
 
     window.openAllInModal = (cost, currentGold) => {
         document.getElementById('allin-cost-disp').innerText = cost.toLocaleString() + " 🟡";
@@ -1913,11 +2075,12 @@
                 b: window.book, r: window.claimedRewards,
                 max_gold: window.maxGold, max_gold_date: window.maxGoldDate,
                 last_active: Date.now(), 
-                best_prob: window.bestProb || 1, // [랭킹용] 핵심 필드 저장
+                best_prob: window.bestProb || 1, 
                 last_reward_date: window.lastRewardDate,
                 tarot_buff: window.tarotBuff,
                 today_tarot_count: window.todayTarotCount,
-                last_tarot_date: window.lastTarotDate
+                last_tarot_date: window.lastTarotDate,
+                consumables: window.consumables // [추가됨]
             };
             
             localStorage.setItem('catSave_' + window.nickname, JSON.stringify(dataToSave)); 
@@ -1993,6 +2156,10 @@
                 window.tarotBuff = d.tarot_buff || null;
                 window.todayTarotCount = d.today_tarot_count || 0;
                 window.lastTarotDate = d.last_tarot_date || 0;
+                                // [추가] 아이템 데이터 로드 및 UI 초기화
+                window.consumables = d.consumables || { protect: 0, charm_5: 0, charm_10: 0, charm_30: 0 };
+                updateBuffUI();
+
                 window.bestProb = d.best_prob || 1; // [랭킹] 로드
 
                 if(window.inventory.length < 10) { for(let k=0; k<10-window.inventory.length; k++) { window.inventory.push({ unlocked: false, item: null }); } }
