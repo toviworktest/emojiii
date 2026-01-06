@@ -406,56 +406,80 @@
             transition: opacity 0.5s;
         }
         .fortune-text.show { opacity: 1; }
-        /* --- [강화 보조 아이템 바 스타일] --- */
+        /* --- [강화 보조 아이템 바 스타일 (플러스 뱃지 축소)] --- */
         .buff-bar {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-            background: #111;
-            padding: 5px;
-            border-radius: 8px;
-            border: 1px solid #333;
+            gap: 6px;
+            background: #0f0f0f;
+            padding: 6px;
+            border-radius: 10px;
+            border: 1px solid #222;
             margin-bottom: 5px;
         }
+
         .buff-item {
-            background: #222;
+            background: #1a1a1a;
             border: 1px solid #444;
-            border-radius: 6px;
+            border-radius: 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            padding: 6px 0; /* 패딩 조정 */
-            transition: 0.2s;
-            position: relative;
-            height: auto; /* 높이 자동 */
+            padding: 5px 0;
+            transition: all 0.2s;
+            position: relative; 
+            height: auto;
             opacity: 1;
         }
-        .buff-item:active { transform: scale(0.95); }
-        
-        /* 보유량이 0일 때 (흐릿하게) */
+
+        .buff-item:active { transform: scale(0.96); }
+
+        /* [상태 1] 없을 때 (구매 유도) : 점선 + 작은 플러스 뱃지 */
         .buff-item.empty {
-            opacity: 0.5;
-            filter: grayscale(0.8);
+            border: 1px dashed #555;
+            background: #111;
+            color: #777;
+        }
+        
+        /* ⭐ 수정됨: 플러스(+) 뱃지 크기 축소 */
+        .buff-item.empty::after {
+            content: '+';
+            position: absolute;
+            top: -3px; right: -3px; /* 위치를 더 안쪽으로 */
+            background: #ffd700;
+            color: #000;
+            font-weight: 900;
+            font-size: 0.5rem; /* 폰트 크기 축소 */
+            width: 11px; height: 11px; /* 뱃지 전체 크기 축소 (13px -> 11px) */
+            border-radius: 50%;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            border: 1px solid #000;
+            /* 애니메이션 없음 */
         }
 
-        /* 장착(선택) 중 상태 */
+        /* [상태 2] 장착(선택) 중 */
         .buff-item.active {
-            background: #2c3e50;
-            border-color: #00cec9;
-            box-shadow: 0 0 8px rgba(0, 206, 201, 0.4);
-            opacity: 1 !important; /* 선택되면 선명하게 */
-            filter: grayscale(0);
+            background: #252a34;
+            border: 1px solid #00cec9;
+            box-shadow: 0 0 5px rgba(0, 206, 201, 0.3);
+            color: #fff;
+            z-index: 2;
         }
+
         /* 파괴 방지권 특수 컬러 */
         .buff-item.protect.active {
             border-color: #e74c3c;
-            box-shadow: 0 0 8px rgba(231, 76, 60, 0.4);
+            background: #2c1e1e;
+            box-shadow: 0 0 5px rgba(231, 76, 60, 0.3);
         }
         
-        .buff-icon { font-size: 1.1rem; line-height: 1; margin-bottom: 3px; }
-        .buff-name { font-size: 0.55rem; color: #ccc; font-weight: bold; letter-spacing: -0.5px; }
+        .buff-icon { font-size: 1.1rem; line-height: 1; margin-bottom: 2px; }
+        .buff-name { font-size: 0.5rem; font-weight: bold; letter-spacing: -0.5px; }
+
 
     </style>
 </head>
