@@ -532,6 +532,11 @@
         <input type="email" id="inp-email" class="login-input" placeholder="이메일 주소">
         <input type="password" id="inp-pw" class="login-input" placeholder="비밀번호">
         <input type="text" id="inp-nick" class="login-input" placeholder="닉네임" style="display:none;">
+        
+        <button class="btn-action" onclick="startGuestMode()" style="width:100%; background:#444; color:#ccc; margin-top:15px; border:1px solid #666; font-size:0.8rem;">
+            👻 게스트로 시작하기 (저장 안 됨)
+        </button>
+
         <div style="display:flex; justify-content:space-between; gap:10px; margin-top:10px;">
             <button class="btn-action" style="flex:1; background:#00cec9; color:#000;" onclick="toggleJoinMode()" id="btn-mode-switch">회원가입</button>
             <button class="btn-action" style="flex:1; background:#e74c3c;" onclick="processAuth()" id="btn-auth-action">로그인</button>
@@ -548,6 +553,11 @@
         </div>
         <div class="header-right">
             <div class="id-box" id="my-id-label">ID: -</div>
+            
+            <button class="header-btn" id="btn-link-google" onclick="linkGoogleAccount()" style="display:none; background:#e74c3c; color:white; border:1px solid #ff7675; animation:pulse-red 2s infinite; font-weight:bold; margin-right:5px;">
+                💾 저장
+            </button>
+            
             <button class="header-btn" onclick="changeNickname()">✏️</button>
             <button class="header-btn" onclick="logout()">OUT</button>
         </div>
@@ -2519,11 +2529,126 @@
         if(window.currentUserUid) await updateDoc(doc(db, "users", window.currentUserUid), { nickname: target });
         alert("변경 완료!");
     };
+    // [추가 1] 게스트 모드 시작 함수
+    window.startGuestMode = () => {
+        document.getElementById('nick-modal').style.display = 'none';
+        
+        // 게스트 초기값 설정 (랜덤 닉네임)
+        window.nickname = "GUEST_" + Math.floor(Math.random() * 9000 + 1000);
+        window.gold = 200000;
+        window.maxGold = 200000;
+        window.currentEmoji = null;
+        window.myHistory = [];
+        window.inventory = Array(10).fill(null).map((_, i) => ({ unlocked: i < 1, item: null }));
+        window.book = {};
+        window.claimedRewards = [];
+        window.claimedGradeRewards = [];
+        window.consumables = { protect: 0, charm_5: 0, charm_10: 0, charm_30: 0 };
+        
+        // 게스트임을 표시 (UID 비움)
+        window.currentUserUid = null; 
+        
+        // '저장' 버튼 보여주기
+        const linkBtn = document.getElementById('btn-link-google');
+        if(linkBtn) linkBtn.style.display = 'inline-block';
+        
+        addLog("👻 게스트 모드로 시작합니다.");
+        addLog("⚠️ 주의: 앱을 삭제하거나 캐시를 지우면 데이터가 사라집니다.");
+        updateUI();
+    };
+
+    // [추가 2] 안전장치가 포함된 계정 연동(저장) 함수
+    window.linkGoogleAccount = async () => {
+        if(!confirm("현재 플레이 중인 데이터를 구글 계정에 영구 저장하시겠습니까?")) return;
+
+        const provider = new GoogleAuthProvider();
+        try {
+            // 연동 시작 플래그 (onAuthStateChanged 자동 실행 방지)
+            window.isLinking = true; 
+
+            // 구글 로그인 팝업
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+            
+            // 서버 데이터 확인 (충돌 방지)
+            const userRef = doc(db, "users", user.uid);
+            const docSnap = await getDoc(userRef);
+
+            // 현재 내 데이터 패키징 (이게 서버로 올라갑니다)
+            const currentData = { 
+                nickname: window.nickname, 
+                g: window.gold, c: window.currentEmoji, h: window.myHistory, i: window.inventory,
+                b: window.book, r: window.claimedRewards,
+                claimedGradeRewards: window.claimedGradeRewards || [],
+                max_gold: window.maxGold, max_gold_date: window.maxGoldDate,
+                last_active: Date.now(), 
+                best_prob: window.bestProb || 1, 
+                last_reward_date: window.lastRewardDate,
+                tarot_buff: window.tarotBuff,
+                today_tarot_count: window.todayTarotCount,
+                last_tarot_date: window.lastTarotDate,
+                consumables: window.consumables
+            };
+
+            if (docSnap.exists()) {
+                // ⚠️ 충돌 감지: 서버에 이미 데이터가 있음!
+                const serverData = docSnap.data();
+                const serverGold = serverData.g || 0;
+                const serverNick = serverData.nickname || "알 수 없음";
+
+                const msg = `⚠️ 이미 저장된 데이터가 발견되었습니다!\n\n` +
+                            `[☁️ 서버 데이터]\n닉네임: ${serverNick}\n골드: ${serverGold.toLocaleString()} 🟡\n\n` +
+                            `[📱 현재 데이터]\n닉네임: ${window.nickname}\n골드: ${window.gold.toLocaleString()} 🟡\n\n` +
+                            `👉 [확인]: 현재 데이터로 덮어씁니다. (서버 데이터 삭제)\n` +
+                            `👉 [취소]: 서버 데이터를 불러옵니다. (현재 데이터 삭제)`;
+
+                if (confirm(msg)) {
+                    // 확인 -> 덮어쓰기 (Guest Win)
+                    await setDoc(userRef, currentData, { merge: true });
+                    alert(`✅ 저장 완료!\n현재 데이터가 [${user.email}] 계정에 저장되었습니다.`);
+                    finishLinking(user.uid);
+                } else {
+                    // 취소 -> 불러오기 (Server Win)
+                    alert("☁️ 서버 데이터를 불러오기 위해 게임을 다시 시작합니다.");
+                    window.isLinking = false; 
+                    location.reload(); 
+                }
+            } else {
+                // ✅ 안전: 신규 연동
+                await setDoc(userRef, currentData, { merge: true });
+                alert(`✅ 계정 연동 완료!\n[${user.email}] 계정에 안전하게 보관됩니다.`);
+                finishLinking(user.uid);
+            }
+
+        } catch (e) {
+            window.isLinking = false;
+            console.error(e);
+            if(e.code !== 'auth/popup-closed-by-user') {
+                alert("연동 실패: " + e.message);
+            }
+        }
+    };
+
+    function finishLinking(uid) {
+        window.currentUserUid = uid;
+        window.isLinking = false;
+        document.getElementById('btn-link-google').style.display = 'none'; // 저장 버튼 숨김
+        updateUI();
+    }
 
     onAuthStateChanged(auth, async (user) => {
+        // [수정 1] 계정 연동(이사) 중이면 자동 로드 중단 (충돌 방지)
+        if (window.isLinking) return;
+
         if (user) {
+            // --- 로그인 성공 시 ---
             window.currentUserUid = user.uid;
             document.getElementById('nick-modal').style.display = 'none';
+            
+            // 로그인 상태니까 '저장' 버튼 숨김
+            const linkBtn = document.getElementById('btn-link-google');
+            if(linkBtn) linkBtn.style.display = 'none'; 
+
             const snap = await getDoc(doc(db, "users", user.uid));
             if (snap.exists()) {
                 const d = snap.data();
@@ -2534,13 +2659,14 @@
                 window.tarotBuff = d.tarot_buff || null;
                 window.todayTarotCount = d.today_tarot_count || 0;
                 window.lastTarotDate = d.last_tarot_date || 0;
-                                // [추가] 아이템 데이터 로드 및 UI 초기화
+                
+                // 50억 보상 & 아이템 데이터 로드
                 window.consumables = d.consumables || { protect: 0, charm_5: 0, charm_10: 0, charm_30: 0 };
-                updateBuffUI();// ⭐ [추가] 50억 보상 기록 불러오기
                 window.claimedGradeRewards = d.claimedGradeRewards || [];
+                
+                updateBuffUI();
 
-
-                window.bestProb = d.best_prob || 1; // [랭킹] 로드
+                window.bestProb = d.best_prob || 1;
 
                 if(window.inventory.length < 10) { for(let k=0; k<10-window.inventory.length; k++) { window.inventory.push({ unlocked: false, item: null }); } }
                 window.maxGold = d.max_gold || d.g || 200000; window.maxGoldDate = d.max_gold_date || Date.now();
@@ -2550,16 +2676,22 @@
                     window.gold += 5000000; window.lastRewardDate = Date.now();
                     alert("📅 일일 지원금이 도착했습니다!\n+5,000,000 🟡"); saveGame(0);
                 }
-                // [추가] 접속 시 날짜 체크 수행
                 await checkDailyTarotReset(); 
                 updateUI(); setTimeout(() => syncGlobal('rarity'), 500); 
             } else {
+                // 신규 구글 유저 (데이터 없음)
                 window.nickname = "User_" + user.uid.slice(0,4);
                 window.gold = 200000; window.maxGold = 200000;
+                // 초기값 설정 등...
                 saveGame(0); updateUI();
             }
-        } else { document.getElementById('nick-modal').style.display = 'flex'; }
+        } else { 
+            // --- 로그아웃 상태 (게스트 대기) ---
+            // 모달 띄우기
+            document.getElementById('nick-modal').style.display = 'flex'; 
+        }
     });
+
 
     window.logout = () => signOut(auth).then(() => location.reload());
 
