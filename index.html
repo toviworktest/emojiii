@@ -569,6 +569,7 @@
                 <div class="canvas-overlay">
                     <span id="overlay-grade">-</span>
                     <span id="overlay-name-level">준비됨</span>
+                    <div id="book-status-badge" style="margin-top:42px; position:absolute; right:10px;"></div>
                 </div>
                 <div class="emoji-wrap">
                     <span id="deco-l" class="deco-icon"></span>
@@ -1027,6 +1028,98 @@
         { name: "불꽃", grades: ["매직","레어"], stages: ["🔥","🕯️","🧨","🎇"] },
         { name: "전기", grades: ["레어","에픽"], stages: ["🔌","🔋","⚡","💡"] }
     ];
+    /* --- [1. 신규 추가된 진화 트리 50종 데이터] --- */
+    const newEvoPaths = [
+        // [일반] 생활, 기본 사물 10종
+        { name: "필기구", stages: ["✏️","🖊️","🖍️","🖌️"], grades: ["일반"] },
+        { name: "청소", stages: ["🧹","🧽","🧼","🧺"], grades: ["일반"] },
+        { name: "우편", stages: ["✉️","📩","📫","📮"], grades: ["일반"] },
+        { name: "문", stages: ["🚪","🛗","🗝️","🔐"], grades: ["일반"] },
+        { name: "시계", stages: ["⏳","⌛","⌚","⏰"], grades: ["일반"] },
+        { name: "전기", stages: ["🔌","🔋","💡","🔦"], grades: ["일반"] },
+        { name: "종이", stages: ["📄","📃","📑","📰"], grades: ["일반"] },
+        { name: "쇼핑", stages: ["🛍️","🛒","🏷️","💳"], grades: ["일반"] },
+        { name: "욕실", stages: ["🚿","🛁","🚽","🧻"], grades: ["일반"] },
+        { name: "공구", stages: ["🔩","🔧","🔨","🗜️"], grades: ["일반"] },
+
+        // [매직] 직업, 취미, 활동 10종
+        { name: "축구", stages: ["⚽","👟","🥅","🏆"], grades: ["매직"] },
+        { name: "농구", stages: ["🏀","⛹️","👟","🗑️"], grades: ["매직"] },
+        { name: "낚시", stages: ["🪱","🎣","🐟","🐡"], grades: ["매직"] },
+        { name: "미술", stages: ["🎨","🧑‍🎨","🖼️","🎭"], grades: ["매직"] },
+        { name: "음악", stages: ["🎼","🎻","🎷","🎸"], grades: ["매직"] },
+        { name: "영화", stages: ["🎬","🎞️","🍿","🎥"], grades: ["매직"] },
+        { name: "의료", stages: ["💊","💉","🩺","🏥"], grades: ["매직"] },
+        { name: "실험", stages: ["🧫","🧪","🧬","🔬"], grades: ["매직"] },
+        { name: "요리사", stages: ["🔪","🍳","🥘","👨‍🍳"], grades: ["매직"] },
+        { name: "경찰", stages: ["🚨","🚔","🔫","👮"], grades: ["매직"] },
+
+        // [레어] 자연, 탈것, 강력한 것 10종
+        { name: "사막", stages: ["🏜️","🦂","🦎","🐪"], grades: ["레어"] },
+        { name: "화산", stages: ["🌋","🔥","🧨","💣"], grades: ["레어"] },
+        { name: "상어", stages: ["💧","🐟","🦈","🌊"], grades: ["레어"] },
+        { name: "공룡", stages: ["🥚","🦖","🦕","🦴"], grades: ["레어"] },
+        { name: "기차", stages: ["🛤️","🚂","🚆","🚅"], grades: ["레어"] },
+        { name: "건설", stages: ["🧱","🏗️","🚜","🏢"], grades: ["레어"] },
+        { name: "비행", stages: ["🪂","🚁","✈️","🛫"], grades: ["레어"] },
+        { name: "정글", stages: ["🌿","🦍","🐆","🦜"], grades: ["레어"] },
+        { name: "보석", stages: ["💍","💎","👑","🔮"], grades: ["레어"] },
+        { name: "성", stages: ["🛡️","⚔️","🏰","🏯"], grades: ["레어"] },
+
+        // [에픽] 판타지, 미스터리 10종
+        { name: "유령", stages: ["🕯️","👻","🧟","💀"], grades: ["에픽"] },
+        { name: "드래곤", stages: ["🥚","🐲","🐉","🔥"], grades: ["에픽"] },
+        { name: "마법", stages: ["✨","🧙","🪄","🎩"], grades: ["에픽"] },
+        { name: "인어", stages: ["🐚","🪸","🧜‍♀️","🔱"], grades: ["에픽"] },
+        { name: "뱀파이어", stages: ["🍷","🦇","🧛","⚰️"], grades: ["에픽"] },
+        { name: "천둥", stages: ["☁️","⛈️","⚡","🌪️"], grades: ["에픽"] },
+        { name: "얼음", stages: ["❄️","☃️","🧊","🥶"], grades: ["에픽"] },
+        { name: "외계인", stages: ["📡","🛸","👽","👾"], grades: ["에픽"] },
+        { name: "도깨비", stages: ["👺","👹","🎭","🧧"], grades: ["에픽"] },
+        { name: "천사", stages: ["🪽","🕊️","👼","🌥️"], grades: ["에픽"] },
+
+        // [레전더리] 우주, 초월, 개념 10종
+        { name: "우주", stages: ["🚀","🧑‍🚀","🌑","🌌"], grades: ["레전더리"] },
+        { name: "행성", stages: ["🌍","🪐","☀️","⭐"], grades: ["레전더리"] },
+        { name: "시간", stages: ["🕰️","📅","📆","♾️"], grades: ["레전더리"] },
+        { name: "겜블", stages: ["🎲","🃏","🎰","🤑"], grades: ["레전더리"] },
+        { name: "왕권", stages: ["🤴","👸","🏰","👑"], grades: ["레전더리"] },
+        { name: "종교", stages: ["🛐","🕉️","☯️","☮️"], grades: ["레전더리"] },
+        { name: "사랑", stages: ["💌","🌹","💍","💖"], grades: ["레전더리"] },
+        { name: "디지털", stages: ["💾","💿","💻","🤖"], grades: ["레전더리"] },
+        { name: "축제", stages: ["🎉","🎊","🎇","🎆"], grades: ["레전더리"] },
+        { name: "신화", stages: ["📜","🏛️","🏺","🔱"], grades: ["레전더리"] }
+    ];
+    // 기존 데이터에 합치기
+    evoPaths.push(...newEvoPaths); 
+
+
+    /* --- [2. 등급별 올클리어 보상 설정 (50억 통일)] --- */
+    const gradeCompletionRewards = {
+        "일반": 5000000000,
+        "매직": 5000000000,
+        "레어": 5000000000,
+        "에픽": 5000000000,
+        "레전더리": 5000000000
+    };
+    // 보상 수령 기록 배열 초기화
+    if (!window.claimedGradeRewards) window.claimedGradeRewards = [];
+
+    // [추가됨] 등급 정복(올클리어) 보상 수령 함수
+    window.claimGradeMasteryReward = (grade) => {
+        if(window.claimedGradeRewards.includes(grade)) return;
+        
+        const reward = gradeCompletionRewards[grade] || 0;
+        window.gold += reward;
+        window.claimedGradeRewards.push(grade);
+        
+        addLog(`🏆 [${grade}] 등급 완전 정복! 보상 +${reward.toLocaleString()}`);
+        alert(`🏆 대단합니다!\n[${grade}] 등급의 모든 도감을 완성했습니다!\n\n특별 보상: ${reward.toLocaleString()} 골드 지급!`);
+        
+        saveGame(0);
+        updateUI();
+        renderBookGrid(); // 버튼 상태 갱신
+    };
 
     window.gold = 200000; window.nickname = ""; window.currentEmoji = null; 
     window.myHistory = []; window.selectedInvIdx = null;
@@ -1451,32 +1544,82 @@
     }
 
     window.renderBookGrid = () => {
-        const grid = document.getElementById('book-list'); grid.innerHTML = "";
-        if(!window.book) window.book = {}; if(!window.claimedRewards) window.claimedRewards = [];
-        const targetPaths = evoPaths.filter(p => p.grades.includes(window.currentBookTab));
-        const currentGradeInfo = gradeInfo[window.currentBookTab];
+        const grid = document.getElementById('book-list'); 
+        grid.innerHTML = "";
         
-        const hintEl = document.getElementById('book-hint-text');
-        if(window.currentBookTab === "일반" || window.currentBookTab === "매직") { hintEl.innerText = "* 고진감래 : 쓴 것이 다하면 단 것이 온다."; } 
-        else { const reward = rewardInfo[window.currentBookTab]; hintEl.innerText = `* ${window.currentBookTab} 등급 완성 시 ${reward.toLocaleString()} 골드 지급!`; }
-        hintEl.style.color = currentGradeInfo.color;
+        if(!window.book) window.book = {}; 
+        if(!window.claimedRewards) window.claimedRewards = [];
+        if(!window.claimedGradeRewards) window.claimedGradeRewards = []; // 안전장치
 
+        const currentGrade = window.currentBookTab;
+        const targetPaths = evoPaths.filter(p => p.grades.includes(currentGrade));
+        const currentGradeInfo = gradeInfo[currentGrade];
+        
+        // --- [올클리어 체크 로직] ---
+        let totalCount = targetPaths.length;
+        let completedCount = 0;
+        
+        targetPaths.forEach(path => {
+            const k = `${path.name}_${currentGrade}`;
+            if ((window.book[k] || 0) >= 4) completedCount++;
+        });
+
+        // 힌트 텍스트 업데이트 (진행률 표시)
+        const hintEl = document.getElementById('book-hint-text');
+        hintEl.innerHTML = `<span style="color:${currentGradeInfo.color}">[${currentGrade}] 진행률: ${completedCount} / ${totalCount}</span>`;
+        
+        // ⭐ [올클리어 보상 버튼 표시]
+        if (completedCount >= totalCount && totalCount > 0) {
+            if (!window.claimedGradeRewards.includes(currentGrade)) {
+                const rewardAmt = gradeCompletionRewards[currentGrade];
+                const masterBtn = document.createElement('div');
+                masterBtn.innerHTML = `
+                    <div style="font-size:1.2rem; font-weight:bold;">🏆 ${currentGrade} 마스터리 달성!</div>
+                    <div style="font-size:0.9rem; color:#ffd700;">터치하여 ${rewardAmt.toLocaleString()} 골드 받기</div>
+                `;
+                masterBtn.onclick = () => claimGradeMasteryReward(currentGrade);
+                
+                masterBtn.style.cssText = `
+                    grid-column: 1 / -1;
+                    background: linear-gradient(45deg, #2c3e50, #000);
+                    border: 2px solid #ffd700;
+                    padding: 15px;
+                    text-align: center;
+                    border-radius: 10px;
+                    margin-bottom: 15px;
+                    cursor: pointer;
+                    animation: pulse-gold 1.5s infinite;
+                    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+                    color: white;
+                `;
+                grid.appendChild(masterBtn);
+            } else {
+                hintEl.innerHTML += ` <span style="color:#ffd700; margin-left:10px;">(🏆 정복 완료)</span>`;
+            }
+        }
+        // -------------------------
+
+        // 정렬
         const gradeWeight = { "레전더리": 5, "에픽": 4, "레어": 3, "매직": 2, "일반": 1 };
         targetPaths.sort((a, b) => Math.max(...b.grades.map(g => gradeWeight[g])) - Math.max(...a.grades.map(g => gradeWeight[g])));
 
         targetPaths.forEach(path => {
             const bookKey = `${path.name}_${window.currentBookTab}`;
             const myLevel = window.book[bookKey] || 0; 
-            const isDiscovered = myLevel > 0; const isCompleted = myLevel >= 4; const isClaimed = window.claimedRewards.includes(bookKey);
-            const card = document.createElement('div'); card.className = `book-card-mini ${isCompleted?'book-completed':''}`; 
-            card.style.borderColor = currentGradeInfo.color; if(!isDiscovered) card.style.opacity = "0.8"; 
+            const isDiscovered = myLevel > 0; 
+            const isCompleted = myLevel >= 4; 
+            const isClaimed = window.claimedRewards.includes(bookKey);
             
-            // [수정된 부분] 보상 수령 가능 시 클릭 이벤트 및 붉은 오라 효과 추가
+            const card = document.createElement('div'); 
+            card.className = `book-card-mini ${isCompleted?'book-completed':''}`; 
+            card.style.borderColor = currentGradeInfo.color; 
+            if(!isDiscovered) card.style.opacity = "0.8"; 
+            
             if(isCompleted) { 
                 card.onclick = () => handleReward(path.name, window.currentBookTab); 
                 if(!isClaimed) {
                     card.innerHTML += `<div class="mini-reward-dot"></div>`;
-                    card.classList.add('book-card-reward-aura'); // 👈 붉은 오라 클래스 추가
+                    card.classList.add('book-card-reward-aura');
                 }
             }
 
@@ -1487,9 +1630,11 @@
                 slotsHtml += `<div class="book-mini-slot">${content}</div>`;
             }
             slotsHtml += `</div>`;
-            card.innerHTML += headerHtml + slotsHtml; grid.appendChild(card);
+            card.innerHTML += headerHtml + slotsHtml; 
+            grid.appendChild(card);
         });
     }
+
 
     window.handleReward = (themeName, grade) => {
         const key = `${themeName}_${grade}`;
@@ -1649,7 +1794,30 @@
                 document.getElementById('overlay-grade').innerText = window.currentEmoji.grade; 
                 document.getElementById('overlay-grade').style.color = info.color;
                 document.getElementById('overlay-name-level').innerText = `+${lvl}`; 
+                // ⭐ [수정됨] 도감 배지: 심플한 도트 & 올클리어 기준 판정
+                const bookKey = `${window.currentEmoji.pathName}_${window.currentEmoji.grade}`;
+                const mySavedLevel = window.book[bookKey] || 0; 
                 
+                // [판정 변경] 4단계(최종 진화)까지 모두 등록되어야 '완성(초록)'으로 인정
+                // 하나라도 부족하면 '미완성(주황)'
+                const isMastered = mySavedLevel >= 4;
+
+                const badgeEl = document.getElementById('book-status-badge');
+                if (badgeEl) {
+                    // 스타일 공통 (작은 원형 도트)
+                    const dotStyle = "width:8px; height:8px; border-radius:50%; display:inline-block; border:1px solid rgba(255,255,255,0.5);";
+                    
+                    if (isMastered) {
+                        // 🟢 초록 도트 (완성됨)
+                        badgeEl.innerHTML = `<div title="도감 완성됨 (마스터)" style="${dotStyle} background-color:#2ecc71; box-shadow:0 0 6px #2ecc71;"></div>`;
+                    } else {
+                        // 🟠 주황 도트 + 깜빡임 (미완성 / 수집 필요)
+                        badgeEl.innerHTML = `<div title="도감 미완성 (수집 필요)" style="${dotStyle} background-color:#e67e22; box-shadow:0 0 6px #e67e22; animation:blink 1s infinite;"></div>`;
+                    }
+                }
+                // ⭐ [수정 끝]
+
+
                 const stageIdx = Math.min(3, Math.floor(lvl / 5));
                 const currentIcon = pathObj.stages[stageIdx] || "❓";
 
@@ -1827,10 +1995,17 @@
     };
 
     function resetDisplay() {
-        document.getElementById('overlay-name-level').innerText = "소환 대기 중"; document.getElementById('main-emoji').innerText = "❓";
-        document.getElementById('overlay-grade').innerText = "-"; document.getElementById('deco-l').innerText = document.getElementById('deco-r').innerText = "";
+        document.getElementById('overlay-name-level').innerText = "소환 대기 중"; 
+        document.getElementById('main-emoji').innerText = "❓";
+        document.getElementById('overlay-grade').innerText = "-"; 
+        document.getElementById('deco-l').innerText = document.getElementById('deco-r').innerText = "";
         document.querySelectorAll('.gauge-seg').forEach(el => el.style.width = "0%"); 
         ["st-value", "st-grade", "st-rarity"].forEach(id => document.getElementById(id).innerText = "-");
+        
+        // ⭐ [추가됨] 소환 전에는 도감 배지 숨기기
+        const badgeEl = document.getElementById('book-status-badge');
+        if(badgeEl) badgeEl.innerHTML = ""; 
+
         if(window.tarotBuff && window.tarotBuff.type === 'mutation_prob') {
             document.getElementById('st-gene').innerHTML = `<span style="color:#a29bfe; animation:blink 1s infinite;">🧬 +${window.tarotBuff.val}%</span>`;
         } else { document.getElementById('st-gene').innerText = "-"; }
@@ -2279,8 +2454,12 @@
                 tarot_buff: window.tarotBuff,
                 today_tarot_count: window.todayTarotCount,
                 last_tarot_date: window.lastTarotDate,
-                consumables: window.consumables // [추가됨]
+                consumables: window.consumables, // 👈 여기에 콤마(,) 꼭 찍으세요!
+                
+                // ⭐ [추가] 50억 보상 받은 기록 저장
+                claimedGradeRewards: window.claimedGradeRewards || []
             };
+
             
             localStorage.setItem('catSave_' + window.nickname, JSON.stringify(dataToSave)); 
             if(db) { 
@@ -2357,7 +2536,9 @@
                 window.lastTarotDate = d.last_tarot_date || 0;
                                 // [추가] 아이템 데이터 로드 및 UI 초기화
                 window.consumables = d.consumables || { protect: 0, charm_5: 0, charm_10: 0, charm_30: 0 };
-                updateBuffUI();
+                updateBuffUI();// ⭐ [추가] 50억 보상 기록 불러오기
+                window.claimedGradeRewards = d.claimedGradeRewards || [];
+
 
                 window.bestProb = d.best_prob || 1; // [랭킹] 로드
 
@@ -2391,3 +2572,4 @@
 </script>
 </body>
 </html>
+
