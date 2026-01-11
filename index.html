@@ -2253,6 +2253,7 @@
 
     // [핵심 수정 3] 랭킹 최적화 판매 로직 (50개 제한 & 정렬)
     // [수정된 판매 함수: RP를 확정 저장]
+    // [2. 수정됨] 스마트 저장 (전설 + 현역 모두 생존)
     window.sellItem = async function() { 
         if (!window.currentEmoji || window.currentEmoji.gone) return;
         
@@ -2262,7 +2263,7 @@
         let sellBonus = (window.tarotBuff?.type === 'sell_bonus') ? (1 + window.tarotBuff.val/100) : 1.0;
         let finalVal = Math.floor(window.currentEmoji.value); 
 
-        // [핵심] 판매 시점에 RP를 정수(Integer)로 확정 계산
+        // RP 점수 계산
         let currentProb = parseFloat(window.currentEmoji.rarity);
         let finalRP = getRareScore(currentProb);
 
@@ -2270,7 +2271,7 @@
             owner: window.nickname, 
             emoji: currentIcon, 
             prob: currentProb,
-            rp: finalRP, // ⭐ [추가됨] 이제 랭킹은 이 'rp' 값을 기준으로 합니다.
+            rp: finalRP,
             val: finalVal, 
             grade: window.currentEmoji.grade, 
             lvl: window.currentEmoji.level, 
@@ -2280,24 +2281,31 @@
             allInHistory: window.currentEmoji.allInHistory 
         };
         
-        // 내 기록에 추가
+        // 1. 기록 추가
         if(!window.myHistory) window.myHistory = [];
         window.myHistory.push(rec); 
         
-        // 내 기록 정렬 (높은 RP 순서)
+        // 2. 점수(RP) 높은 순 정렬
         window.myHistory.sort((a, b) => {
-            let rpA = a.rp || getRareScore(a.prob); // 기존 데이터 호환용
-            let rpB = b.rp || getRareScore(b.prob);
+            let rpA = a.rp !== undefined ? a.rp : getRareScore(a.prob);
+            let rpB = b.rp !== undefined ? b.rp : getRareScore(b.prob);
             return rpB - rpA; 
         }); 
-        
-        if (window.myHistory.length > 50) { window.myHistory = window.myHistory.slice(0, 50); }
 
-        // [랭킹용] 최고 RP 갱신 (확률이 아니라 점수 기준)
+        // 3. 스마트 필터링 (전체 50위 이내 OR 이번 주 기록은 살려둠)
+        const weeklyStart = getWeeklyStartTimestamp(); 
+        window.myHistory = window.myHistory.filter((item, index) => {
+            if (index < 50) return true; // 명예의 전당 (Top 50)
+            if (item.date >= weeklyStart) return true; // 이번 주 현역
+            return false; // 나머지는 삭제
+        });
+
+        // 데이터 폭증 방지 (최대 200개 제한)
+        if (window.myHistory.length > 200) window.myHistory = window.myHistory.slice(0, 200);
+
+        // 최고 기록 갱신
         let myBestRP = getRareScore(window.bestProb || 100);
-        if (finalRP > myBestRP) { 
-            window.bestProb = currentProb; // 서버에는 여전히 prob을 저장하지만 (기존 호환)
-        }
+        if (finalRP > myBestRP) { window.bestProb = currentProb; }
 
         window.gold += finalVal;
         addLog(`💰 판매: +${finalVal.toLocaleString()} (RP: ${finalRP})`); 
@@ -2305,6 +2313,7 @@
         
         saveGame(0); updateUI(); 
     };
+
 
     function formatDateSimple(ts) {
         if(!ts) return "-";
@@ -2314,58 +2323,60 @@
 
     // [핵심 수정 4] 글로벌 랭킹 호출 (50명 제한)
     // [수정된 랭킹 불러오기 함수]
+    // [3. 수정됨] 랭킹 불러오기 (서버 데이터 + 내 로컬 데이터 즉시 반영)
     async function syncGlobal(tabType) { 
         if(!db) { document.getElementById('rank-list').innerHTML = "<div style='padding:20px; text-align:center;'>DB 연결 실패</div>"; return; }
-        document.getElementById('rank-list').innerHTML = "<div style='text-align:center; padding:20px; color:#888;'>데이터 로딩 중...</div>";
+        document.getElementById('rank-list').innerHTML = "<div style='text-align:center; padding:20px; color:#888;'>랭킹 집계 중...</div>";
         
-        // 이번 주 월요일 0시 타임스탬프 (이 시간 이전 기록은 무시)
         const weeklyLimit = getWeeklyStartTimestamp();
 
         try {
-            if (tabType === 'rarity') {
-                // 1. 유저를 100명까지 넉넉하게 불러옵니다
-                const q = query(
-                    collection(db, "users"), 
-                    orderBy("best_prob", "asc"), 
-                    limit(100) 
-                ); 
-                const snap = await getDocs(q); 
-                let all = [];
-                
-                snap.forEach(d => { 
-                    const data = d.data();
-                    // 2. 각 유저의 기록(h)을 다 뒤져서 '이번 주' 기록만 쏙쏙 뽑아냅니다.
-                    if(data.h && Array.isArray(data.h)) {
-                        const weeklyRecords = data.h.filter(item => item.date >= weeklyLimit);
-                        all = all.concat(weeklyRecords); 
-                    }
-                }); 
+            // 1. 서버의 모든 유저 가져오기
+            const q = query(collection(db, "users")); 
+            const snap = await getDocs(q); 
+            
+            let all = [];
 
-                // ⭐ [여기서부터 수정됨] 3. RP(점수) 기준 정렬 -> 동점 시 최신순 1등
+            // 2. 서버 데이터 합치기 (단, '나'의 데이터는 제외 - 내 폰 데이터가 더 최신이니까)
+            snap.forEach(d => { 
+                const data = d.data();
+                if (data.nickname === window.nickname) return; // 내 서버 데이터 스킵
+
+                if(data.h && Array.isArray(data.h)) {
+                    const weeklyRecords = data.h.filter(item => {
+                        if (!item.date) return false;
+                        return item.date >= weeklyLimit;
+                    });
+                    all = all.concat(weeklyRecords); 
+                }
+            }); 
+
+            // 3. '나'의 로컬 데이터 강제 주입 (즉시 반영)
+            if (window.myHistory && Array.isArray(window.myHistory)) {
+                const myWeeklyRecords = window.myHistory.filter(item => {
+                    if (!item.date) return false;
+                    return item.date >= weeklyLimit;
+                });
+                myWeeklyRecords.forEach(r => r.owner = window.nickname);
+                all = all.concat(myWeeklyRecords);
+            }
+
+            if (tabType === 'rarity') {
+                // 4. 희귀도 랭킹 정렬
                 cachedRarityRank = all.sort((a, b) => {
-                    // 1. RP값 가져오기 (옛날 데이터는 즉석 계산, 새 데이터는 저장된 rp 사용)
                     const scoreA = a.rp !== undefined ? a.rp : getRareScore(a.prob);
                     const scoreB = b.rp !== undefined ? b.rp : getRareScore(b.prob);
-                    
-                    // 2. 점수가 다르면 점수 높은 순 (내림차순)
-                    if (scoreA !== scoreB) {
-                        return scoreB - scoreA;
-                    }
-                    
-                    // 3. 점수가 같으면(동점) -> 최신 날짜가 위로 (내림차순)
-                    return b.date - a.date; 
-                }).slice(0, 50); // 상위 50개만 자름
-                // ⭐ [수정 끝]
+                    if (scoreA !== scoreB) return scoreB - scoreA;
+                    return b.date - a.date;
+                }).slice(0, 50);
 
                 lastRankFetch = Date.now();
                 
-                // 4. 화면에 그리기
                 const rankListEl = document.getElementById('rank-list');
                 if (rankListEl && rankListEl.offsetParent !== null) { 
                     rankListEl.innerHTML = renderRanking(cachedRarityRank, 'rarity'); 
                 }
                 
-                // 1등 전광판 업데이트
                 if(cachedRarityRank.length > 0) { 
                     document.getElementById('world-best-info').innerText = `🏆 1위: ${cachedRarityRank[0].owner}`; 
                     document.getElementById('world-best-icon').innerText = cachedRarityRank[0].emoji; 
@@ -2375,24 +2386,20 @@
                 }
 
             } else if (tabType === 'wealth') {
-                // 자산 랭킹 로직 (기존과 동일)
-                const q = query(collection(db, "users"), orderBy("max_gold", "desc"), limit(50));
-                const snap = await getDocs(q);
-                let all = [];
-                snap.forEach(d => { 
-                    const data = d.data(); 
-                    all.push({ owner: data.nickname, val: data.max_gold || data.g || 0, date: data.max_gold_date || Date.now() }); 
+                // 5. 자산 랭킹 (동일 로직: 서버 데이터들 + 내 현재 자산)
+                let wealthList = [];
+                snap.forEach(d => {
+                    const data = d.data();
+                    if (data.nickname === window.nickname) return;
+                    wealthList.push({ owner: data.nickname, val: data.max_gold || data.g || 0, date: data.max_gold_date || Date.now() });
                 });
-                cachedWealthRank = all; 
-                lastRankFetch = Date.now();
-                
-                let displayList = [...cachedWealthRank].filter(item => item.owner !== window.nickname);
-                displayList.push({ owner: window.nickname, val: window.maxGold, date: window.maxGoldDate });
-                displayList.sort((a, b) => b.val - a.val);
+
+                wealthList.push({ owner: window.nickname, val: window.maxGold, date: window.maxGoldDate });
+                wealthList.sort((a, b) => b.val - a.val);
                 
                 const rankListEl = document.getElementById('rank-list');
                 if (rankListEl.offsetParent !== null) { 
-                    rankListEl.innerHTML = renderRanking(displayList.slice(0, 50), 'wealth'); 
+                    rankListEl.innerHTML = renderRanking(wealthList.slice(0, 50), 'wealth'); 
                 }
             }
         } catch(e) { 
@@ -2735,3 +2742,4 @@
 </script>
 </body>
 </html>
+
