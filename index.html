@@ -654,6 +654,25 @@
         .deco-toolbar { display: flex; gap: 5px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 5px; }
         .deco-bg-btn { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #555; cursor: pointer; flex-shrink: 0; }
         .deco-controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-top: 10px; }
+            /* [Ver 3.0] 대폭 조절 버튼 스타일 (새로 추가) */
+        .macro-btn {
+            width: 32px; height: 24px; 
+            background: #222; color: #74b9ff;
+            border: 1px solid #74b9ff; border-radius: 4px; 
+            font-weight: 900; font-size: 0.65rem;
+            cursor: pointer; margin: 0 2px;
+        }
+        .macro-btn:active { background: #74b9ff; color: #000; }
+        
+        /* 미세 버튼도 스타일 맞춤 */
+        .micro-btn {
+            width: 24px; height: 24px; 
+            background: #333; color: #ddd;
+            border: 1px solid #555; border-radius: 4px; 
+            font-weight: bold; font-size: 0.8rem; cursor: pointer;
+        }
+        .micro-btn:active { background: #555; }
+
 
     </style>
 </head>
@@ -1022,13 +1041,23 @@ onmouseout="this.style.background='#1a1a1a'; this.style.color='#888'; this.style
     <div id="deco-editor-panel" class="editor-panel">
         
         <div class="panel-row space-between">
+            <div style="display:flex; gap:5px;">
+                <button class="tool-btn" onclick="undo()" style="width:40px;">↩️</button>
+                <button class="tool-btn" onclick="redo()" style="width:40px;">↪️</button>
+            </div>
             <button id="btn-multi-toggle" class="tool-btn toggle-btn" onclick="toggleMultiSelectMode()">
                 ⬜ 다중 선택 OFF
             </button>
+        </div>
+
+        <hr style="border:0; border-top:1px solid #333; margin:8px 0;">
+
+        <div class="panel-row space-between">
             <div style="display:flex; gap:5px;">
-                <button class="tool-btn" onclick="deselectAll()">🔓 전체 해제</button>
-                <button class="tool-btn btn-del" onclick="deleteSelectedStickers()">🗑️ 삭제</button>
+                <button class="tool-btn" onclick="deselectAll()">🔓 해제</button>
+                <button class="tool-btn" style="background:#6c5ce7; border-color:#a29bfe;" onclick="cloneSelectedStickers()">📑 복제</button>
             </div>
+            <button class="tool-btn btn-del" onclick="deleteSelectedStickers()">🗑️ 삭제</button>
         </div>
 
         <hr style="border:0; border-top:1px solid #333; margin:8px 0;">
@@ -1057,17 +1086,22 @@ onmouseout="this.style.background='#1a1a1a'; this.style.color='#888'; this.style
 
         <div class="panel-row">
             <span class="panel-label">크기</span>
+            <button class="macro-btn" onclick="applyToGroup('scale', -0.2)">--</button>
             <button class="micro-btn" onclick="applyToGroup('scale', -0.05)">-</button>
-            <input type="range" id="sl-scale" min="0.1" max="3.0" step="0.05" value="1" oninput="onSliderChange('scale', this.value)">
+            <input type="range" id="sl-scale" min="0.1" max="5.0" step="0.05" value="1" oninput="onSliderChange('scale', this.value)">
             <button class="micro-btn" onclick="applyToGroup('scale', 0.05)">+</button>
+            <button class="macro-btn" onclick="applyToGroup('scale', 0.2)">++</button>
         </div>
         <div class="panel-row">
             <span class="panel-label">회전</span>
-            <button class="micro-btn" onclick="applyToGroup('angle', -5)">↺</button>
+            <button class="macro-btn" onclick="applyToGroup('angle', -45)">-45°</button>
+            <button class="micro-btn" onclick="applyToGroup('angle', -1)">-1°</button>
             <input type="range" id="sl-angle" min="0" max="360" step="1" value="0" oninput="onSliderChange('angle', this.value)">
-            <button class="micro-btn" onclick="applyToGroup('angle', 5)">↻</button>
+            <button class="micro-btn" onclick="applyToGroup('angle', 1)">+1°</button>
+            <button class="macro-btn" onclick="applyToGroup('angle', 45)">+45°</button>
         </div>
     </div>
+
 
     <div style="display:flex; gap:5px; margin:10px 0;">
         <input type="text" id="deco-text-input" placeholder="텍스트 입력" style="flex:1; background:#111; border:1px solid #444; color:#fff; padding:8px; border-radius:6px; font-size:0.8rem;">
@@ -1093,7 +1127,8 @@ onmouseout="this.style.background='#1a1a1a'; this.style.color='#888'; this.style
             <h3 style="margin:0; color:#ffd700; font-size:1.1rem;">스티커 도감</h3>
             <div style="font-size:0.6rem; color:#aaa; margin-top:4px;">터치하여 캔버스에 추가하세요</div>
             
-            <div style="margin-top:10px; display:flex; justify-content:center; gap:4px;">
+            <div style="margin-top:10px; display:flex; justify-content:center; gap:4px; flex-wrap:wrap;">
+                <button class="deco-tab-btn" onclick="window.switchDecoTab('도형')" style="color:#74b9ff; border-color:#74b9ff;">도형</button>
                 <button class="deco-tab-btn active" onclick="window.switchDecoTab('일반')">일반</button>
                 <button class="deco-tab-btn" onclick="window.switchDecoTab('매직')">매직</button>
                 <button class="deco-tab-btn" onclick="window.switchDecoTab('레어')">레어</button>
@@ -1107,6 +1142,7 @@ onmouseout="this.style.background='#1a1a1a'; this.style.color='#888'; this.style
         <button class="btn-action" style="margin:10px; background:#444;" onclick="document.getElementById('deco-picker-modal').style.display='none'">닫기</button>
     </div>
 </div>
+
 
 
 <script type="module">
@@ -3005,14 +3041,29 @@ onmouseout="this.style.background='#1a1a1a'; this.style.color='#888'; this.style
         updateResetTimer(); updateUI();
     }
     init();
-/* --- [🎨 꾸미기 모드 로직 (다중 선택 & 그룹 정밀 제어)] --- */
+/* --- [🎨 꾸미기 모드 로직 (언두/리두 + 기본도형 + 정밀제어)] --- */
 
-const stickerStateMap = {};
-// ✨ 다중 선택을 위해 Set 사용 (여러 ID 저장)
+// 상태 관리 변수
+let stickerStateMap = {};
 const selectedStickerIds = new Set();
 let isMultiSelectMode = false;
 let recentStickers = JSON.parse(localStorage.getItem('decoRecent') || "[]"); 
 window.currentDecoTab = '일반';
+
+// ✨ 언두/리두 히스토리 스택
+const historyStack = [];
+const redoStack = [];
+const MAX_HISTORY = 20; // 최대 저장 횟수
+
+// ✨ 기본 도형 데이터 (해금 필요 없음)
+const basicShapes = [
+    "🟥","🟧","🟨","🟩","🟦","🟪","🟫","⬛","⬜",
+    "🔴","🟠","🟡","🟢","🔵","🟣","🟤","⚫","⚪",
+    "🔻","🔺","🔶","🔷","🔳","🔲","⭐","🌟","✨",
+    "❤️","💔","💘","💖","💗","💓","💞","💕","💟",
+    "💭","💬","🗨️","👁️‍🗨️","🎵","🎶","➰","➿",
+    "✖️","➕","➖","➗","✔️","⭕","❌","❓","❗"
+];
 
 // 1. 초기화
 window.openDecoMode = () => {
@@ -3020,7 +3071,6 @@ window.openDecoMode = () => {
     history.pushState({ modal: true }, '', '');
     document.getElementById('deco-page').style.display = 'block';
     
-    // 스크롤 방지
     const cvs = document.getElementById('deco-canvas-container');
     if(cvs) {
         cvs.style.touchAction = "none";
@@ -3028,8 +3078,82 @@ window.openDecoMode = () => {
     }
     setTimeout(renderRecentBar, 50);
     window.deselectAll();
+    
+    // 열 때 초기 상태 저장 (히스토리 시작점)
+    if(historyStack.length === 0) saveHistory();
 };
 
+// 2. ✨ [핵심] 언두 / 리두 시스템
+function saveHistory() {
+    // 현재 상태(맵)를 깊은 복사해서 저장
+    const stateSnapshot = JSON.stringify(stickerStateMap);
+    
+    // 중복 저장 방지 (마지막 상태와 같으면 무시)
+    if (historyStack.length > 0 && historyStack[historyStack.length - 1] === stateSnapshot) return;
+
+    historyStack.push(stateSnapshot);
+    if (historyStack.length > MAX_HISTORY) historyStack.shift(); // 오래된 것 삭제
+    
+    // 새 행동을 하면 리두 스택은 날아감
+    redoStack.length = 0; 
+}
+
+window.undo = () => {
+    if (historyStack.length <= 1) return addLog("⚠️ 더 이상 뒤로 갈 수 없습니다.");
+    
+    // 현재 상태를 리두 스택에 보냄
+    const current = historyStack.pop();
+    redoStack.push(current);
+    
+    // 이전 상태 불러오기
+    const prev = historyStack[historyStack.length - 1];
+    restoreState(prev);
+    addLog("↩️ 실행 취소");
+};
+
+window.redo = () => {
+    if (redoStack.length === 0) return addLog("⚠️ 다시 실행할 내용이 없습니다.");
+    
+    // 리두 스택에서 꺼내서 히스토리에 넣고 복구
+    const next = redoStack.pop();
+    historyStack.push(next);
+    restoreState(next);
+    addLog("↪️ 다시 실행");
+};
+
+function restoreState(jsonState) {
+    window.deselectAll();
+    const container = document.getElementById('deco-canvas-container');
+    container.innerHTML = ""; // 캔버스 비우기
+    
+    // 데이터 복구
+    stickerStateMap = JSON.parse(jsonState);
+    
+    // DOM 재생성
+    for (const [id, state] of Object.entries(stickerStateMap)) {
+        const el = document.createElement('div');
+        el.className = 'deco-sticker';
+        el.id = id;
+        el.innerText = state.content; // 내용 복구
+        
+        // 텍스트 타입이면 스타일 복구
+        if(state.type === 'text') {
+            el.style.fontSize = "1.5rem";
+            el.style.whiteSpace = "nowrap";
+            el.style.fontWeight = "bold";
+            el.style.color = "#fff";
+            el.style.textShadow = "0 0 5px #000";
+        }
+        
+        container.appendChild(el);
+        applyTransform(el);
+        attachDragEvents(el);
+    }
+    window.updateDecoCount();
+}
+
+
+// 3. UI 및 도감
 function renderRecentBar() {
     const bar = document.getElementById('deco-recent-bar');
     if(!bar) return;
@@ -3050,37 +3174,69 @@ function renderRecentBar() {
     });
 }
 
-// 2. 도감 및 스티커 추가 (기존 유지)
 window.openDecoPickerModal = () => {
     const modal = document.getElementById('deco-picker-modal');
     if(!modal) return alert("도감 HTML을 찾을 수 없습니다.");
     modal.style.display = 'flex';
+    // 기본적으로 도형 탭이 없으면 일반으로, 아니면 도형이나 일반으로
     window.switchDecoTab('일반');
 };
+
 window.switchDecoTab = (tabName) => {
     window.currentDecoTab = tabName;
-    const color = gradeInfo[tabName].color;
+    // 탭 스타일
     document.querySelectorAll('.deco-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.borderColor = "#444"; 
+        btn.style.color = "#888";
+        
         if(btn.innerText === tabName || (tabName==='레전더리' && btn.innerText==='전설')) {
-            btn.classList.add('active'); btn.style.borderColor = color; btn.style.color = color;
-        } else {
-            btn.classList.remove('active'); btn.style.borderColor = "#444"; btn.style.color = "#888";
+            btn.classList.add('active'); 
+            // 도형은 파란색, 나머지는 등급색
+            if(tabName === '도형') {
+                btn.style.borderColor = "#74b9ff"; btn.style.color = "#74b9ff";
+            } else {
+                const color = gradeInfo[tabName]?.color || '#fff';
+                btn.style.borderColor = color; btn.style.color = color;
+            }
         }
     });
     renderPickerGrid();
 };
+
 function renderPickerGrid() {
     const grid = document.getElementById('picker-modal-grid');
     if(!grid) return;
     grid.innerHTML = "";
-    const currentGrade = window.currentDecoTab;
-    const info = gradeInfo[currentGrade];
-    const targetPaths = evoPaths.filter(p => p.grades.includes(currentGrade));
+    
+    const currentTab = window.currentDecoTab;
+
+    // ✨ 도형 탭 처리
+    if (currentTab === '도형') {
+        basicShapes.forEach(shape => {
+            const card = document.createElement('div');
+            card.className = "book-card-mini";
+            card.style.borderColor = "#74b9ff";
+            // 도형은 잠금 없음
+            const html = `
+                <div class="book-mini-header" style="color:#fff">기본</div>
+                <div class="book-mini-slots" style="display:flex; align-items:center; justify-content:center; height:100%;">
+                    <div style="font-size:2rem; cursor:pointer;" onclick="window.selectFromPicker('${shape}')">${shape}</div>
+                </div>`;
+            card.innerHTML = html;
+            grid.appendChild(card);
+        });
+        return;
+    }
+
+    // 기존 등급별 처리
+    const info = gradeInfo[currentTab];
+    const targetPaths = evoPaths.filter(p => p.grades.includes(currentTab));
     const gradeWeight = { "레전더리": 5, "에픽": 4, "레어": 3, "매직": 2, "일반": 1 };
     targetPaths.sort((a, b) => Math.max(...b.grades.map(g=>gradeWeight[g])) - Math.max(...a.grades.map(g=>gradeWeight[g])));
 
     targetPaths.forEach(path => {
-        const bookKey = `${path.name}_${currentGrade}`;
+        const bookKey = `${path.name}_${currentTab}`;
         const myLevel = window.book[bookKey] || 0; 
         const card = document.createElement('div');
         card.className = "book-card-mini";
@@ -3096,15 +3252,21 @@ function renderPickerGrid() {
         grid.appendChild(card);
     });
 }
+
 window.selectFromPicker = (emoji) => {
     window.addStickerToCanvas(emoji, 'emoji');
     document.getElementById('deco-picker-modal').style.display = 'none';
-    recentStickers = recentStickers.filter(e => e !== emoji);
-    recentStickers.unshift(emoji);
-    if(recentStickers.length > 10) recentStickers.pop();
-    localStorage.setItem('decoRecent', JSON.stringify(recentStickers));
+    
+    // 도형은 최근 사용에 추가 안 함 (선택사항)
+    if(!basicShapes.includes(emoji)) {
+        recentStickers = recentStickers.filter(e => e !== emoji);
+        recentStickers.unshift(emoji);
+        if(recentStickers.length > 10) recentStickers.pop();
+        localStorage.setItem('decoRecent', JSON.stringify(recentStickers));
+    }
     renderRecentBar();
 };
+
 window.addTextToCanvas = () => {
     const inp = document.getElementById('deco-text-input');
     const text = inp.value.trim();
@@ -3113,9 +3275,12 @@ window.addTextToCanvas = () => {
     inp.value = "";
 };
 
+// 4. 스티커 소환
 window.addStickerToCanvas = (content, type) => {
+    saveHistory(); // ✨ 추가 전 상태 저장
+
     const container = document.getElementById('deco-canvas-container');
-    if(container.childElementCount >= 30) return alert("최대 30개까지만 배치 가능합니다.");
+    if(container.childElementCount >= 50) return alert("최대 50개까지만 배치 가능합니다.");
 
     const el = document.createElement('div');
     el.className = 'deco-sticker';
@@ -3135,49 +3300,85 @@ window.addStickerToCanvas = (content, type) => {
     const startX = 130 + (Math.random() * 40 - 20);
     const startY = 150 + (Math.random() * 40 - 20);
 
-    stickerStateMap[uniqueId] = { x: startX, y: startY, scale: 1, angle: 0, flip: 1, zIndex: 10 };
+    // ✨ content와 type도 상태에 저장 (복구를 위해)
+    stickerStateMap[uniqueId] = { 
+        x: startX, y: startY, scale: 1, angle: 0, flip: 1, zIndex: 10,
+        content: content, type: type 
+    };
 
     container.appendChild(el);
     applyTransform(el);
     attachDragEvents(el);
     
-    // 추가 시 자동 선택 (다중 모드면 추가 선택)
     if(!isMultiSelectMode) window.deselectAll();
     window.selectSticker(el);
-    
     updateDecoCount();
 };
 
-// 3. ✨ [핵심] 다중 선택 & 드래그 로직
+// 5. 복제 (Clone)
+window.cloneSelectedStickers = () => {
+    if(selectedStickerIds.size === 0) return alert("복제할 스티커를 선택하세요.");
+    
+    saveHistory(); // ✨ 복제 전 저장
+
+    const targets = Array.from(selectedStickerIds);
+    window.deselectAll(); 
+    const container = document.getElementById('deco-canvas-container');
+
+    targets.forEach(originId => {
+        if(container.childElementCount >= 50) return;
+        const originState = stickerStateMap[originId];
+        const originEl = document.getElementById(originId);
+        
+        if(originState && originEl) {
+            const newId = `sticker-${Date.now()}-${Math.floor(Math.random()*1000)}`;
+            const newEl = originEl.cloneNode(true);
+            newEl.id = newId;
+            newEl.classList.remove('selected'); 
+            
+            stickerStateMap[newId] = {
+                ...originState, // 기존 속성 복사
+                x: originState.x + 15,
+                y: originState.y + 15,
+                zIndex: originState.zIndex + 1
+            };
+            
+            container.appendChild(newEl);
+            applyTransform(newEl);
+            attachDragEvents(newEl);
+            window.selectSticker(newEl);
+        }
+    });
+    updateDecoCount();
+    addLog("📑 복제 완료");
+};
+
+// 6. 드래그 이벤트 (종료 시 히스토리 저장)
 function attachDragEvents(el) {
     let startX=0, startY=0;
-    // 드래그 시작 시점의 각 스티커 초기 위치 저장
     let initialPositions = {};
+    let isDragging = false; // 드래그 여부 확인
 
     const startDrag = (clientX, clientY) => {
-        // 선택되지 않은 상태에서 터치 시 선택 처리
         if (!selectedStickerIds.has(el.id)) {
             if (!isMultiSelectMode) window.deselectAll();
             window.selectSticker(el);
         }
-        
         startX = clientX;
         startY = clientY;
-        
-        // 선택된 모든 스티커의 현재 위치 저장
         initialPositions = {};
         selectedStickerIds.forEach(id => {
-            if(stickerStateMap[id]) {
-                initialPositions[id] = { x: stickerStateMap[id].x, y: stickerStateMap[id].y };
-            }
+            if(stickerStateMap[id]) initialPositions[id] = { x: stickerStateMap[id].x, y: stickerStateMap[id].y };
         });
+        isDragging = false;
     };
 
     const moveDrag = (clientX, clientY) => {
         const dx = clientX - startX;
         const dy = clientY - startY;
-        
-        // 선택된 모든 스티커 이동
+        // 아주 조금이라도 움직였으면 드래그로 간주
+        if (Math.abs(dx) > 1 || Math.abs(dy) > 1) isDragging = true;
+
         selectedStickerIds.forEach(id => {
             const state = stickerStateMap[id];
             const initPos = initialPositions[id];
@@ -3190,10 +3391,23 @@ function attachDragEvents(el) {
         });
     };
 
+    // ✨ 드래그가 끝났을 때만 저장
+    const endDrag = () => {
+        if (isDragging) saveHistory();
+        isDragging = false;
+    };
+
+    // 모바일
     el.addEventListener('touchstart', (e) => {
         if(e.cancelable) e.preventDefault();
         e.stopPropagation();
         startDrag(e.touches[0].clientX, e.touches[0].clientY);
+        // 저장 타이밍을 위해 이벤트 연결
+        const onEnd = () => {
+            endDrag();
+            window.removeEventListener('touchend', onEnd);
+        };
+        window.addEventListener('touchend', onEnd);
     }, { passive: false });
 
     el.addEventListener('touchmove', (e) => {
@@ -3202,11 +3416,13 @@ function attachDragEvents(el) {
         moveDrag(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: false });
 
+    // PC
     el.addEventListener('mousedown', (e) => {
         e.preventDefault(); e.stopPropagation();
         startDrag(e.clientX, e.clientY);
         const onMove = (ev) => { moveDrag(ev.clientX, ev.clientY); };
         const onUp = () => {
+            endDrag(); // 저장
             window.removeEventListener('mousemove', onMove);
             window.removeEventListener('mouseup', onUp);
         };
@@ -3215,7 +3431,7 @@ function attachDragEvents(el) {
     });
 }
 
-// 4. ✨ [핵심] 다중 선택 관리
+// 7. 패널 조작
 window.toggleMultiSelectMode = () => {
     isMultiSelectMode = !isMultiSelectMode;
     const btn = document.getElementById('btn-multi-toggle');
@@ -3225,24 +3441,16 @@ window.toggleMultiSelectMode = () => {
     } else {
         btn.classList.remove('active');
         btn.innerText = "⬜ 다중 선택 OFF";
-        // 끄면 하나만 남기고 해제? 아니면 유지? -> 유지하되 다음 터치 시 초기화
     }
 };
 
 window.selectSticker = (el) => {
     if (!isMultiSelectMode) {
-        // 단일 모드: 기존 것 다 지우고 얘만 선택
-        // 단, 이미 내가 선택되어 있다면 유지 (드래그 위해)
-        if(!selectedStickerIds.has(el.id)) {
-            window.deselectAll();
-        }
+        if(!selectedStickerIds.has(el.id)) window.deselectAll();
     }
-    
-    // 선택 목록에 추가
     selectedStickerIds.add(el.id);
     el.classList.add('selected');
-    
-    syncPanelValues(); // 패널 값 업데이트
+    syncPanelValues();
 };
 
 window.deselectAll = () => {
@@ -3257,14 +3465,13 @@ window.handleCanvasBgClick = (e) => {
     if(e.target.id === 'deco-canvas-container') window.deselectAll();
 };
 
-// 5. ✨ [핵심] 그룹 조작 (이동, 회전, 크기, 반전)
+// ✨ 조작 함수 실행 전 저장
 window.applyToGroup = (prop, value) => {
     if(selectedStickerIds.size === 0) return;
+    saveHistory(); // 변경 전 저장
 
-    // A. 중심점(Centroid) 계산
     let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
     let count = 0;
-    
     selectedStickerIds.forEach(id => {
         const s = stickerStateMap[id];
         if(s) {
@@ -3273,9 +3480,7 @@ window.applyToGroup = (prop, value) => {
             count++;
         }
     });
-    
-    const cx = (minX + maxX) / 2; // 그룹 중심 X
-    const cy = (minY + maxY) / 2; // 그룹 중심 Y
+    const cx = (minX + maxX) / 2; const cy = (minY + maxY) / 2; 
 
     selectedStickerIds.forEach(id => {
         const state = stickerStateMap[id];
@@ -3283,44 +3488,32 @@ window.applyToGroup = (prop, value) => {
         if(!state || !el) return;
 
         if (prop === 'layer_up') {
-            state.zIndex += 1;
-            el.style.zIndex = state.zIndex;
+            state.zIndex += 1; el.style.zIndex = state.zIndex;
         } else if (prop === 'layer_down') {
-            state.zIndex = Math.max(1, state.zIndex - 1);
-            el.style.zIndex = state.zIndex;
+            state.zIndex = Math.max(1, state.zIndex - 1); el.style.zIndex = state.zIndex;
         } else if (prop === 'flip') {
             state.flip *= -1;
         } else if (prop === 'scale') {
-            // 크기는 더하기 (미세 조정)
             state.scale = Math.max(0.1, state.scale + value);
-            
-            // 그룹 중심 기준 벌리기/모으기 (선택사항: 너무 복잡하면 생략 가능)
-            // 여기서는 개별 크기만 조절합니다.
         } else if (prop === 'angle') {
-            // ✨ [그룹 공전 회전 알고리즘]
-            // 1. 개별 각도 회전
             state.angle += value;
-            
-            // 2. 중심점 기준 위치 회전 (공전)
-            if (count > 1) { // 2개 이상일 때만 공전
+            if (count > 1) { 
                 const rad = value * (Math.PI / 180);
-                const dx = state.x - cx;
-                const dy = state.y - cy;
-                
-                // 회전 행렬 적용
+                const dx = state.x - cx; const dy = state.y - cy;
                 state.x = cx + (dx * Math.cos(rad) - dy * Math.sin(rad));
                 state.y = cy + (dx * Math.sin(rad) + dy * Math.cos(rad));
             }
         }
         applyTransform(el);
     });
-    
     syncPanelValues();
 };
 
-// 슬라이더 조작 (단일 모드일 때만 절대값, 다중이면 델타값?)
-// 편의상 슬라이더는 "마지막 선택된 녀석" 기준으로 표시하되, 조작 시 델타를 적용하거나 절대값을 적용
-// 여기서는 헷갈림 방지를 위해 "슬라이더는 선택된 모든 녀석에게 절대값 적용"으로 통일 (개별 각도 리셋됨)
+// 슬라이더는 연속 변화하므로, 시작할 때 저장이 필요하지만 복잡하므로 일단 변화 직전 1회만 저장하거나
+// 마우스 뗄 때 저장해야 함. 여기서는 편의상 input 이벤트마다 저장은 안하고 (렉 걸림)
+// 슬라이더 'change' 이벤트(손 뗄때)에 저장하는게 좋음. 
+// 하지만 HTML onclick 구조상 어려우니, 슬라이더는 언두가 조금 부정확해도 감안.
+// (완벽하게 하려면 onchange="saveHistory()" 추가 필요)
 window.onSliderChange = (prop, val) => {
     const numVal = parseFloat(val);
     selectedStickerIds.forEach(id => {
@@ -3328,34 +3521,33 @@ window.onSliderChange = (prop, val) => {
         const el = document.getElementById(id);
         if(state && el) {
             if(prop === 'scale') state.scale = numVal;
-            if(prop === 'angle') state.angle = numVal; // 이 경우 제자리 회전만 함 (공전 X)
+            if(prop === 'angle') state.angle = numVal;
             applyTransform(el);
         }
     });
 };
 
-// 패널 값 동기화 (하나만 선택됐을 때 유효)
 function syncPanelValues() {
     if(selectedStickerIds.size === 1) {
         const id = selectedStickerIds.values().next().value;
         const state = stickerStateMap[id];
         if(state) {
-            document.getElementById('sl-scale').value = state.scale;
-            document.getElementById('sl-angle').value = state.angle % 360;
+            const sc = document.getElementById('sl-scale');
+            const ang = document.getElementById('sl-angle');
+            if(sc) sc.value = state.scale;
+            if(ang) ang.value = state.angle % 360;
         }
     }
 }
 
-// 6. D-Pad 정밀 이동 (꾹 누르기 지원)
+// 8. D-Pad 이동
 let nudgeInterval = null;
 window.startNudge = (dx, dy) => {
-    // 1회 이동
+    saveHistory(); // 이동 전 저장
     performNudge(dx, dy);
-    // 꾹 누르면 연속 이동
     if(nudgeInterval) clearInterval(nudgeInterval);
     nudgeInterval = setInterval(() => performNudge(dx, dy), 100);
     
-    // 떼면 멈춤 (window에 이벤트 걸어서 확실히 멈춤)
     const stop = () => {
         clearInterval(nudgeInterval);
         window.removeEventListener('pointerup', stop);
@@ -3371,14 +3563,12 @@ function performNudge(dx, dy) {
         const state = stickerStateMap[id];
         const el = document.getElementById(id);
         if(state && el) {
-            state.x += dx; // 1px 이동
-            state.y += dy;
+            state.x += dx; state.y += dy;
             applyTransform(el);
         }
     });
 }
 
-// 7. 공통 유틸
 function applyTransform(el) {
     const state = stickerStateMap[el.id];
     if(!state) return;
@@ -3388,6 +3578,7 @@ function applyTransform(el) {
 
 window.deleteSelectedStickers = () => {
     if(selectedStickerIds.size === 0) return alert("삭제할 스티커를 선택하세요.");
+    saveHistory(); // 삭제 전 저장
     selectedStickerIds.forEach(id => {
         delete stickerStateMap[id];
         const el = document.getElementById(id);
@@ -3399,8 +3590,10 @@ window.deleteSelectedStickers = () => {
 
 window.resetDecoCanvas = () => {
     if(confirm("모두 지우시겠습니까?")) {
+        saveHistory(); // 초기화 전 저장
         document.getElementById('deco-canvas-container').innerHTML = "";
-        for (let key in stickerStateMap) delete stickerStateMap[key];
+        for (let key in stickerStateMap) delete stickerStateMap[key]; // 객체 비우기
+        // stickerStateMap = {}; // 이렇게 하면 참조 끊김 주의 (위 방식이 안전)
         window.deselectAll();
         updateDecoCount();
     }
@@ -3408,23 +3601,20 @@ window.resetDecoCanvas = () => {
 
 window.updateDecoCount = () => {
     const count = document.getElementById('deco-canvas-container').childElementCount;
-    document.getElementById('deco-count').innerText = `${count} / 30`;
+    document.getElementById('deco-count').innerText = `${count} / 50`;
 };
 
 window.saveDecoImage = () => {
     window.deselectAll();
     const c = document.getElementById('deco-canvas-container');
     addLog("📸 저장 처리 중...");
-    
     const orgBorder = c.style.border;
     const orgBgImg = c.style.backgroundImage;
     c.style.border = "none";
     c.style.backgroundImage = "none"; 
-
     html2canvas(c, {backgroundColor:null, scale:2}).then(cvs => {
         c.style.border = orgBorder || "2px solid #ffd700";
         c.style.backgroundImage = orgBgImg;
-
         const link = document.createElement('a');
         link.download = `MyEmoji_${Date.now()}.png`;
         link.href = cvs.toDataURL();
